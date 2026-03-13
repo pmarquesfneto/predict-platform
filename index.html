@@ -825,6 +825,186 @@ function initGrowthChart(){
 renderCards(MARKETS,document.getElementById('featured-grid'));
 renderRows(MARKETS);
 calcBet();
+
+/* ══════════════════════════════════════════
+   DEMO TOUR SYSTEM
+══════════════════════════════════════════ */
+const TOUR_STEPS=[
+  {page:'home',   title:'Página Inicial',       body:'Bem-vindo à Predict — o primeiro mercado de probabilidades do Brasil. O ticker ao vivo mostra as probabilidades em tempo real de dezenas de eventos.',        spotlight:null,              btn:'Ver mercados →'},
+  {page:'listing',title:'Explorar Mercados',     body:'Aqui estão todos os mercados abertos. Filtre por Economia, Esportes, Política ou Cripto. Cada linha mostra a probabilidade atual e o volume apostado.',   spotlight:'.filter-row',     btn:'Abrir um mercado →'},
+  {page:'market', title:'Mercado Individual',    body:'Este é o coração da plataforma. O gráfico mostra como a probabilidade evoluiu nos últimos 30 dias — inteligência coletiva em tempo real.',                spotlight:'.prob-box',        btn:'Fazer uma aposta →'},
+  {page:'market', title:'Painel de Apostas',     body:'Escolha SIM ou NÃO, defina o valor e veja o cálculo de retorno potencial instantaneamente. O algoritmo LMSR garante preços justos sempre.',              spotlight:'.bet-panel',       btn:'Ver minha conta →'},
+  {page:'dashboard',title:'Dashboard do Trader', body:'Acompanhe seu portfólio, P&L acumulado e posições abertas. O ranking mostra sua posição entre todos os traders da plataforma.',                           spotlight:'.kpis',            btn:'Ver pitch de investimento →'},
+  {page:'pitch',  title:'Para Investidores',     body:'Zero concorrentes diretos no Brasil. Polymarket movimenta USD 1 bilhão/mês nos EUA. A Predict chega primeiro no maior mercado emergente do mundo.',       spotlight:'.market-opp',      btn:'Começar agora →'},
+  {page:'onboard',title:'Cadastro em 3 passos',  body:'CPF, dados básicos e PIX. Em menos de 3 minutos o usuário está apostando. Zero fricção — é o que diferencia a Predict de qualquer fintech tradicional.', spotlight:'.ob-card',         btn:'Reiniciar tour'},
+];
+
+let tourStep=0,tourActive=false,tourTimer=null;
+
+function buildTourUI(){
+  // floating launch button
+  const fab=document.createElement('button');
+  fab.id='tour-fab';
+  fab.innerHTML='▶ Demo Tour';
+  fab.onclick=startTour;
+  document.body.appendChild(fab);
+
+  // overlay
+  const ov=document.createElement('div');
+  ov.id='tour-overlay';
+  ov.innerHTML=`
+    <div id="tour-progress-bar"><div id="tour-progress-fill"></div></div>
+    <div id="tour-card">
+      <div id="tour-header">
+        <div id="tour-step-lbl"></div>
+        <button id="tour-close" onclick="endTour()">✕</button>
+      </div>
+      <div id="tour-title"></div>
+      <div id="tour-body"></div>
+      <div id="tour-footer">
+        <div id="tour-dots"></div>
+        <div id="tour-actions">
+          <button id="tour-skip" onclick="endTour()">Sair</button>
+          <button id="tour-next" onclick="tourNext()"></button>
+        </div>
+      </div>
+    </div>
+    <div id="tour-spotlight"></div>
+  `;
+  document.body.appendChild(ov);
+}
+
+function startTour(){
+  tourActive=true;
+  tourStep=0;
+  document.getElementById('tour-overlay').classList.add('active');
+  document.getElementById('tour-fab').style.display='none';
+  renderTourStep();
+}
+
+function endTour(){
+  tourActive=false;
+  clearTimeout(tourTimer);
+  document.getElementById('tour-overlay').classList.remove('active');
+  document.getElementById('tour-fab').style.display='flex';
+  clearSpotlight();
+}
+
+function tourNext(){
+  clearTimeout(tourTimer);
+  if(tourStep>=TOUR_STEPS.length-1){endTour();startTour();return;}
+  tourStep++;
+  renderTourStep();
+}
+
+function renderTourStep(){
+  const s=TOUR_STEPS[tourStep];
+  // navigate
+  showPage(s.page, null);
+  // sync nav tab highlight
+  const tabMap={home:0,listing:1,market:2,dashboard:3,pitch:4,onboard:5};
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const tab=document.querySelectorAll('.nav-tab')[tabMap[s.page]];
+  if(tab) tab.classList.add('active');
+
+  // update card
+  document.getElementById('tour-step-lbl').textContent=(tourStep+1)+' / '+TOUR_STEPS.length;
+  document.getElementById('tour-title').textContent=s.title;
+  document.getElementById('tour-body').textContent=s.body;
+  document.getElementById('tour-next').textContent=s.btn;
+
+  // dots
+  const dotsEl=document.getElementById('tour-dots');
+  dotsEl.innerHTML='';
+  TOUR_STEPS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='t-dot'+(i===tourStep?' active':'');
+    d.onclick=()=>{tourStep=i;renderTourStep();};
+    dotsEl.appendChild(d);
+  });
+
+  // progress bar
+  const pct=((tourStep+1)/TOUR_STEPS.length)*100;
+  document.getElementById('tour-progress-fill').style.width=pct+'%';
+
+  // spotlight
+  clearSpotlight();
+  if(s.spotlight){
+    setTimeout(()=>{
+      const el=document.querySelector(s.spotlight);
+      if(el){
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+        el.classList.add('tour-highlight');
+        document.getElementById('tour-spotlight').classList.add('active');
+      }
+    },400);
+  }
+
+  // charts
+  if(s.page==='market') setTimeout(initProbChart,300);
+  if(s.page==='dashboard') setTimeout(initPnlChart,300);
+  if(s.page==='pitch') setTimeout(initGrowthChart,300);
+
+  // auto-advance after 8s
+  clearTimeout(tourTimer);
+  if(tourStep<TOUR_STEPS.length-1){
+    tourTimer=setTimeout(()=>{tourStep++;renderTourStep();},8000);
+    // animate progress
+    animateProgress(pct,((tourStep+1)/TOUR_STEPS.length)*100,8000);
+  }
+}
+
+let progressAnim=null;
+function animateProgress(from,to,duration){
+  clearInterval(progressAnim);
+  const fill=document.getElementById('tour-progress-fill');
+  const start=Date.now();
+  progressAnim=setInterval(()=>{
+    const elapsed=Date.now()-start;
+    const frac=Math.min(elapsed/duration,1);
+    fill.style.width=(from+(to-from)*frac)+'%';
+    if(frac>=1) clearInterval(progressAnim);
+  },50);
+}
+
+function clearSpotlight(){
+  document.querySelectorAll('.tour-highlight').forEach(el=>el.classList.remove('tour-highlight'));
+  document.getElementById('tour-spotlight')&&document.getElementById('tour-spotlight').classList.remove('active');
+}
+
+// inject tour styles
+const tourStyle=document.createElement('style');
+tourStyle.textContent=`
+#tour-fab{position:fixed;bottom:28px;right:28px;z-index:999;background:#1D9E75;color:#fff;border:none;border-radius:100px;padding:12px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:8px;box-shadow:0 4px 24px rgba(29,158,117,0.4);transition:all 0.2s;letter-spacing:-0.2px}
+#tour-fab:hover{background:#0F6E56;transform:translateY(-2px);box-shadow:0 6px 28px rgba(29,158,117,0.5)}
+#tour-overlay{position:fixed;inset:0;z-index:998;pointer-events:none;display:none}
+#tour-overlay.active{display:block;pointer-events:none}
+#tour-progress-bar{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.06);z-index:1001}
+#tour-progress-fill{height:100%;background:linear-gradient(90deg,#0F6E56,#1D9E75);transition:width 0.3s;width:0%}
+#tour-card{position:fixed;bottom:88px;right:28px;width:320px;background:rgba(18,22,19,0.97);border:1px solid rgba(29,158,117,0.3);border-radius:18px;padding:22px;z-index:1002;pointer-events:all;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(29,158,117,0.1)}
+#tour-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+#tour-step-lbl{font-size:11px;color:rgba(29,158,117,0.8);font-weight:500;text-transform:uppercase;letter-spacing:0.8px}
+#tour-close{background:rgba(255,255,255,0.06);border:none;color:rgba(255,255,255,0.4);width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;pointer-events:all}
+#tour-close:hover{background:rgba(255,255,255,0.12);color:#fff}
+#tour-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.4px;margin-bottom:10px}
+#tour-body{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:18px}
+#tour-footer{display:flex;justify-content:space-between;align-items:center}
+#tour-dots{display:flex;gap:5px;align-items:center}
+.t-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all 0.2s}
+.t-dot.active{background:#1D9E75;width:16px;border-radius:3px}
+#tour-actions{display:flex;gap:8px;align-items:center}
+#tour-skip{background:none;border:none;color:rgba(255,255,255,0.25);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;pointer-events:all}
+#tour-skip:hover{color:rgba(255,255,255,0.5)}
+#tour-next{background:#1D9E75;border:none;color:#fff;font-size:12px;font-weight:500;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.15s;pointer-events:all}
+#tour-next:hover{background:#0F6E56}
+.tour-highlight{outline:2px solid #1D9E75 !important;outline-offset:4px;border-radius:12px;position:relative;z-index:500}
+@media(max-width:480px){
+  #tour-card{right:12px;left:12px;width:auto;bottom:80px}
+  #tour-fab{right:16px;bottom:20px;padding:10px 18px;font-size:13px}
+}
+`;
+document.head.appendChild(tourStyle);
+buildTourUI();
 </script>
 </body>
 </html>
