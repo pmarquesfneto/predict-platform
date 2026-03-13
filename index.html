@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predict Platform — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#1D9E75;--teal-d:#0F6E56;--teal-dd:#085041;--teal-l:#E1F5EE;--teal-ll:#F0FAF6;
+  --amber:#BA7517;--amber-l:#FAEEDA;--amber-b:#EF9F27;
+  --red:#E24B4A;--red-l:#FCEBEB;
+  --blue:#185FA5;--blue-l:#E6F1FB;
+  --near-black:#0D0F0E;--dark:#111613;--dark-card:#172118;--dark-border:rgba(29,158,117,0.18);
+  --gray-100:#F1EFE8;--gray-200:#D3D1C7;--gray-500:#888780;--gray-700:#444441;--gray-900:#1A1A17;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+  --r:12px;--r-lg:18px;
+}
+body{font-family:var(--font-body);background:var(--near-black);color:#fff;overflow-x:hidden}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,15,14,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--dark-border);padding:0 6vw;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:var(--font-display);font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;background:transparent;color:rgba(255,255,255,0.5);font-family:var(--font-body)}
+.nav-tab.active{background:rgba(29,158,117,0.15);color:var(--teal)}
+.nav-tab:hover:not(.active){background:rgba(255,255,255,0.06);color:#fff}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-balance{font-size:13px;color:rgba(255,255,255,0.5);font-weight:300}
+.nav-balance b{color:var(--teal);font-weight:500}
+.btn-deposit{padding:7px 16px;border-radius:8px;background:var(--teal);color:#fff;font-size:13px;font-weight:500;border:none;cursor:pointer;transition:all 0.2s;font-family:var(--font-body)}
+.btn-deposit:hover{background:var(--teal-d);transform:translateY(-1px)}
+.page{display:none;min-height:calc(100vh - 60px)}
+.page.active{display:block}
+.hero{padding:80px 6vw 60px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(29,158,117,0.12) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 20% 80%,rgba(15,110,86,0.08) 0%,transparent 60%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(29,158,117,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(29,158,117,0.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;color:var(--teal);margin-bottom:28px;letter-spacing:0.4px}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite;display:inline-block}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+.hero h1{font-family:var(--font-display);font-size:clamp(38px,6vw,72px);font-weight:800;line-height:1.03;letter-spacing:-2px;margin-bottom:24px;max-width:780px}
+.hero h1 em{font-style:normal;color:var(--teal)}
+.hero-sub{font-size:17px;color:rgba(255,255,255,0.55);font-weight:300;line-height:1.7;max-width:520px;margin-bottom:40px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:60px}
+.btn-primary{padding:14px 28px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:var(--font-body)}
+.btn-primary:hover{background:var(--teal-d);transform:translateY(-2px)}
+.btn-ghost{padding:14px 28px;background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;font-weight:400;cursor:pointer;transition:all 0.2s;font-family:var(--font-body)}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.35);color:#fff}
+.hero-stats{display:flex;gap:40px;flex-wrap:wrap}
+.hero-stat-val{font-family:var(--font-display);font-size:28px;font-weight:700;color:#fff;letter-spacing:-1px}
+.hero-stat-val span{color:var(--teal)}
+.hero-stat-lbl{font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.8px;margin-top:3px}
+.live-ticker{background:var(--dark-card);border-top:1px solid var(--dark-border);border-bottom:1px solid var(--dark-border);padding:12px 6vw;display:flex;align-items:center;gap:20px;overflow:hidden}
+.ticker-label{font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.ticker-scroll{overflow:hidden;flex:1}
+.ticker-items{display:flex;gap:32px;animation:ticker 28s linear infinite;width:max-content}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{display:flex;align-items:center;gap:10px;white-space:nowrap;font-size:13px}
+.ticker-q{color:rgba(255,255,255,0.6)}
+.ticker-yes{color:var(--teal);font-weight:500}
+.ticker-no{color:var(--red);font-weight:500}
+.section{padding:48px 6vw}
+.section-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:28px}
+.section-title{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.section-link{font-size:13px;color:var(--teal);cursor:pointer;font-weight:500}
+.section-link:hover{text-decoration:underline}
+.markets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.market-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden}
+.market-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.market-card:hover{border-color:rgba(29,158,117,0.4);transform:translateY(-3px)}
+.market-card:hover::before{transform:scaleX(1)}
+.mc-category{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.5px}
+.cat-econ{background:rgba(186,117,23,0.15);color:#EF9F27}
+.cat-sport{background:rgba(29,158,117,0.15);color:var(--teal)}
+.cat-pol{background:rgba(24,95,165,0.15);color:#5CA8F5}
+.cat-crypto{background:rgba(83,74,183,0.15);color:#9D96F0}
+.mc-q{font-size:15px;font-weight:500;line-height:1.4;margin-bottom:16px;color:#fff}
+.mc-bar{height:7px;border-radius:100px;overflow:hidden;display:flex;margin-bottom:8px;background:rgba(255,255,255,0.06)}
+.mc-bar-yes{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--teal-d),var(--teal))}
+.mc-bar-no{height:100%;border-radius:100px;background:linear-gradient(90deg,#A32D2D,var(--red))}
+.mc-probs{display:flex;justify-content:space-between;font-size:12px;margin-bottom:16px}
+.mc-yes-pct{color:var(--teal);font-weight:500}
+.mc-no-pct{color:var(--red);font-weight:500}
+.mc-foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)}
+.mc-vol{font-size:11px;color:rgba(255,255,255,0.35)}
+.mc-vol b{color:rgba(255,255,255,0.6)}
+.mc-closes{font-size:11px;color:rgba(255,255,255,0.35)}
+.btn-bet-sm{padding:5px 14px;background:rgba(29,158,117,0.12);color:var(--teal);border:1px solid rgba(29,158,117,0.3);border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:var(--font-body)}
+.btn-bet-sm:hover{background:var(--teal);color:#fff}
+.why-section{padding:60px 6vw;background:var(--dark-card);border-top:1px solid var(--dark-border);border-bottom:1px solid var(--dark-border)}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:36px}
+.why-card{padding:24px}
+.why-icon{width:40px;height:40px;border-radius:10px;background:rgba(29,158,117,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px}
+.why-title{font-size:15px;font-weight:500;margin-bottom:8px}
+.why-body{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7}
+.listing-hero{padding:48px 6vw 32px;background:linear-gradient(180deg,rgba(29,158,117,0.07) 0%,transparent 100%);border-bottom:1px solid var(--dark-border)}
+.listing-hero h2{font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.listing-sub{font-size:14px;color:rgba(255,255,255,0.45)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.filter-chip{padding:7px 16px;border-radius:100px;font-size:13px;cursor:pointer;transition:all 0.2s;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-family:var(--font-body)}
+.filter-chip.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.filter-chip:hover:not(.active){border-color:rgba(255,255,255,0.25);color:#fff}
+.listing-body{padding:32px 6vw}
+.listing-sort{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.listing-count{font-size:13px;color:rgba(255,255,255,0.4)}
+.sort-select{background:var(--dark-card);border:1px solid var(--dark-border);color:rgba(255,255,255,0.7);padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+.market-row{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:18px 20px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:20px}
+.market-row:hover{border-color:rgba(29,158,117,0.4);transform:translateX(4px)}
+.mr-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.mr-content{flex:1;min-width:0}
+.mr-q{font-size:14px;font-weight:500;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mr-meta{font-size:12px;color:rgba(255,255,255,0.35)}
+.mr-bar-wrap{width:120px;flex-shrink:0}
+.mr-bar-track{height:5px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden;margin-bottom:5px}
+.mr-bar-fill{height:100%;border-radius:100px;background:var(--teal)}
+.mr-pcts{display:flex;justify-content:space-between;font-size:11px}
+.mr-yes{color:var(--teal);font-weight:500}
+.mr-no{color:var(--red);font-weight:500}
+.mr-vol{width:80px;text-align:right;font-size:12px;color:rgba(255,255,255,0.35);flex-shrink:0}
+.mr-vol b{display:block;font-size:14px;color:rgba(255,255,255,0.7);font-weight:500}
+.market-detail{padding:32px 6vw;max-width:1100px;margin:0 auto}
+.md-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;margin-bottom:24px;transition:color 0.2s}
+.md-back:hover{color:var(--teal)}
+.md-layout{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+.md-title{font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-0.8px;line-height:1.2;margin-bottom:16px}
+.md-meta-row{display:flex;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.md-meta-item{font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:5px}
+.md-meta-item b{color:rgba(255,255,255,0.7);font-weight:500}
+.md-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.md-stat-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:16px}
+.md-stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px}
+.md-stat-val{font-family:var(--font-display);font-size:22px;font-weight:700;color:#fff}
+.md-stat-val.green{color:var(--teal)}
+.md-stat-val.amber{color:var(--amber-b)}
+.prob-display{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;margin-bottom:20px}
+.prob-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.35);margin-bottom:16px}
+.prob-big{display:flex;align-items:baseline;gap:6px;margin-bottom:14px}
+.prob-yes-big{font-family:var(--font-display);font-size:52px;font-weight:800;color:var(--teal);letter-spacing:-2px;line-height:1}
+.prob-yes-lbl{font-size:13px;color:rgba(255,255,255,0.4);font-weight:300}
+.prob-track{height:12px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden;margin-bottom:10px;display:flex}
+.prob-fill-yes{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--teal))}
+.prob-fill-no{height:100%;background:linear-gradient(90deg,#A32D2D,var(--red))}
+.prob-labels{display:flex;justify-content:space-between;font-size:13px;font-weight:500}
+.prob-lbl-yes{color:var(--teal)}
+.prob-lbl-no{color:var(--red)}
+.sparkline-wrap{margin-bottom:20px}
+.spark-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.35);margin-bottom:10px}
+.activity-feed{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);overflow:hidden;margin-top:20px}
+.af-header{padding:14px 16px;border-bottom:1px solid var(--dark-border);font-size:12px;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.35)}
+.af-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.af-item:last-child{border-bottom:none}
+.af-user{color:rgba(255,255,255,0.5)}
+.af-user b{color:#fff;font-weight:500}
+.af-yes{color:var(--teal);font-weight:500}
+.af-no{color:var(--red);font-weight:500}
+.af-amount{color:rgba(255,255,255,0.35)}
+.af-time{color:rgba(255,255,255,0.2);font-size:11px}
+.bet-panel{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;position:sticky;top:72px}
+.bp-title{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:20px;letter-spacing:-0.3px}
+.bp-tabs{display:flex;background:rgba(255,255,255,0.04);border-radius:8px;padding:3px;margin-bottom:20px}
+.bp-tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;color:rgba(255,255,255,0.4)}
+.bp-tab.yes-tab.active{background:rgba(29,158,117,0.2);color:var(--teal)}
+.bp-tab.no-tab.active{background:rgba(226,75,74,0.2);color:var(--red)}
+.bp-tab:hover:not(.active){color:rgba(255,255,255,0.7)}
+.bp-outcome{background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.2);border-radius:8px;padding:12px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.bp-out-lbl{font-size:12px;color:rgba(255,255,255,0.5)}
+.bp-out-val{font-size:18px;font-weight:700;color:var(--teal);font-family:var(--font-display)}
+.bp-input-label{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:8px}
+.bp-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;color:#fff;font-size:16px;font-weight:500;font-family:var(--font-display);width:100%;outline:none}
+.bp-input:focus{border-color:var(--teal)}
+.bp-presets{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.bp-preset{padding:5px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;font-family:var(--font-body)}
+.bp-preset:hover{border-color:var(--teal);color:var(--teal)}
+.bp-calc{background:rgba(255,255,255,0.04);border-radius:8px;padding:12px 14px;margin-bottom:16px}
+.bp-calc-row{display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,0.4);padding:4px 0}
+.bp-calc-row.highlight{color:#fff;font-weight:500;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;padding-top:8px}
+.btn-place-bet{width:100%;padding:15px;border-radius:10px;background:var(--teal);color:#fff;font-size:16px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;font-family:var(--font-display);letter-spacing:-0.3px}
+.btn-place-bet.no-bet{background:var(--red)}
+.btn-place-bet:hover{opacity:0.9;transform:translateY(-2px)}
+.bp-disclaimer{font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-top:12px;line-height:1.5}
+.dash{padding:36px 6vw}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.dash-welcome{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-0.8px}
+.dash-welcome span{color:var(--teal)}
+.dash-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.kpi{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:18px}
+.kpi-lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:rgba(255,255,255,0.35);margin-bottom:8px}
+.kpi-val{font-family:var(--font-display);font-size:26px;font-weight:700;color:#fff;letter-spacing:-1px}
+.kpi-val.up{color:var(--teal)}
+.kpi-delta{font-size:12px;margin-top:4px;color:rgba(255,255,255,0.35)}
+.kpi-delta.pos{color:rgba(29,158,117,0.8)}
+.kpi-delta.neg{color:rgba(226,75,74,0.8)}
+.dash-grid{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+.positions-title{font-size:15px;font-weight:500;margin-bottom:16px}
+.position-item{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:16px;margin-bottom:10px;display:flex;gap:16px;align-items:center}
+.pos-icon{width:36px;height:36px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pos-content{flex:1;min-width:0}
+.pos-q{font-size:13px;font-weight:500;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pos-meta{font-size:11px;color:rgba(255,255,255,0.35)}
+.pos-outcome{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:500}
+.pos-yes{background:rgba(29,158,117,0.12);color:var(--teal)}
+.pos-no{background:rgba(226,75,74,0.12);color:var(--red)}
+.pos-pnl{text-align:right;flex-shrink:0}
+.pos-pnl-val{font-family:var(--font-display);font-size:16px;font-weight:700}
+.pos-pnl-val.pos{color:var(--teal)}
+.pos-pnl-val.neg{color:var(--red)}
+.pos-pnl-pct{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px}
+.leaderboard{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);overflow:hidden}
+.lb-header{padding:16px;border-bottom:1px solid var(--dark-border);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.lb-live{font-size:11px;color:var(--teal);display:flex;align-items:center;gap:5px}
+.lb-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{font-family:var(--font-display);font-size:16px;font-weight:700;color:rgba(255,255,255,0.15);width:24px;flex-shrink:0}
+.lb-rank.gold{color:#EF9F27}
+.lb-rank.silver{color:#B4B2A9}
+.lb-rank.bronze{color:#CD7F32}
+.lb-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.lb-name{flex:1;font-size:13px;color:rgba(255,255,255,0.7)}
+.lb-name b{display:block;color:#fff;font-weight:500}
+.lb-score{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--teal)}
+.lb-acc{font-size:11px;color:rgba(255,255,255,0.35)}
+.lb-you{background:rgba(29,158,117,0.06)}
+svg.sparkline{overflow:visible;display:block;width:100%}
+@media(max-width:700px){
+  .md-layout{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .bet-panel{position:static}
+  .md-stats{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:36px;letter-spacing:-1px}
+  .mr-bar-wrap,.mr-vol{display:none}
+  .nav-tabs .nav-tab:nth-child(2){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><div class="logo-dot"></div>Predict</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home',this)">Mercados</button>
+    <button class="nav-tab" onclick="showPage('listing',this)">Explorar</button>
+    <button class="nav-tab" onclick="showPage('market',this)">Mercado</button>
+    <button class="nav-tab" onclick="showPage('dashboard',this)">Minha Conta</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-balance">Saldo: <b>R$ 847,50</b></div>
+    <button class="btn-deposit">+ Depositar</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-eyebrow"><div class="pulse"></div>Mercado de Probabilidades — Brasil</div>
+    <h1>O futuro tem<br><em>um preço.</em><br>Descubra qual.</h1>
+    <p class="hero-sub">Aposte com dados, não com achismos. Selic, eleições, esportes — cada evento tem uma probabilidade real. Descubra a sua e lucre com o seu conhecimento.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">Ver todos os mercados →</button>
+      <button class="btn-ghost">Como funciona?</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-val">R$ <span>2,4M</span></div><div class="hero-stat-lbl">Volume total</div></div>
+      <div><div class="hero-stat-val"><span>1.847</span></div><div class="hero-stat-lbl">Traders ativos</div></div>
+      <div><div class="hero-stat-val"><span>94,2</span>%</div><div class="hero-stat-lbl">Acurácia média</div></div>
+      <div><div class="hero-stat-val"><span>138</span></div><div class="hero-stat-lbl">Mercados abertos</div></div>
+    </div>
+  </div>
+  <div class="live-ticker">
+    <div class="ticker-label"><div class="pulse"></div>AO VIVO</div>
+    <div class="ticker-scroll"><div class="ticker-items">
+      <div class="ticker-item"><span class="ticker-q">Selic abaixo 10,75%</span><span class="ticker-yes">SIM 67%</span><span class="ticker-no">NÃO 33%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Flamengo Campeão Brasileiro</span><span class="ticker-yes">SIM 41%</span><span class="ticker-no">NÃO 59%</span></div>
+      <div class="ticker-item"><span class="ticker-q">IPCA abaixo 4% em 2026</span><span class="ticker-yes">SIM 72%</span><span class="ticker-no">NÃO 28%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Bitcoin acima 200k USD</span><span class="ticker-yes">SIM 38%</span><span class="ticker-no">NÃO 62%</span></div>
+      <div class="ticker-item"><span class="ticker-q">PIB Brasil +2,5% 2026</span><span class="ticker-yes">SIM 54%</span><span class="ticker-no">NÃO 46%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Palmeiras Libertadores 2026</span><span class="ticker-yes">SIM 29%</span><span class="ticker-no">NÃO 71%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Dólar acima R$6,50</span><span class="ticker-yes">SIM 44%</span><span class="ticker-no">NÃO 56%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Selic abaixo 10,75%</span><span class="ticker-yes">SIM 67%</span><span class="ticker-no">NÃO 33%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Flamengo Campeão Brasileiro</span><span class="ticker-yes">SIM 41%</span><span class="ticker-no">NÃO 59%</span></div>
+      <div class="ticker-item"><span class="ticker-q">IPCA abaixo 4% em 2026</span><span class="ticker-yes">SIM 72%</span><span class="ticker-no">NÃO 28%</span></div>
+      <div class="ticker-item"><span class="ticker-q">Bitcoin acima 200k USD</span><span class="ticker-yes">SIM 38%</span><span class="ticker-no">NÃO 62%</span></div>
+      <div class="ticker-item"><span class="ticker-q">PIB Brasil +2,5% 2026</span><span class="ticker-yes">SIM 54%</span><span class="ticker-no">NÃO 46%</span></div>
+    </div></div>
+  </div>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🔥 Mercados em Destaque</div>
+      <div class="section-link" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">Ver todos →</div>
+    </div>
+    <div class="markets-grid" id="featured-grid"></div>
+  </div>
+  <div class="why-section">
+    <div class="section-title" style="text-align:center;margin-bottom:8px">Por que apostar aqui?</div>
+    <p style="text-align:center;color:rgba(255,255,255,0.4);font-size:14px;max-width:500px;margin:0 auto">Diferente de palpites — cada aposta é embasada em probabilidades reais calculadas pelo mercado.</p>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-icon">📊</div><div class="why-title">Preços baseados em LMSR</div><div class="why-body">Algoritmo matemático garante preços justos e liquidez imediata em qualquer mercado, a qualquer momento.</div></div>
+      <div class="why-card"><div class="why-icon">🏦</div><div class="why-title">Resolução automática</div><div class="why-body">Mercados econômicos como Selic e IPCA resolvidos via API oficial do Banco Central — sem viés humano.</div></div>
+      <div class="why-card"><div class="why-icon">🎯</div><div class="why-title">Aprenda com os melhores</div><div class="why-body">Scores de calibração públicos. Veja quem realmente sabe prever o futuro e aprenda com eles.</div></div>
+      <div class="why-card"><div class="why-icon">⚡</div><div class="why-title">PIX instantâneo</div><div class="why-body">Depósitos e saques via PIX em segundos. Sem burocracia, sem espera, sem taxas absurdas.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LISTING -->
+<div class="page" id="page-listing">
+  <div class="listing-hero">
+    <h2>Explorar Mercados</h2>
+    <p class="listing-sub">138 mercados abertos · R$ 2,4M em volume total</p>
+    <div class="filter-bar">
+      <button class="filter-chip active" onclick="filterMarkets('all',this)">Todos</button>
+      <button class="filter-chip" onclick="filterMarkets('econ',this)">📈 Economia</button>
+      <button class="filter-chip" onclick="filterMarkets('sport',this)">⚽ Esportes</button>
+      <button class="filter-chip" onclick="filterMarkets('pol',this)">🗳 Política</button>
+      <button class="filter-chip" onclick="filterMarkets('crypto',this)">₿ Cripto</button>
+    </div>
+  </div>
+  <div class="listing-body">
+    <div class="listing-sort">
+      <div class="listing-count" id="list-count">Exibindo 12 mercados</div>
+      <select class="sort-select"><option>Volume ↓</option><option>Mais recentes</option><option>Encerra em breve</option></select>
+    </div>
+    <div id="market-rows"></div>
+  </div>
+</div>
+
+<!-- INDIVIDUAL MARKET -->
+<div class="page" id="page-market">
+  <div class="market-detail">
+    <div class="md-back" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">← Voltar para mercados</div>
+    <div class="md-layout">
+      <div>
+        <div style="margin-bottom:14px"><span class="mc-category cat-econ">📈 Economia</span></div>
+        <div class="md-title">Selic será cortada na próxima reunião do COPOM em agosto 2025?</div>
+        <div class="md-meta-row">
+          <div class="md-meta-item"><b>Volume:</b> R$ 284.320</div>
+          <div class="md-meta-item"><b>Traders:</b> 643</div>
+          <div class="md-meta-item"><b>Encerra:</b> 06 ago 2025</div>
+          <div class="md-meta-item"><b>Resolução:</b> BCB Auto</div>
+        </div>
+        <div class="md-stats">
+          <div class="md-stat-card"><div class="md-stat-lbl">Probabilidade SIM</div><div class="md-stat-val green">67%</div></div>
+          <div class="md-stat-card"><div class="md-stat-lbl">Volume 24h</div><div class="md-stat-val amber">R$ 18.4k</div></div>
+          <div class="md-stat-card"><div class="md-stat-lbl">Variação 7d</div><div class="md-stat-val green">+4,2%</div></div>
+        </div>
+        <div class="prob-display">
+          <div class="prob-title">Probabilidade atual do mercado</div>
+          <div class="prob-big"><div class="prob-yes-big" id="prob-big-yes">67%</div><div class="prob-yes-lbl">chance de corte da Selic</div></div>
+          <div class="prob-track"><div class="prob-fill-yes" id="prob-fill-yes" style="width:67%"></div><div class="prob-fill-no" id="prob-fill-no" style="width:33%"></div></div>
+          <div class="prob-labels"><span class="prob-lbl-yes">SIM 67%</span><span class="prob-lbl-no">NÃO 33%</span></div>
+        </div>
+        <div class="sparkline-wrap">
+          <div class="spark-title">Histórico de probabilidade — 30 dias</div>
+          <svg class="sparkline" height="80" viewBox="0 0 500 80" preserveAspectRatio="none">
+            <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1D9E75" stop-opacity="0.3"/><stop offset="100%" stop-color="#1D9E75" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,60 L20,55 L40,58 L70,50 L100,52 L130,44 L160,46 L190,40 L220,38 L250,42 L270,35 L300,30 L330,28 L360,24 L390,22 L420,18 L450,16 L480,14 L500,12 L500,80 L0,80 Z" fill="url(#sg)"/>
+            <path d="M0,60 L20,55 L40,58 L70,50 L100,52 L130,44 L160,46 L190,40 L220,38 L250,42 L270,35 L300,30 L330,28 L360,24 L390,22 L420,18 L450,16 L480,14 L500,12" fill="none" stroke="#1D9E75" stroke-width="2"/>
+            <circle cx="500" cy="12" r="4" fill="#1D9E75"/>
+          </svg>
+        </div>
+        <div class="activity-feed">
+          <div class="af-header">Atividade recente</div>
+          <div class="af-item"><span class="af-user"><b>pedro_mv</b> apostou</span><span class="af-yes">SIM</span><span class="af-amount">R$ 120</span><span class="af-time">2 min atrás</span></div>
+          <div class="af-item"><span class="af-user"><b>ana.trader</b> apostou</span><span class="af-no">NÃO</span><span class="af-amount">R$ 80</span><span class="af-time">5 min atrás</span></div>
+          <div class="af-item"><span class="af-user"><b>r.santos</b> apostou</span><span class="af-yes">SIM</span><span class="af-amount">R$ 350</span><span class="af-time">11 min atrás</span></div>
+          <div class="af-item"><span class="af-user"><b>carlos_fx</b> apostou</span><span class="af-yes">SIM</span><span class="af-amount">R$ 50</span><span class="af-time">18 min atrás</span></div>
+          <div class="af-item"><span class="af-user"><b>ju.invest</b> apostou</span><span class="af-no">NÃO</span><span class="af-amount">R$ 200</span><span class="af-time">24 min atrás</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="bet-panel">
+          <div class="bp-title">Fazer sua aposta</div>
+          <div class="bp-tabs">
+            <div class="bp-tab yes-tab active" onclick="setBetSide('sim',this)">SIM</div>
+            <div class="bp-tab no-tab" onclick="setBetSide('nao',this)">NÃO</div>
+          </div>
+          <div class="bp-outcome" id="bp-outcome">
+            <div class="bp-out-lbl" id="bp-out-lbl">Apostando em SIM</div>
+            <div class="bp-out-val" id="bp-out-val">67%</div>
+          </div>
+          <div class="bp-input-label">Valor da aposta (R$)</div>
+          <input class="bp-input" type="number" value="100" min="1" id="bet-amount" oninput="updateCalc()" style="margin-bottom:10px">
+          <div class="bp-presets">
+            <button class="bp-preset" onclick="setPreset(50)">R$50</button>
+            <button class="bp-preset" onclick="setPreset(100)">R$100</button>
+            <button class="bp-preset" onclick="setPreset(250)">R$250</button>
+            <button class="bp-preset" onclick="setPreset(500)">R$500</button>
+          </div>
+          <div class="bp-calc">
+            <div class="bp-calc-row"><span>Preço atual</span><span id="bc-price">R$ 0,67 / ação</span></div>
+            <div class="bp-calc-row"><span>Ações compradas</span><span id="bc-shares">149,3</span></div>
+            <div class="bp-calc-row"><span>Retorno se ganhar</span><span id="bc-win">R$ 149,30</span></div>
+            <div class="bp-calc-row highlight"><span>Lucro potencial</span><span id="bc-profit" style="color:var(--teal)">R$ +49,30</span></div>
+          </div>
+          <button class="btn-place-bet" id="bet-btn" onclick="placeBet()">Apostar SIM →</button>
+          <div class="bp-disclaimer">Plataforma de simulação. Leia os termos antes de apostar com dinheiro real.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dash">
+    <div class="dash-header">
+      <div class="dash-welcome">Olá, <span>Pedro</span> 👋</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.4)">Score de calibração: <b style="color:var(--amber-b)">87,4</b> · Top 5%</div>
+    </div>
+    <div class="dash-kpis">
+      <div class="kpi"><div class="kpi-lbl">Portfólio total</div><div class="kpi-val">R$ 2.341</div><div class="kpi-delta pos">+R$ 187 este mês</div></div>
+      <div class="kpi"><div class="kpi-lbl">P&L realizado</div><div class="kpi-val up">+R$ 623</div><div class="kpi-delta pos">+36% retorno</div></div>
+      <div class="kpi"><div class="kpi-lbl">Posições abertas</div><div class="kpi-val">7</div><div class="kpi-delta">em 5 mercados</div></div>
+      <div class="kpi"><div class="kpi-lbl">Taxa de acerto</div><div class="kpi-val up">73%</div><div class="kpi-delta pos">+3% vs. mês anterior</div></div>
+      <div class="kpi"><div class="kpi-lbl">Apostas ganhas</div><div class="kpi-val">19/26</div><div class="kpi-delta">total resolvidas</div></div>
+    </div>
+    <div class="dash-grid">
+      <div>
+        <div class="positions-title">Posições abertas</div>
+        <div class="position-item"><div class="pos-icon" style="background:rgba(186,117,23,0.1)">📈</div><div class="pos-content"><div class="pos-q">Selic será cortada no COPOM de ago 2025?</div><div class="pos-meta">Apostado: R$ 200 · <span class="pos-outcome pos-yes">SIM @ 58%</span></div></div><div class="pos-pnl"><div class="pos-pnl-val pos">+R$ 31,40</div><div class="pos-pnl-pct">+15,7%</div></div></div>
+        <div class="position-item"><div class="pos-icon" style="background:rgba(29,158,117,0.1)">⚽</div><div class="pos-content"><div class="pos-q">Flamengo campeão Brasileiro 2025?</div><div class="pos-meta">Apostado: R$ 150 · <span class="pos-outcome pos-yes">SIM @ 35%</span></div></div><div class="pos-pnl"><div class="pos-pnl-val pos">+R$ 27,00</div><div class="pos-pnl-pct">+18,0%</div></div></div>
+        <div class="position-item"><div class="pos-icon" style="background:rgba(24,95,165,0.1)">₿</div><div class="pos-content"><div class="pos-q">Bitcoin acima de USD 200k em 2026?</div><div class="pos-meta">Apostado: R$ 80 · <span class="pos-outcome pos-no">NÃO @ 62%</span></div></div><div class="pos-pnl"><div class="pos-pnl-val neg">-R$ 4,20</div><div class="pos-pnl-pct">-5,3%</div></div></div>
+        <div class="position-item"><div class="pos-icon" style="background:rgba(83,74,183,0.1)">🗳</div><div class="pos-content"><div class="pos-q">Eleição presidencial 2026: Lula reeleito?</div><div class="pos-meta">Apostado: R$ 300 · <span class="pos-outcome pos-no">NÃO @ 44%</span></div></div><div class="pos-pnl"><div class="pos-pnl-val pos">+R$ 14,50</div><div class="pos-pnl-pct">+4,8%</div></div></div>
+        <div class="position-item"><div class="pos-icon" style="background:rgba(186,117,23,0.1)">📊</div><div class="pos-content"><div class="pos-q">IPCA ficará abaixo de 4% em 2026?</div><div class="pos-meta">Apostado: R$ 120 · <span class="pos-outcome pos-yes">SIM @ 68%</span></div></div><div class="pos-pnl"><div class="pos-pnl-val pos">+R$ 8,90</div><div class="pos-pnl-pct">+7,4%</div></div></div>
+      </div>
+      <div class="leaderboard">
+        <div class="lb-header">Ranking de traders <span class="lb-live"><div class="pulse"></div>ao vivo</span></div>
+        <div class="lb-item"><div class="lb-rank gold">#1</div><div class="lb-avatar" style="background:rgba(239,159,39,0.15);color:#EF9F27">MM</div><div class="lb-name"><b>marcos_m</b><span style="display:block;font-size:11px;color:rgba(255,255,255,0.3)">São Paulo</span></div><div style="text-align:right"><div class="lb-score">R$ 12.840</div><div class="lb-acc">91% acerto</div></div></div>
+        <div class="lb-item"><div class="lb-rank silver">#2</div><div class="lb-avatar" style="background:rgba(92,168,245,0.15);color:#5CA8F5">JC</div><div class="lb-name"><b>julia_c</b><span style="display:block;font-size:11px;color:rgba(255,255,255,0.3)">Rio de Janeiro</span></div><div style="text-align:right"><div class="lb-score">R$ 9.210</div><div class="lb-acc">88% acerto</div></div></div>
+        <div class="lb-item"><div class="lb-rank bronze">#3</div><div class="lb-avatar" style="background:rgba(157,150,240,0.15);color:#9D96F0">RS</div><div class="lb-name"><b>r.souza</b><span style="display:block;font-size:11px;color:rgba(255,255,255,0.3)">Belo Horizonte</span></div><div style="text-align:right"><div class="lb-score">R$ 7.650</div><div class="lb-acc">85% acerto</div></div></div>
+        <div class="lb-item lb-you"><div class="lb-rank" style="color:var(--teal)">#12</div><div class="lb-avatar" style="background:rgba(29,158,117,0.2);color:var(--teal)">PM</div><div class="lb-name"><b>pedro_mv</b> <span style="font-size:11px;background:rgba(29,158,117,0.15);color:var(--teal);padding:2px 6px;border-radius:4px">Você</span></div><div style="text-align:right"><div class="lb-score">R$ 2.341</div><div class="lb-acc">73% acerto</div></div></div>
+        <div class="lb-item"><div class="lb-rank">#13</div><div class="lb-avatar" style="background:rgba(136,135,128,0.15);color:#B4B2A9">TF</div><div class="lb-name"><b>t.ferreira</b><span style="display:block;font-size:11px;color:rgba(255,255,255,0.3)">Curitiba</span></div><div style="text-align:right"><div class="lb-score">R$ 2.180</div><div class="lb-acc">70% acerto</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MARKETS=[
+  {id:1,q:"Selic será cortada na próxima reunião do COPOM em agosto 2025?",cat:"econ",icon:"📈",yes:67,vol:"R$ 284k",closes:"06 ago",bg:"rgba(186,117,23,0.1)"},
+  {id:2,q:"Flamengo será campeão do Brasileirão 2025?",cat:"sport",icon:"⚽",yes:41,vol:"R$ 192k",closes:"10 dez",bg:"rgba(29,158,117,0.1)"},
+  {id:3,q:"IPCA ficará abaixo de 4% ao final de 2026?",cat:"econ",icon:"📊",yes:72,vol:"R$ 156k",closes:"15 jan",bg:"rgba(186,117,23,0.1)"},
+  {id:4,q:"Bitcoin vai superar USD 200.000 em 2026?",cat:"crypto",icon:"₿",yes:38,vol:"R$ 143k",closes:"31 dez",bg:"rgba(83,74,183,0.1)"},
+  {id:5,q:"Brasil crescerá mais de 2,5% do PIB em 2026?",cat:"econ",icon:"🏦",yes:54,vol:"R$ 128k",closes:"31 mar",bg:"rgba(186,117,23,0.1)"},
+  {id:6,q:"Lula será reeleito nas eleições de 2026?",cat:"pol",icon:"🗳",yes:48,vol:"R$ 319k",closes:"01 nov",bg:"rgba(24,95,165,0.1)"},
+  {id:7,q:"Palmeiras vai vencer a Libertadores 2026?",cat:"sport",icon:"🏆",yes:29,vol:"R$ 87k",closes:"22 nov",bg:"rgba(29,158,117,0.1)"},
+  {id:8,q:"Dólar fechará acima de R$ 6,50 em dezembro 2025?",cat:"econ",icon:"💵",yes:44,vol:"R$ 74k",closes:"31 dez",bg:"rgba(186,117,23,0.1)"},
+  {id:9,q:"Ethereum vai superar R$ 20.000 até junho 2026?",cat:"crypto",icon:"⟠",yes:51,vol:"R$ 68k",closes:"30 jun",bg:"rgba(83,74,183,0.1)"},
+  {id:10,q:"Brasil vai à final da Copa do Mundo 2026?",cat:"sport",icon:"🇧🇷",yes:63,vol:"R$ 211k",closes:"14 jul",bg:"rgba(29,158,117,0.1)"},
+  {id:11,q:"Reforma tributária aprovada no senado até 2026?",cat:"pol",icon:"⚖️",yes:66,vol:"R$ 94k",closes:"15 dez",bg:"rgba(24,95,165,0.1)"},
+  {id:12,q:"Nubank vai lançar conta investimentos em 2025?",cat:"econ",icon:"💜",yes:78,vol:"R$ 52k",closes:"20 dez",bg:"rgba(83,74,183,0.1)"},
+];
+const catClass={econ:"cat-econ",sport:"cat-sport",pol:"cat-pol",crypto:"cat-crypto"};
+const catLabel={econ:"📈 Economia",sport:"⚽ Esportes",pol:"🗳 Política",crypto:"₿ Cripto"};
+function renderCards(markets,container,limit){
+  container.innerHTML='';
+  markets.slice(0,limit||6).forEach(m=>{
+    const no=100-m.yes;
+    container.innerHTML+=`<div class="market-card" onclick="openMarket(${m.id})"><span class="mc-category ${catClass[m.cat]}">${catLabel[m.cat]}</span><div class="mc-q">${m.q}</div><div class="mc-bar"><div class="mc-bar-yes" style="width:${m.yes}%"></div><div class="mc-bar-no" style="width:${no}%"></div></div><div class="mc-probs"><span class="mc-yes-pct">SIM ${m.yes}%</span><span class="mc-no-pct">NÃO ${no}%</span></div><div class="mc-foot"><div><div class="mc-vol">Vol: <b>${m.vol}</b></div><div class="mc-closes">Encerra: ${m.closes}</div></div><button class="btn-bet-sm">Apostar →</button></div></div>`;
+  });
+}
+function renderRows(markets){
+  const cont=document.getElementById('market-rows');
+  document.getElementById('list-count').textContent=`Exibindo ${markets.length} mercados`;
+  cont.innerHTML='';
+  markets.forEach(m=>{
+    const no=100-m.yes;
+    cont.innerHTML+=`<div class="market-row" onclick="openMarket(${m.id})"><div class="mr-icon" style="background:${m.bg}">${m.icon}</div><div class="mr-content"><div class="mr-q">${m.q}</div><div class="mr-meta">${catLabel[m.cat]} · Encerra ${m.closes}</div></div><div class="mr-bar-wrap"><div class="mr-bar-track"><div class="mr-bar-fill" style="width:${m.yes}%"></div></div><div class="mr-pcts"><span class="mr-yes">SIM ${m.yes}%</span><span class="mr-no">NÃO ${no}%</span></div></div><div class="mr-vol"><b>${m.vol}</b>volume</div></div>`;
+  });
+}
+function filterMarkets(cat,btn){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered=cat==='all'?MARKETS:MARKETS.filter(m=>m.cat===cat);
+  renderRows(filtered);
+}
+function openMarket(id){
+  showPage('market',document.querySelectorAll('.nav-tab')[2]);
+}
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(btn){document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+}
+let betSide='sim';
+function setBetSide(side,btn){
+  betSide=side;
+  document.querySelectorAll('.bp-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const isYes=side==='sim';
+  document.getElementById('bp-out-lbl').textContent='Apostando em '+(isYes?'SIM':'NÃO');
+  document.getElementById('bp-out-val').textContent=isYes?'67%':'33%';
+  document.getElementById('bp-out-val').style.color=isYes?'var(--teal)':'var(--red)';
+  document.getElementById('bet-btn').textContent='Apostar '+(isYes?'SIM':'NÃO')+' →';
+  document.getElementById('bet-btn').className='btn-place-bet'+(isYes?'':' no-bet');
+  document.getElementById('bp-outcome').style.background=isYes?'rgba(29,158,117,0.08)':'rgba(226,75,74,0.08)';
+  document.getElementById('bp-outcome').style.borderColor=isYes?'rgba(29,158,117,0.2)':'rgba(226,75,74,0.2)';
+  updateCalc();
+}
+function setPreset(val){document.getElementById('bet-amount').value=val;updateCalc();}
+function updateCalc(){
+  const amount=parseFloat(document.getElementById('bet-amount').value)||0;
+  const price=betSide==='sim'?0.67:0.33;
+  const shares=amount/price;
+  const profit=shares-amount;
+  document.getElementById('bc-price').textContent='R$ '+price.toFixed(2)+' / ação';
+  document.getElementById('bc-shares').textContent=shares.toFixed(1);
+  document.getElementById('bc-win').textContent='R$ '+shares.toFixed(2);
+  document.getElementById('bc-profit').textContent='R$ '+(profit>=0?'+':'')+profit.toFixed(2);
+  document.getElementById('bc-profit').style.color=profit>=0?'var(--teal)':'var(--red)';
+}
+function placeBet(){
+  const btn=document.getElementById('bet-btn');
+  btn.textContent='✓ Aposta registrada!';
+  btn.style.background='var(--teal-d)';
+  setTimeout(()=>{btn.textContent='Apostar '+(betSide==='sim'?'SIM':'NÃO')+' →';btn.style.background=betSide==='sim'?'var(--teal)':'var(--red)';},2000);
+}
+renderCards(MARKETS,document.getElementById('featured-grid'),6);
+renderRows(MARKETS);
+updateCalc();
+</script>
+</body>
+</html>
