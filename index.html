@@ -506,7 +506,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
   </div>
   <div class="nav-right">
     <div class="nav-bal">Saldo: <b>R$ 847,50</b></div>
-    <button class="btn-dep" onclick="showPage('onboard',document.querySelectorAll('.nav-tab')[5])">+ Depositar</button>
+    <button class="btn-dep" onclick="showPage('onboard',null)">+ Depositar</button>
     <div class="hamburger" onclick="toggleMenu()" id="hamburger">
       <span></span><span></span><span></span>
     </div>
@@ -533,8 +533,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
       <h1>O futuro tem<br><em>um preço.</em><br>Descubra qual.</h1>
       <p class="hero-sub">Aposte com dados, não com achismos. Selic, eleições, esportes — cada evento tem uma probabilidade real. Descubra a sua e lucre com o seu conhecimento.</p>
       <div class="hero-ctas">
-        <button class="btn-primary" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">Ver todos os mercados →</button>
-        <button class="btn-outline" onclick="showPage('pitch',document.querySelectorAll('.nav-tab')[6])">Para investidores</button>
+        <button class="btn-primary" onclick="showPage('listing',null)">Ver todos os mercados →</button>
+        <button class="btn-outline" onclick="showPage('pitch',null)">Para investidores</button>
       </div>
       <div class="hero-nums">
         <div><div class="hnum-val">R$<span>2,4M</span></div><div class="hnum-lbl">Volume total</div></div>
@@ -564,7 +564,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
   </div>
 
   <div class="section">
-    <div class="sec-hd"><div class="sec-title">🔥 Mercados em destaque</div><button class="sec-more" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">Ver todos →</button></div>
+    <div class="sec-hd"><div class="sec-title">🔥 Mercados em destaque</div><button class="sec-more" onclick="showPage('listing',null)">Ver todos →</button></div>
     <div class="cards-grid" id="featured-grid"></div>
   </div>
 
@@ -605,7 +605,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
 <!-- ══ MARKET DETAIL ══════════════════════════════════════════════ -->
 <div class="page" id="page-market">
   <div class="mkt-wrap">
-    <button class="back-btn" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">← Voltar</button>
+    <button class="back-btn" onclick="showPage('listing',null)">← Voltar</button>
     <div class="mkt-layout">
       <div>
         <div style="margin-bottom:12px"><span class="mcat c-econ">📈 Economia</span></div>
@@ -682,7 +682,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
         <div class="dash-welcome">Olá, <span>Pedro</span> 👋</div>
         <div class="dash-score">Score de calibração: <b>87,4</b> · Top 5% dos traders</div>
       </div>
-      <button class="btn-dep" onclick="showPage('onboard',document.querySelectorAll('.nav-tab')[5]);obStep(3)">+ Depositar via PIX</button>
+      <button class="btn-dep" onclick="showPage('onboard',null);obStep(3)">+ Depositar via PIX</button>
     </div>
     <div class="kpis">
       <div class="kpi"><div class="kpi-l">Portfólio total</div><div class="kpi-v">R$ 2.341</div><div class="kpi-d pos">+R$ 187 este mês</div></div>
@@ -1099,7 +1099,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
         <div class="ob-feat"><div class="ob-feat-ico">⚡</div>Depósito e saque via PIX instantâneo</div>
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
-      <button class="ob-skip" onclick="showPage('home',document.querySelectorAll('.nav-tab')[0])">Já tenho conta — entrar</button>
+      <button class="ob-skip" onclick="showPage('home',null)">Já tenho conta — entrar</button>
     </div>
 
     <!-- step 1: dados pessoais -->
@@ -1145,8 +1145,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
       </div>
       <div class="pix-qr"><div class="pix-qr-inner">⚡</div></div>
       <div class="pix-key">00020126580014br.gov.bcb.pix0136a629532e-7693-4846-b8d4-predict-0001</div>
-      <button class="ob-btn" onclick="showPage('home',document.querySelectorAll('.nav-tab')[0])">✓ Já paguei — ir para mercados</button>
-      <button class="ob-skip" onclick="showPage('home',document.querySelectorAll('.nav-tab')[0])">Depositar depois</button>
+      <button class="ob-btn" onclick="showPage('home',null)">✓ Já paguei — ir para mercados</button>
+      <button class="ob-skip" onclick="showPage('home',null)">Depositar depois</button>
     </div>
   </div>
 </div>
@@ -1190,15 +1190,19 @@ function filterM(cat,btn){
   btn.classList.add('active');
   renderRows(cat==='all'?MARKETS:MARKETS.filter(m=>m.cat===cat));
 }
-function openMarket(){showPage('market',document.querySelectorAll('.nav-tab')[2]);}
+function openMarket(){showPage('market',null);}
 
 function showPage(id,btn,closeMobile){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
+  const pg=document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
   window.scrollTo(0,0);
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   if(btn){
-    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
     btn.classList.add('active');
+  } else {
+    const match=Array.from(document.querySelectorAll('.nav-tab')).find(t=>t.onclick&&t.onclick.toString().includes("'"+id+"'"));
+    if(match) match.classList.add('active');
   }
   if(closeMobile){
     document.getElementById('mobile-menu').classList.remove('open');
@@ -1652,6 +1656,8 @@ function renderTourStep(){
   if(s.page==='market') setTimeout(initProbChart,300);
   if(s.page==='dashboard') setTimeout(initPnlChart,300);
   if(s.page==='pitch') setTimeout(initGrowthChart,300);
+  if(s.page==='markets') setTimeout(initMarketTypesPage,300);
+  if(s.page==='financial') setTimeout(calcFin,300);
 
   // auto-advance after 8s
   clearTimeout(tourTimer);
