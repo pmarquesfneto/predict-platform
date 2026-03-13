@@ -25,7 +25,7 @@ body{font-family:var(--font-body);background:var(--near-black);color:#fff;overfl
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--dark-border);border-radius:2px}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--dark-border);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:58px}
+nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--dark-border);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:58px}
 .logo{font-family:var(--font-display);font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px;cursor:pointer}
 .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
@@ -495,14 +495,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
 <nav>
   <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>Predict</div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('home',this)">Início</button>
-    <button class="nav-tab" onclick="showPage('listing',this)">Explorar</button>
-    <button class="nav-tab" onclick="showPage('market',this)">Mercado</button>
-    <button class="nav-tab" onclick="showPage('dashboard',this)">Minha Conta</button>
-    <button class="nav-tab" onclick="showPage('markets',this)">Tipos de Mercado</button>
-    <button class="nav-tab" onclick="showPage('financial',this)">Modelo Financeiro</button>
-    <button class="nav-tab" onclick="showPage('pitch',this)">Investidores</button>
-    <button class="nav-tab" onclick="showPage('onboard',this)">Entrar</button>
+    <button class="nav-tab active" data-page="home" onclick="showPage('home',this)">Início</button>
+    <button class="nav-tab" data-page="listing" onclick="showPage('listing',this)">Explorar</button>
+    <button class="nav-tab" data-page="market" onclick="showPage('market',this)">Mercado</button>
+    <button class="nav-tab" data-page="dashboard" onclick="showPage('dashboard',this)">Minha Conta</button>
+    <button class="nav-tab" data-page="markets" onclick="showPage('markets',this)">Tipos de Mercado</button>
+    <button class="nav-tab" data-page="financial" onclick="showPage('financial',this)">Modelo Financeiro</button>
+    <button class="nav-tab" data-page="pitch" onclick="showPage('pitch',this)">Investidores</button>
+    <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)">Entrar</button>
   </div>
   <div class="nav-right">
     <div class="nav-bal">Saldo: <b>R$ 847,50</b></div>
@@ -514,14 +514,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
 </nav>
 
 <div class="mobile-menu" id="mobile-menu">
-  <button class="mobile-tab active" onclick="showPage('home',this,true)">Início</button>
-  <button class="mobile-tab" onclick="showPage('listing',this,true)">Explorar</button>
-  <button class="mobile-tab" onclick="showPage('market',this,true)">Mercado</button>
-  <button class="mobile-tab" onclick="showPage('dashboard',this,true)">Minha Conta</button>
-  <button class="mobile-tab" onclick="showPage('markets',this,true)">Tipos de Mercado</button>
-  <button class="mobile-tab" onclick="showPage('financial',this,true)">Modelo Financeiro</button>
-  <button class="mobile-tab" onclick="showPage('pitch',this,true)">Para Investidores</button>
-  <button class="mobile-tab" onclick="showPage('onboard',this,true)">Entrar / Cadastrar</button>
+  <button class="mobile-tab active" data-page="home" onclick="showPage('home',this,true)">Início</button>
+  <button class="mobile-tab" data-page="listing" onclick="showPage('listing',this,true)">Explorar</button>
+  <button class="mobile-tab" data-page="market" onclick="showPage('market',this,true)">Mercado</button>
+  <button class="mobile-tab" data-page="dashboard" onclick="showPage('dashboard',this,true)">Minha Conta</button>
+  <button class="mobile-tab" data-page="markets" onclick="showPage('markets',this,true)">Tipos de Mercado</button>
+  <button class="mobile-tab" data-page="financial" onclick="showPage('financial',this,true)">Modelo Financeiro</button>
+  <button class="mobile-tab" data-page="pitch" onclick="showPage('pitch',this,true)">Para Investidores</button>
+  <button class="mobile-tab" data-page="onboard" onclick="showPage('onboard',this,true)">Entrar / Cadastrar</button>
 </div>
 
 <!-- ══ HOME ══════════════════════════════════════════════════════ -->
@@ -1193,27 +1193,34 @@ function filterM(cat,btn){
 function openMarket(){showPage('market',null);}
 
 function showPage(id,btn,closeMobile){
+  // hide all pages
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pg=document.getElementById('page-'+id);
+  // show target page
+  var pg=document.getElementById('page-'+id);
   if(pg) pg.classList.add('active');
   window.scrollTo(0,0);
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  if(btn){
-    btn.classList.add('active');
-  } else {
-    const match=Array.from(document.querySelectorAll('.nav-tab')).find(t=>t.onclick&&t.onclick.toString().includes("'"+id+"'"));
-    if(match) match.classList.add('active');
-  }
+  // update nav tabs - match by data-page attribute
+  document.querySelectorAll('.nav-tab').forEach(function(t){
+    t.classList.remove('active');
+    if(t.getAttribute('data-page')===id) t.classList.add('active');
+  });
+  // if explicit btn passed, also mark it active
+  if(btn && btn.classList) btn.classList.add('active');
+  // mobile menu
   if(closeMobile){
-    document.getElementById('mobile-menu').classList.remove('open');
-    document.querySelectorAll('.mobile-tab').forEach(t=>t.classList.remove('active'));
-    if(btn) btn.classList.add('active');
+    var mm=document.getElementById('mobile-menu');
+    if(mm) mm.classList.remove('open');
+    document.querySelectorAll('.mobile-tab').forEach(function(t){
+      t.classList.remove('active');
+      if(t.getAttribute('data-page')===id) t.classList.add('active');
+    });
   }
-  if(id==='market') initProbChart();
-  if(id==='dashboard') initPnlChart();
-  if(id==='pitch') initGrowthChart();
-  if(id==='markets') initMarketTypesPage();
-  if(id==='financial'){calcFin();}
+  // init charts
+  if(id==='market') setTimeout(initProbChart,100);
+  if(id==='dashboard') setTimeout(initPnlChart,100);
+  if(id==='pitch') setTimeout(initGrowthChart,100);
+  if(id==='markets') setTimeout(initMarketTypesPage,100);
+  if(id==='financial') setTimeout(calcFin,100);
 }
 function toggleMenu(){
   document.getElementById('mobile-menu').classList.toggle('open');
@@ -1526,7 +1533,7 @@ function updateFinChart(labels,rev,ebitda){
       {label:'Receita (R$k)',data:rev,backgroundColor:'rgba(29,158,117,0.5)',borderRadius:4,borderSkipped:false},
       {label:'EBITDA (R$k)',data:ebitda,backgroundColor:ebitda.map(v=>v>=0?'rgba(29,158,117,0.85)':'rgba(226,75,74,0.7)'),borderRadius:4,borderSkipped:false},
     ]},
-    options:{responsive:true,plugins:{legend:{labels:{color:'rgba(255,255,255,0.4)',font:{size:11}}},tooltip:{backgroundColor:'rgba(18,22,19,0.97)',titleColor:'rgba(255,255,255,0.5)',bodyColor:'#fff',callbacks:{label:ctx=>ctx.dataset.label+': R$ '+ctx.raw+'k'}}},},scales:{x:{grid:{display:false},ticks:{color:'rgba(255,255,255,0.3)',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:v=>'R$'+v+'k'}}}}
+    options:{responsive:true,plugins:{legend:{labels:{color:'rgba(255,255,255,0.4)',font:{size:11}}},tooltip:{backgroundColor:'rgba(18,22,19,0.97)',titleColor:'rgba(255,255,255,0.5)',bodyColor:'#fff',callbacks:{label:function(ctx){return ctx.dataset.label+': R$ '+ctx.raw+'k';}}}},scales:{x:{grid:{display:false},ticks:{color:'rgba(255,255,255,0.3)',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:function(v){return 'R$'+v+'k';}}}}}
   });
 }
 
@@ -1693,7 +1700,7 @@ tourStyle.textContent=`
 #tour-fab:hover{background:#0F6E56;transform:translateY(-2px);box-shadow:0 6px 28px rgba(29,158,117,0.5)}
 #tour-overlay{position:fixed;inset:0;z-index:998;pointer-events:none;display:none}
 #tour-overlay.active{display:block;pointer-events:none}
-#tour-progress-bar{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.06);z-index:1001}
+#tour-progress-bar{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.06);z-index:1001;pointer-events:none}
 #tour-progress-fill{height:100%;background:linear-gradient(90deg,#0F6E56,#1D9E75);transition:width 0.3s;width:0%}
 #tour-card{position:fixed;bottom:88px;right:28px;width:320px;background:rgba(18,22,19,0.97);border:1px solid rgba(29,158,117,0.3);border-radius:18px;padding:22px;z-index:1002;pointer-events:all;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(29,158,117,0.1)}
 #tour-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
