@@ -345,6 +345,149 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
   .hero-nums{gap:20px}
   .hnum-val{font-size:22px}
 }
+/* ══ MARKET TYPES STYLES ══════════════════════════════════════ */
+.mkt-types-hero{padding:60px 5vw 40px;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(29,158,117,0.07) 0%,transparent 60%);border-bottom:1px solid var(--dark-border)}
+.mkt-types-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(29,158,117,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(29,158,117,0.03) 1px,transparent 1px);background-size:40px 40px}
+.mkt-types-content{position:relative}
+.mkt-types-h{font-family:var(--font-display);font-size:clamp(28px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:14px}
+.mkt-types-h em{font-style:normal;color:var(--teal)}
+.mkt-types-sub{font-size:15px;color:rgba(255,255,255,0.45);max-width:520px;line-height:1.7}
+.mkt-types-body{padding:0 5vw 60px}
+.mt-section{padding:48px 0;border-bottom:1px solid var(--dark-border)}
+.mt-section.alt{background:linear-gradient(90deg,rgba(29,158,117,0.025) 0%,transparent 100%)}
+.mt-section:last-child{border-bottom:none}
+.mt-header{margin-bottom:28px}
+.mt-badge{display:inline-flex;font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px}
+.mt-title{font-family:var(--font-display);font-size:clamp(22px,3vw,32px);font-weight:800;letter-spacing:-0.8px;margin-bottom:10px}
+.mt-desc{font-size:15px;color:rgba(255,255,255,0.45);line-height:1.7;max-width:600px}
+.mt-demo{margin-bottom:28px}
+.mt-demo-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.25);margin-bottom:12px}
+
+/* Binary */
+.binary-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;max-width:560px}
+.bc-q{font-size:16px;font-weight:500;line-height:1.4;margin-bottom:20px}
+.bc-bar-wrap{margin-bottom:20px}
+.bc-bar{height:10px;border-radius:100px;overflow:hidden;display:flex;margin-bottom:8px;background:rgba(255,255,255,0.05)}
+.bc-fill-y{height:100%;background:linear-gradient(90deg,var(--teal-d),var(--teal));transition:width 0.4s}
+.bc-fill-n{height:100%;background:linear-gradient(90deg,#7A2020,var(--red));transition:width 0.4s}
+.bc-labels{display:flex;justify-content:space-between;font-size:13px}
+.bc-lbl-y{color:var(--teal)}
+.bc-lbl-n{color:var(--red)}
+.bc-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.bc-btn-y{padding:12px;background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--teal);border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:all 0.18s}
+.bc-btn-y:hover{background:var(--teal);color:#fff}
+.bc-btn-n{padding:12px;background:rgba(226,75,74,0.1);border:1px solid rgba(226,75,74,0.25);color:var(--red);border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:all 0.18s}
+.bc-btn-n:hover{background:var(--red);color:#fff}
+.bc-resolution{font-size:11px;color:rgba(255,255,255,0.25);padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)}
+
+/* Multi */
+.multi-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;max-width:620px}
+.mc-candidate{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.mc-candidate:last-child{border-bottom:none}
+.mc-rank{font-family:var(--font-display);font-size:18px;font-weight:700;color:rgba(255,255,255,0.12);width:28px;flex-shrink:0}
+.mc-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.mc-name{flex:1}
+.mc-name b{display:block;font-size:14px;font-weight:500}
+.mc-name span{font-size:11px;color:rgba(255,255,255,0.3)}
+.mc-bar-col{width:160px;flex-shrink:0}
+.mc-mini-bar{height:5px;border-radius:100px;margin-bottom:4px;transition:width 0.4s}
+.mc-pct{font-size:12px;font-weight:600;text-align:right}
+.mc-bet-btn{padding:6px 14px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-body);border:none;transition:all 0.17s;flex-shrink:0}
+.mc-total{font-size:11px;color:rgba(255,255,255,0.25);margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)}
+
+/* Range */
+.range-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;max-width:580px}
+.range-title{font-size:15px;font-weight:500;margin-bottom:20px;line-height:1.4}
+.range-bands{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.range-band{display:flex;align-items:center;gap:12px}
+.range-band-lbl{font-size:12px;color:rgba(255,255,255,0.5);width:120px;flex-shrink:0}
+.range-band-bar{flex:1;height:8px;border-radius:100px;overflow:hidden;background:rgba(255,255,255,0.05)}
+.range-band-fill{height:100%;border-radius:100px;transition:width 0.3s,background 0.3s}
+.range-band-pct{font-size:12px;font-weight:500;width:36px;text-align:right;flex-shrink:0;transition:color 0.3s}
+.range-band.active .range-band-lbl{color:#fff}
+.range-slider-wrap{border-top:1px solid rgba(255,255,255,0.05);padding-top:16px}
+.range-slider-label{font-size:11px;color:rgba(255,255,255,0.3)}
+.range-slider-val{font-size:13px;color:rgba(255,255,255,0.5)}
+.range-slider-val b{color:var(--teal)}
+
+/* Scalar */
+.scalar-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;max-width:580px}
+.scalar-title{font-size:15px;font-weight:500;margin-bottom:20px}
+.scalar-range-display{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.scalar-min,.scalar-max{font-size:12px;color:rgba(255,255,255,0.3);flex-shrink:0}
+.scalar-track-wrap{flex:1;position:relative;padding-bottom:32px}
+.scalar-track{height:8px;background:rgba(255,255,255,0.06);border-radius:100px;position:relative;overflow:visible}
+.scalar-fill{position:absolute;top:0;height:100%;background:linear-gradient(90deg,rgba(29,158,117,0.3),var(--teal));border-radius:100px}
+.scalar-needle{position:absolute;top:-6px;width:20px;height:20px;background:var(--teal);border-radius:50%;transform:translateX(-50%);border:3px solid var(--near-black);transition:left 0.2s;cursor:grab}
+.scalar-labels-row{position:absolute;top:14px;left:0;right:0}
+.scalar-lbl{position:absolute;font-size:10px;color:rgba(255,255,255,0.3);transform:translateX(-50%);text-align:center;line-height:1.4;white-space:nowrap}
+.scalar-lbl b{color:var(--teal)}
+.scalar-payout-preview{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px}
+.sc-win{color:var(--teal);font-weight:500}
+.sc-loss{color:var(--red);font-weight:500}
+
+/* Conditional */
+.cond-card{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;max-width:620px}
+.cond-chain{display:flex;flex-direction:column;gap:0}
+.cond-node{padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);margin-bottom:0;position:relative}
+.cond-node-title{font-size:12px;font-weight:500;color:#fff;margin-bottom:4px}
+.cond-node-q{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px}
+.cond-node-probs{display:flex;gap:12px;font-size:12px}
+.cond-prob-y{color:var(--teal);font-weight:500}
+.cond-prob-n{color:var(--red);font-weight:500}
+.cond-arrow{display:flex;align-items:center;padding:6px 0 6px 24px;gap:8px;font-size:11px;color:rgba(255,255,255,0.2)}
+.cond-arrow-line{width:2px;height:24px;background:rgba(255,255,255,0.1);margin-left:6px}
+.cond-children{padding-left:24px;border-left:2px solid rgba(255,255,255,0.06);margin-left:10px;display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+.cond-legend{display:flex;gap:16px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);flex-wrap:wrap}
+.cond-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.4)}
+.cond-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* How it works */
+.mt-how{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r);padding:20px}
+.mt-how-title{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.25);margin-bottom:14px}
+.mt-how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.mt-how-item{display:flex;gap:12px;align-items:flex-start}
+.mt-how-num{font-family:var(--font-display);font-size:20px;font-weight:800;color:rgba(29,158,117,0.3);flex-shrink:0;line-height:1}
+.mt-how-text{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.65}
+
+/* ══ FINANCIAL MODEL STYLES ═══════════════════════════════════ */
+.fin-hero{padding:60px 5vw 36px;border-bottom:1px solid var(--dark-border);background:linear-gradient(135deg,rgba(29,158,117,0.06) 0%,transparent 55%)}
+.fin-h{font-family:var(--font-display);font-size:clamp(26px,4vw,42px);font-weight:800;letter-spacing:-1.2px;margin-bottom:12px}
+.fin-sub{font-size:15px;color:rgba(255,255,255,0.4);max-width:500px;line-height:1.7}
+.fin-body{padding:32px 5vw 60px}
+.fin-layout{display:grid;grid-template-columns:360px 1fr;gap:32px;align-items:start}
+.fin-inputs{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;position:sticky;top:70px}
+.fin-section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.9px;color:rgba(255,255,255,0.25);margin-bottom:16px}
+.fin-input-group{margin-bottom:18px}
+.fin-input-label{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:8px}
+.fin-slider-row{display:flex;align-items:center;gap:12px}
+.fin-slider-row input[type=range]{flex:1}
+.fin-val{font-size:13px;font-weight:500;color:#fff;min-width:60px;text-align:right;font-family:var(--font-display)}
+.fin-presets{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06)}
+.fin-preset-label{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:10px}
+.fin-preset-btns{display:flex;gap:7px}
+.fin-preset-btn{flex:1;padding:8px;border-radius:7px;border:1px solid rgba(255,255,255,0.09);background:transparent;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all 0.17s}
+.fin-preset-btn.active{border-color:var(--teal);background:rgba(29,158,117,0.12);color:var(--teal)}
+.fin-preset-btn:hover:not(.active){border-color:rgba(255,255,255,0.2);color:#fff}
+.fin-outputs{}
+.fin-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:4px}
+.fin-kpi{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:14px}
+.fin-kpi.highlight{border-color:rgba(29,158,117,0.25)}
+.fin-kpi-l{font-size:10px;text-transform:uppercase;letter-spacing:0.6px;color:rgba(255,255,255,0.3);margin-bottom:6px}
+.fin-kpi-v{font-family:var(--font-display);font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.5px;transition:all 0.3s}
+.fin-kpi-v.green{color:var(--teal)}
+.fin-kpi-v.red{color:var(--red)}
+.fin-kpi-sub{font-size:10px;color:rgba(255,255,255,0.25);margin-top:3px}
+.fin-chart-wrap{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:16px}
+.fin-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fin-metric{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:13px}
+.fin-metric-l{font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px}
+.fin-metric-v{font-family:var(--font-display);font-size:17px;font-weight:700;color:#fff}
+.fin-metric-v.green{color:var(--teal)}
+.fin-assumption{font-size:10px;color:rgba(255,255,255,0.18);line-height:1.6;margin-top:14px;padding:10px;background:rgba(255,255,255,0.02);border-radius:6px}
+@media(max-width:900px){.fin-layout{grid-template-columns:1fr}.fin-inputs{position:static}.fin-kpis{grid-template-columns:repeat(2,1fr)}.fin-metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.fin-kpis{grid-template-columns:1fr 1fr}.fin-metrics{grid-template-columns:1fr 1fr}.bc-btns{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -356,7 +499,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
     <button class="nav-tab" onclick="showPage('listing',this)">Explorar</button>
     <button class="nav-tab" onclick="showPage('market',this)">Mercado</button>
     <button class="nav-tab" onclick="showPage('dashboard',this)">Minha Conta</button>
-    <button class="nav-tab" onclick="showPage('pitch',this)">Para Investidores</button>
+    <button class="nav-tab" onclick="showPage('markets',this)">Tipos de Mercado</button>
+    <button class="nav-tab" onclick="showPage('financial',this)">Modelo Financeiro</button>
+    <button class="nav-tab" onclick="showPage('pitch',this)">Investidores</button>
     <button class="nav-tab" onclick="showPage('onboard',this)">Entrar</button>
   </div>
   <div class="nav-right">
@@ -373,6 +518,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
   <button class="mobile-tab" onclick="showPage('listing',this,true)">Explorar</button>
   <button class="mobile-tab" onclick="showPage('market',this,true)">Mercado</button>
   <button class="mobile-tab" onclick="showPage('dashboard',this,true)">Minha Conta</button>
+  <button class="mobile-tab" onclick="showPage('markets',this,true)">Tipos de Mercado</button>
+  <button class="mobile-tab" onclick="showPage('financial',this,true)">Modelo Financeiro</button>
   <button class="mobile-tab" onclick="showPage('pitch',this,true)">Para Investidores</button>
   <button class="mobile-tab" onclick="showPage('onboard',this,true)">Entrar / Cadastrar</button>
 </div>
@@ -387,7 +534,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
       <p class="hero-sub">Aposte com dados, não com achismos. Selic, eleições, esportes — cada evento tem uma probabilidade real. Descubra a sua e lucre com o seu conhecimento.</p>
       <div class="hero-ctas">
         <button class="btn-primary" onclick="showPage('listing',document.querySelectorAll('.nav-tab')[1])">Ver todos os mercados →</button>
-        <button class="btn-outline" onclick="showPage('pitch',document.querySelectorAll('.nav-tab')[4])">Para investidores</button>
+        <button class="btn-outline" onclick="showPage('pitch',document.querySelectorAll('.nav-tab')[6])">Para investidores</button>
       </div>
       <div class="hero-nums">
         <div><div class="hnum-val">R$<span>2,4M</span></div><div class="hnum-lbl">Volume total</div></div>
@@ -571,6 +718,323 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(10,12,11,0.8
   </div>
 </div>
 
+<!-- ══ MARKET TYPES ═══════════════════════════════════════════════ -->
+<div class="page" id="page-markets">
+  <div class="mkt-types-hero">
+    <div class="mkt-types-bg"></div>
+    <div class="mkt-types-content">
+      <div class="eyebrow"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;animation:pulse 2s infinite"></span> Tipos de Mercado</div>
+      <h2 class="mkt-types-h">Cinco formas de apostar.<br><em>Infinitas formas de ganhar.</em></h2>
+      <p class="mkt-types-sub">Da pergunta mais simples ao cenário mais complexo — a Predict oferece o instrumento certo para cada tipo de previsão.</p>
+    </div>
+  </div>
+
+  <div class="mkt-types-body">
+
+    <!-- 1. BINARY -->
+    <div class="mt-section">
+      <div class="mt-header">
+        <div class="mt-badge" style="background:rgba(29,158,117,0.12);color:var(--teal)">Tipo 1</div>
+        <div class="mt-title">Mercado Binário</div>
+        <div class="mt-desc">A forma mais simples. Uma pergunta, duas respostas: SIM ou NÃO. O mercado precifica a probabilidade de cada desfecho.</div>
+      </div>
+      <div class="mt-demo">
+        <div class="mt-demo-label">Exemplo ao vivo · clique para apostar</div>
+        <div class="binary-card">
+          <div class="bc-q">Selic será cortada na reunião do COPOM em agosto 2025?</div>
+          <div class="bc-bar-wrap">
+            <div class="bc-bar">
+              <div class="bc-fill-y" id="bin-fill-y" style="width:67%"></div>
+              <div class="bc-fill-n" id="bin-fill-n" style="width:33%"></div>
+            </div>
+            <div class="bc-labels">
+              <span class="bc-lbl-y">SIM <b id="bin-pct-y">67%</b></span>
+              <span class="bc-lbl-n">NÃO <b id="bin-pct-n">33%</b></span>
+            </div>
+          </div>
+          <div class="bc-btns">
+            <button class="bc-btn-y" onclick="binaryBet('sim',this)">Apostar SIM — R$0,67/ação</button>
+            <button class="bc-btn-n" onclick="binaryBet('nao',this)">Apostar NÃO — R$0,33/ação</button>
+          </div>
+          <div class="bc-resolution">⚡ Resolução automática via API do Banco Central em 06/ago/2025</div>
+        </div>
+      </div>
+      <div class="mt-how">
+        <div class="mt-how-title">Como funciona</div>
+        <div class="mt-how-grid">
+          <div class="mt-how-item"><div class="mt-how-num">01</div><div class="mt-how-text">Você aposta R$100 em SIM ao preço de R$0,67/ação → recebe 149 ações</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">02</div><div class="mt-how-text">Se SIM vencer, cada ação vale R$1,00 → você recebe R$149 (lucro de R$49)</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">03</div><div class="mt-how-text">Se NÃO vencer, você perde os R$100 apostados</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MULTI-OUTCOME -->
+    <div class="mt-section alt">
+      <div class="mt-header">
+        <div class="mt-badge" style="background:rgba(92,168,245,0.12);color:#5CA8F5">Tipo 2</div>
+        <div class="mt-title">Mercado Multi-Resultado</div>
+        <div class="mt-desc">Múltiplos candidatos ou resultados possíveis. Cada opção tem sua própria probabilidade. Perfeito para eleições, campeonatos e corridas.</div>
+      </div>
+      <div class="mt-demo">
+        <div class="mt-demo-label">Exemplo · Eleição Presidencial 2026</div>
+        <div class="multi-card" id="multi-card">
+          <div class="mc-candidates" id="mc-candidates"></div>
+          <div class="mc-total">Total apostado: <b>R$ 847.320</b> · 2.341 traders</div>
+        </div>
+      </div>
+      <div class="mt-how">
+        <div class="mt-how-title">Como funciona</div>
+        <div class="mt-how-grid">
+          <div class="mt-how-item"><div class="mt-how-num">01</div><div class="mt-how-text">Cada candidato tem um preço independente baseado na probabilidade implícita</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">02</div><div class="mt-how-text">Você pode apostar em múltiplos candidatos para hedgear sua posição</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">03</div><div class="mt-how-text">O vencedor recebe R$1,00 por ação; todos os outros expiram a zero</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RANGE -->
+    <div class="mt-section">
+      <div class="mt-header">
+        <div class="mt-badge" style="background:rgba(239,159,39,0.12);color:var(--amber)">Tipo 3</div>
+        <div class="mt-title">Mercado de Faixa (Range)</div>
+        <div class="mt-desc">Para indicadores econômicos com valor contínuo. O mercado é dividido em faixas e você aposta em qual intervalo o valor cairá.</div>
+      </div>
+      <div class="mt-demo">
+        <div class="mt-demo-label">Exemplo · Selic ao final de 2025</div>
+        <div class="range-card">
+          <div class="range-title">Em qual faixa estará a Selic em dezembro 2025?</div>
+          <div class="range-bands" id="range-bands"></div>
+          <div class="range-slider-wrap">
+            <div class="range-slider-label">Arraste para simular cenário:</div>
+            <input type="range" min="800" max="1400" value="1075" step="25" id="range-slider" oninput="updateRange(this.value)" style="width:100%;margin:10px 0">
+            <div class="range-slider-val">Selic simulada: <b id="range-val">10,75%</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-how">
+        <div class="mt-how-title">Como funciona</div>
+        <div class="mt-how-grid">
+          <div class="mt-how-item"><div class="mt-how-num">01</div><div class="mt-how-text">O mercado define N faixas (ex: abaixo de 9%, 9–10%, 10–11%, acima de 11%)</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">02</div><div class="mt-how-text">Cada faixa tem preço independente; a soma de todas as probabilidades = 100%</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">03</div><div class="mt-how-text">Resolução automática via BCB — sem subjetividade, sem disputa</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SCALAR -->
+    <div class="mt-section alt">
+      <div class="mt-header">
+        <div class="mt-badge" style="background:rgba(157,150,240,0.12);color:#9D96F0">Tipo 4</div>
+        <div class="mt-title">Mercado Escalar</div>
+        <div class="mt-desc">Pagamento proporcional ao resultado real. Quanto mais perto você acertar o valor exato, mais você ganha. Ideal para previsões numéricas precisas.</div>
+      </div>
+      <div class="mt-demo">
+        <div class="mt-demo-label">Exemplo · PIB Brasil 2026 (%)</div>
+        <div class="scalar-card">
+          <div class="scalar-title">Qual será o crescimento do PIB em 2026?</div>
+          <div class="scalar-range-display">
+            <div class="scalar-min">0%</div>
+            <div class="scalar-track-wrap">
+              <div class="scalar-track">
+                <div class="scalar-fill" id="scalar-fill" style="left:20%;width:40%"></div>
+                <div class="scalar-needle" id="scalar-needle" style="left:40%"></div>
+              </div>
+              <div class="scalar-labels-row">
+                <span style="left:20%" class="scalar-lbl">Pessimista<br>1%</span>
+                <span style="left:40%" class="scalar-lbl" id="scalar-your">Sua aposta<br><b id="scalar-bet-val">2%</b></span>
+                <span style="left:60%" class="scalar-lbl">Otimista<br>3%</span>
+              </div>
+            </div>
+            <div class="scalar-max">5%</div>
+          </div>
+          <input type="range" min="0" max="500" value="200" step="10" id="scalar-slider" oninput="updateScalar(this.value)" style="width:100%;margin:16px 0 8px">
+          <div class="scalar-payout-preview" id="scalar-payout">
+            Apostando 2,00% → se resultado for <b>2,5%</b>: ganho de <span class="sc-win">R$ +67,40</span> · se for <b>1,0%</b>: perda de <span class="sc-loss">R$ -42,10</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-how">
+        <div class="mt-how-title">Como funciona</div>
+        <div class="mt-how-grid">
+          <div class="mt-how-item"><div class="mt-how-num">01</div><div class="mt-how-text">Você escolhe um valor exato (ex: PIB de 2,3%) e aposta nesse número</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">02</div><div class="mt-how-text">O pagamento é proporcional: acerto exato = 100%, erro de 1pp = ~60%, erro de 3pp = ~10%</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">03</div><div class="mt-how-text">Premia analistas com previsões precisas — não apenas direção, mas magnitude</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. CONDITIONAL -->
+    <div class="mt-section">
+      <div class="mt-header">
+        <div class="mt-badge" style="background:rgba(212,83,126,0.12);color:#ED93B1">Tipo 5</div>
+        <div class="mt-title">Mercado Condicional</div>
+        <div class="mt-desc">A probabilidade de B dado que A aconteceu. Mercados encadeados onde o resultado de um afeta o outro. O instrumento mais sofisticado da plataforma.</div>
+      </div>
+      <div class="mt-demo">
+        <div class="mt-demo-label">Exemplo · Cadeia condicional</div>
+        <div class="cond-card">
+          <div class="cond-chain" id="cond-chain"></div>
+          <div class="cond-legend">
+            <div class="cond-leg-item"><div class="cond-leg-dot" style="background:var(--teal)"></div>Mercado pai (independente)</div>
+            <div class="cond-leg-item"><div class="cond-leg-dot" style="background:#5CA8F5"></div>Condicional (depende do pai)</div>
+            <div class="cond-leg-item"><div class="cond-leg-dot" style="background:#9D96F0"></div>Derivado (depende dos anteriores)</div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-how">
+        <div class="mt-how-title">Como funciona</div>
+        <div class="mt-how-grid">
+          <div class="mt-how-item"><div class="mt-how-num">01</div><div class="mt-how-text">"Lula é reeleito?" é o mercado pai com prob. de 52%</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">02</div><div class="mt-how-text">"Selic cai dado que Lula ganhou?" tem prob. diferente de "Selic cai dado que Lula perdeu?"</div></div>
+          <div class="mt-how-item"><div class="mt-how-num">03</div><div class="mt-how-text">Se o mercado pai não resolver SIM, a aposta condicional é reembolsada integralmente</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ FINANCIAL MODEL ════════════════════════════════════════════ -->
+<div class="page" id="page-financial">
+  <div class="fin-hero">
+    <div class="eyebrow" style="margin-bottom:16px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Modelo Financeiro Interativo</div>
+    <h2 class="fin-h">Projete o potencial da Predict.</h2>
+    <p class="fin-sub">Ajuste os parâmetros e veja a projeção de receita em tempo real. Todos os cálculos são transparentes.</p>
+  </div>
+  <div class="fin-body">
+    <div class="fin-layout">
+
+      <!-- INPUTS -->
+      <div class="fin-inputs">
+        <div class="fin-section-title">Parâmetros do modelo</div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Usuários ativos mensais (MAU)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="500" max="100000" value="10000" step="500" id="sl-mau" oninput="calcFin()">
+            <span class="fin-val" id="v-mau">10.000</span>
+          </div>
+        </div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Volume médio apostado por usuário/mês (R$)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="50" max="2000" value="300" step="50" id="sl-avg" oninput="calcFin()">
+            <span class="fin-val" id="v-avg">R$ 300</span>
+          </div>
+        </div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Fee por transação (%)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="1" max="5" value="2" step="0.5" id="sl-fee" oninput="calcFin()">
+            <span class="fin-val" id="v-fee">2,0%</span>
+          </div>
+        </div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Assinantes Pro (% dos MAU)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="1" max="20" value="5" step="1" id="sl-pro" oninput="calcFin()">
+            <span class="fin-val" id="v-pro">5%</span>
+          </div>
+        </div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Preço assinatura Pro (R$/mês)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="19" max="199" value="49" step="10" id="sl-price" oninput="calcFin()">
+            <span class="fin-val" id="v-price">R$ 49</span>
+          </div>
+        </div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Crescimento mensal de usuários (%)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="5" max="50" value="20" step="5" id="sl-growth" oninput="calcFin()">
+            <span class="fin-val" id="v-growth">20%</span>
+          </div>
+        </div>
+
+        <div class="fin-input-group">
+          <div class="fin-input-label">Custo operacional mensal (R$)</div>
+          <div class="fin-slider-row">
+            <input type="range" min="5000" max="200000" value="40000" step="5000" id="sl-cost" oninput="calcFin()">
+            <span class="fin-val" id="v-cost">R$ 40k</span>
+          </div>
+        </div>
+
+        <div class="fin-presets">
+          <div class="fin-preset-label">Cenários rápidos:</div>
+          <div class="fin-preset-btns">
+            <button class="fin-preset-btn" onclick="setPreset('conservador')">Conservador</button>
+            <button class="fin-preset-btn active" onclick="setPreset('base')">Base</button>
+            <button class="fin-preset-btn" onclick="setPreset('otimista')">Otimista</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUTS -->
+      <div class="fin-outputs">
+        <div class="fin-section-title">Projeção mensal — mês atual</div>
+        <div class="fin-kpis">
+          <div class="fin-kpi">
+            <div class="fin-kpi-l">Volume total</div>
+            <div class="fin-kpi-v" id="fk-vol">R$ 3,0M</div>
+            <div class="fin-kpi-sub" id="fk-vol-sub">10.000 × R$300</div>
+          </div>
+          <div class="fin-kpi">
+            <div class="fin-kpi-l">Receita de fee</div>
+            <div class="fin-kpi-v" id="fk-fee">R$ 60k</div>
+            <div class="fin-kpi-sub" id="fk-fee-sub">2% de R$3M</div>
+          </div>
+          <div class="fin-kpi">
+            <div class="fin-kpi-l">Receita Pro</div>
+            <div class="fin-kpi-v" id="fk-pro">R$ 24,5k</div>
+            <div class="fin-kpi-sub" id="fk-pro-sub">500 × R$49</div>
+          </div>
+          <div class="fin-kpi highlight">
+            <div class="fin-kpi-l">Receita total</div>
+            <div class="fin-kpi-v green" id="fk-total">R$ 84,5k</div>
+            <div class="fin-kpi-sub" id="fk-total-sub">bruta mensal</div>
+          </div>
+          <div class="fin-kpi">
+            <div class="fin-kpi-l">Custos</div>
+            <div class="fin-kpi-v red" id="fk-cost">R$ 40k</div>
+            <div class="fin-kpi-sub">operacional</div>
+          </div>
+          <div class="fin-kpi highlight">
+            <div class="fin-kpi-l">EBITDA</div>
+            <div class="fin-kpi-v" id="fk-ebitda">R$ 44,5k</div>
+            <div class="fin-kpi-sub" id="fk-margin">Margem 52,7%</div>
+          </div>
+        </div>
+
+        <div class="fin-section-title" style="margin-top:24px">Projeção 12 meses</div>
+        <div class="fin-chart-wrap">
+          <canvas id="fin-chart" height="200"></canvas>
+        </div>
+
+        <div class="fin-section-title" style="margin-top:24px">Métricas-chave</div>
+        <div class="fin-metrics">
+          <div class="fin-metric"><div class="fin-metric-l">CAC estimado</div><div class="fin-metric-v" id="fm-cac">R$ 28</div></div>
+          <div class="fin-metric"><div class="fin-metric-l">LTV (12 meses)</div><div class="fin-metric-v" id="fm-ltv">R$ 72</div></div>
+          <div class="fin-metric"><div class="fin-metric-l">LTV/CAC ratio</div><div class="fin-metric-v green" id="fm-ratio">2,6x</div></div>
+          <div class="fin-metric"><div class="fin-metric-l">Breakeven</div><div class="fin-metric-v" id="fm-be">Mês 3</div></div>
+          <div class="fin-metric"><div class="fin-metric-l">Receita ano 1</div><div class="fin-metric-v" id="fm-yr1">R$ 1,8M</div></div>
+          <div class="fin-metric"><div class="fin-metric-l">Valuation (10x receita)</div><div class="fin-metric-v green" id="fm-val">R$ 18M</div></div>
+        </div>
+
+        <div class="fin-assumption">
+          * Projeções baseadas em premissas de crescimento composto. Não constituem garantia de resultados. CAC assumido como R$28 (CPM digital Brasil Q1/2026).
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- ══ PITCH / INVESTOR ═══════════════════════════════════════════ -->
 <div class="page" id="page-pitch">
   <div class="pitch">
@@ -744,6 +1208,8 @@ function showPage(id,btn,closeMobile){
   if(id==='market') initProbChart();
   if(id==='dashboard') initPnlChart();
   if(id==='pitch') initGrowthChart();
+  if(id==='markets') initMarketTypesPage();
+  if(id==='financial'){calcFin();}
 }
 function toggleMenu(){
   document.getElementById('mobile-menu').classList.toggle('open');
@@ -826,6 +1292,247 @@ renderCards(MARKETS,document.getElementById('featured-grid'));
 renderRows(MARKETS);
 calcBet();
 
+
+/* ══ BINARY MARKET ══ */
+let binPct=67;
+function binaryBet(side,btn){
+  const delta = side==='sim' ? Math.random()*4+1 : -(Math.random()*4+1);
+  binPct = Math.max(10,Math.min(90, binPct+delta));
+  document.getElementById('bin-fill-y').style.width=binPct+'%';
+  document.getElementById('bin-fill-n').style.width=(100-binPct)+'%';
+  document.getElementById('bin-pct-y').textContent=binPct.toFixed(0)+'%';
+  document.getElementById('bin-pct-n').textContent=(100-binPct).toFixed(0)+'%';
+  btn.textContent='✓ Aposta registrada!';
+  setTimeout(()=>{
+    document.querySelector('.bc-btn-y').textContent='Apostar SIM — R$'+( binPct/100).toFixed(2)+'/ação';
+    document.querySelector('.bc-btn-n').textContent='Apostar NÃO — R$'+((100-binPct)/100).toFixed(2)+'/ação';
+  },1500);
+}
+
+/* ══ MULTI-OUTCOME ══ */
+const CANDIDATES=[
+  {name:'Lula',party:'PT',flag:'🔴',pct:52,color:'#E24B4A'},
+  {name:'Bolsonaro',party:'PL',flag:'🔵',pct:28,color:'#5CA8F5'},
+  {name:'Novo candidato',party:'MDB',flag:'🟡',pct:13,color:'#EF9F27'},
+  {name:'Outros',party:'—',flag:'⚪',pct:7,color:'#888780'},
+];
+function renderMulti(){
+  const el=document.getElementById('mc-candidates');
+  if(!el) return;
+  el.innerHTML='';
+  CANDIDATES.sort((a,b)=>b.pct-a.pct).forEach((c,i)=>{
+    el.innerHTML+=`<div class="mc-candidate">
+      <div class="mc-rank">#${i+1}</div>
+      <div class="mc-avatar" style="background:${c.color}22;font-size:16px">${c.flag}</div>
+      <div class="mc-name"><b>${c.name}</b><span>${c.party}</span></div>
+      <div class="mc-bar-col">
+        <div class="mc-mini-bar" style="width:${c.pct*1.8}px;max-width:100%;background:${c.color};opacity:0.8;height:5px;border-radius:100px"></div>
+        <div style="text-align:right;margin-top:3px"><span class="mc-pct" style="color:${c.color}">${c.pct}%</span></div>
+      </div>
+      <button class="mc-bet-btn" style="background:${c.color}22;color:${c.color};border:1px solid ${c.color}44" onclick="multiBet(${i},this)">Apostar</button>
+    </div>`;
+  });
+}
+function multiBet(idx,btn){
+  CANDIDATES[idx].pct=Math.min(90,CANDIDATES[idx].pct+Math.random()*3+1);
+  const total=CANDIDATES.reduce((s,c)=>s+c.pct,0);
+  CANDIDATES.forEach(c=>c.pct=Math.round(c.pct/total*100));
+  btn.textContent='✓';
+  setTimeout(()=>renderMulti(),1200);
+}
+
+/* ══ RANGE MARKET ══ */
+const RANGE_BANDS=[
+  {lbl:'Abaixo de 9%',base:5},
+  {lbl:'9% – 10%',base:18},
+  {lbl:'10% – 10,75%',base:35},
+  {lbl:'10,75% – 11,5%',base:28},
+  {lbl:'Acima de 11,5%',base:14},
+];
+function updateRange(val){
+  const selic=val/100;
+  document.getElementById('range-val').textContent=(selic).toFixed(2).replace('.',',')+'%';
+  const el=document.getElementById('range-bands');
+  if(!el) return;
+  const bandIdx = selic<9?0:selic<10?1:selic<10.75?2:selic<11.5?3:4;
+  el.innerHTML='';
+  RANGE_BANDS.forEach((b,i)=>{
+    const isActive=i===bandIdx;
+    const pct=isActive?Math.min(b.base+15,60):Math.max(b.base-4,3);
+    el.innerHTML+=`<div class="range-band${isActive?' active':''}">
+      <div class="range-band-lbl">${b.lbl}</div>
+      <div class="range-band-bar"><div class="range-band-fill" style="width:${pct*2.2}px;max-width:100%;background:${isActive?'var(--teal)':'rgba(255,255,255,0.15)'}"></div></div>
+      <div class="range-band-pct" style="color:${isActive?'var(--teal)':'rgba(255,255,255,0.3)'}">${pct}%</div>
+    </div>`;
+  });
+}
+
+/* ══ SCALAR MARKET ══ */
+function updateScalar(val){
+  const pct=val/500;
+  const betVal=(pct*5).toFixed(1);
+  document.getElementById('scalar-bet-val').textContent=betVal+'%';
+  document.getElementById('scalar-needle').style.left=pct*100+'%';
+  document.getElementById('scalar-fill').style.left='0%';
+  document.getElementById('scalar-fill').style.width=(pct*100)+'%';
+  const win=(100*Math.random()*0.8+20).toFixed(2);
+  const loss=(100*Math.random()*0.5+10).toFixed(2);
+  const actualHigh=(parseFloat(betVal)+0.5).toFixed(1);
+  const actualLow=(parseFloat(betVal)-1.0).toFixed(1);
+  document.getElementById('scalar-payout').innerHTML=`Apostando <b>${betVal}%</b> → se resultado for <b>${actualHigh}%</b>: ganho de <span class="sc-win">R$ +${win}</span> · se for <b>${actualLow}%</b>: perda de <span class="sc-loss">R$ -${loss}</span>`;
+}
+
+/* ══ CONDITIONAL MARKET ══ */
+function renderConditional(){
+  const el=document.getElementById('cond-chain');
+  if(!el) return;
+  el.innerHTML=`
+    <div class="cond-node" style="border-color:rgba(29,158,117,0.3);background:rgba(29,158,117,0.06)">
+      <div class="cond-node-title" style="color:var(--teal)">Mercado pai · independente</div>
+      <div class="cond-node-q">Lula será reeleito nas eleições de 2026?</div>
+      <div class="cond-node-probs"><span class="cond-prob-y">SIM 52%</span><span class="cond-prob-n">NÃO 48%</span></div>
+    </div>
+    <div class="cond-arrow"><div class="cond-arrow-line"></div>Se SIM →</div>
+    <div class="cond-children">
+      <div class="cond-node" style="border-color:rgba(92,168,245,0.25);background:rgba(92,168,245,0.05)">
+        <div class="cond-node-title" style="color:#5CA8F5">Condicional · dado Lula ganhou</div>
+        <div class="cond-node-q">Selic cairá abaixo de 10% em 2027?</div>
+        <div class="cond-node-probs"><span class="cond-prob-y">SIM 71%</span><span class="cond-prob-n">NÃO 29%</span></div>
+      </div>
+      <div class="cond-node" style="border-color:rgba(92,168,245,0.25);background:rgba(92,168,245,0.05)">
+        <div class="cond-node-title" style="color:#5CA8F5">Condicional · dado Lula ganhou</div>
+        <div class="cond-node-q">Ibovespa acima de 160k pontos em 2027?</div>
+        <div class="cond-node-probs"><span class="cond-prob-y">SIM 44%</span><span class="cond-prob-n">NÃO 56%</span></div>
+      </div>
+    </div>
+    <div class="cond-arrow"><div class="cond-arrow-line"></div>Se NÃO →</div>
+    <div class="cond-children">
+      <div class="cond-node" style="border-color:rgba(157,150,240,0.25);background:rgba(157,150,240,0.05)">
+        <div class="cond-node-title" style="color:#9D96F0">Derivado · dado oposição ganhou</div>
+        <div class="cond-node-q">Reforma fiscal aprovada no 1º ano?</div>
+        <div class="cond-node-probs"><span class="cond-prob-y">SIM 63%</span><span class="cond-prob-n">NÃO 37%</span></div>
+      </div>
+    </div>`;
+}
+
+/* ══ FINANCIAL MODEL ══ */
+let finChartInst=null;
+const PRESETS={
+  conservador:{mau:2000,avg:150,fee:1.5,pro:3,price:29,growth:10,cost:20000},
+  base:{mau:10000,avg:300,fee:2,pro:5,price:49,growth:20,cost:40000},
+  otimista:{mau:30000,avg:600,fee:2.5,pro:10,price:79,growth:35,cost:80000},
+};
+function setPreset(name){
+  const p=PRESETS[name];
+  document.getElementById('sl-mau').value=p.mau;
+  document.getElementById('sl-avg').value=p.avg;
+  document.getElementById('sl-fee').value=p.fee;
+  document.getElementById('sl-pro').value=p.pro;
+  document.getElementById('sl-price').value=p.price;
+  document.getElementById('sl-growth').value=p.growth;
+  document.getElementById('sl-cost').value=p.cost;
+  document.querySelectorAll('.fin-preset-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  calcFin();
+}
+function fmt(n){
+  if(n>=1000000) return 'R$'+(n/1000000).toFixed(1)+'M';
+  if(n>=1000) return 'R$'+(n/1000).toFixed(0)+'k';
+  return 'R$'+n.toFixed(0);
+}
+function calcFin(){
+  const mau=+document.getElementById('sl-mau').value;
+  const avg=+document.getElementById('sl-avg').value;
+  const fee=+document.getElementById('sl-fee').value/100;
+  const proPct=+document.getElementById('sl-pro').value/100;
+  const price=+document.getElementById('sl-price').value;
+  const growth=+document.getElementById('sl-growth').value/100;
+  const cost=+document.getElementById('sl-cost').value;
+
+  document.getElementById('v-mau').textContent=mau.toLocaleString('pt-BR');
+  document.getElementById('v-avg').textContent='R$ '+avg;
+  document.getElementById('v-fee').textContent=((fee)*100).toFixed(1).replace('.',',')+'%';
+  document.getElementById('v-pro').textContent=Math.round(proPct*100)+'%';
+  document.getElementById('v-price').textContent='R$ '+price;
+  document.getElementById('v-growth').textContent=Math.round(growth*100)+'%';
+  document.getElementById('v-cost').textContent=fmt(cost);
+
+  const vol=mau*avg;
+  const feeRev=vol*fee;
+  const proRev=mau*proPct*price;
+  const total=feeRev+proRev;
+  const ebitda=total-cost;
+  const margin=total>0?(ebitda/total*100):0;
+
+  document.getElementById('fk-vol').textContent=fmt(vol);
+  document.getElementById('fk-vol-sub').textContent=mau.toLocaleString('pt-BR')+' × R$'+avg;
+  document.getElementById('fk-fee').textContent=fmt(feeRev);
+  document.getElementById('fk-fee-sub').textContent=((fee*100).toFixed(1))+'% de '+fmt(vol);
+  document.getElementById('fk-pro').textContent=fmt(proRev);
+  document.getElementById('fk-pro-sub').textContent=Math.round(mau*proPct)+' × R$'+price;
+  document.getElementById('fk-total').textContent=fmt(total);
+  document.getElementById('fk-total-sub').textContent='bruta mensal';
+  document.getElementById('fk-cost').textContent=fmt(cost);
+  document.getElementById('fk-ebitda').textContent=fmt(ebitda);
+  document.getElementById('fk-ebitda').className='fin-kpi-v '+(ebitda>=0?'green':'red');
+  document.getElementById('fk-margin').textContent='Margem '+margin.toFixed(1).replace('.',',')+'%';
+
+  const cac=28;
+  const ltv=(total/mau)*12;
+  const ratio=ltv/cac;
+  let beMonth=0;
+  let cum=0,m=mau;
+  for(let i=0;i<24;i++){
+    const r=(m*avg*fee)+(m*proPct*price);
+    cum+=r-cost;
+    if(cum>=0&&beMonth===0) beMonth=i+1;
+    m=Math.round(m*(1+growth));
+  }
+  document.getElementById('fm-cac').textContent='R$ '+cac;
+  document.getElementById('fm-ltv').textContent=fmt(ltv);
+  document.getElementById('fm-ratio').textContent=ratio.toFixed(1)+'x';
+  document.getElementById('fm-ratio').className='fin-metric-v '+(ratio>=3?'green':'');
+  document.getElementById('fm-be').textContent=beMonth>0?'Mês '+beMonth:'> 24m';
+
+  // 12-month projection
+  const months=['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'];
+  const revData=[],ebitdaData=[];
+  let mu=mau;
+  let yr1=0;
+  for(let i=0;i<12;i++){
+    const r=(mu*avg*fee)+(mu*proPct*price);
+    const e=r-cost;
+    revData.push(Math.round(r/1000));
+    ebitdaData.push(Math.round(e/1000));
+    yr1+=r;
+    mu=Math.round(mu*(1+growth));
+  }
+  document.getElementById('fm-yr1').textContent=fmt(yr1);
+  document.getElementById('fm-val').textContent=fmt(yr1*10);
+
+  updateFinChart(months,revData,ebitdaData);
+}
+function updateFinChart(labels,rev,ebitda){
+  const ctx=document.getElementById('fin-chart');
+  if(!ctx) return;
+  if(finChartInst){finChartInst.destroy();finChartInst=null;}
+  finChartInst=new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Receita (R$k)',data:rev,backgroundColor:'rgba(29,158,117,0.5)',borderRadius:4,borderSkipped:false},
+      {label:'EBITDA (R$k)',data:ebitda,backgroundColor:ebitda.map(v=>v>=0?'rgba(29,158,117,0.85)':'rgba(226,75,74,0.7)'),borderRadius:4,borderSkipped:false},
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'rgba(255,255,255,0.4)',font:{size:11}}},tooltip:{backgroundColor:'rgba(18,22,19,0.97)',titleColor:'rgba(255,255,255,0.5)',bodyColor:'#fff',callbacks:{label:ctx=>ctx.dataset.label+': R$ '+ctx.raw+'k'}}},},scales:{x:{grid:{display:false},ticks:{color:'rgba(255,255,255,0.3)',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},callback:v=>'R$'+v+'k'}}}}
+  });
+}
+
+function initMarketTypesPage(){
+  renderMulti();
+  updateRange(1075);
+  renderConditional();
+}
+
+
 /* ══════════════════════════════════════════
    DEMO TOUR SYSTEM
 ══════════════════════════════════════════ */
@@ -835,7 +1542,8 @@ const TOUR_STEPS=[
   {page:'market', title:'Mercado Individual',    body:'Este é o coração da plataforma. O gráfico mostra como a probabilidade evoluiu nos últimos 30 dias — inteligência coletiva em tempo real.',                spotlight:'.prob-box',        btn:'Fazer uma aposta →'},
   {page:'market', title:'Painel de Apostas',     body:'Escolha SIM ou NÃO, defina o valor e veja o cálculo de retorno potencial instantaneamente. O algoritmo LMSR garante preços justos sempre.',              spotlight:'.bet-panel',       btn:'Ver minha conta →'},
   {page:'dashboard',title:'Dashboard do Trader', body:'Acompanhe seu portfólio, P&L acumulado e posições abertas. O ranking mostra sua posição entre todos os traders da plataforma.',                           spotlight:'.kpis',            btn:'Ver pitch de investimento →'},
-  {page:'pitch',  title:'Para Investidores',     body:'Zero concorrentes diretos no Brasil. Polymarket movimenta USD 1 bilhão/mês nos EUA. A Predict chega primeiro no maior mercado emergente do mundo.',       spotlight:'.market-opp',      btn:'Começar agora →'},
+  {page:'markets', title:'5 Tipos de Mercado',       body:'Binário, Multi-resultado, Faixa, Escalar e Condicional. Cada tipo serve um caso de uso diferente — do apostador casual ao analista quantitativo.',  spotlight:'.mt-section',     btn:'Ver modelo financeiro →'},
+  {page:'financial',title:'Modelo Financeiro',        body:'Ajuste os parâmetros e veja a projeção de receita em tempo real. Com 10.000 MAU e R$300 de ticket médio, a Predict projeta R$84k/mês de receita bruta.', spotlight:'.fin-kpis',       btn:'Ver pitch de investimento →'},
   {page:'onboard',title:'Cadastro em 3 passos',  body:'CPF, dados básicos e PIX. Em menos de 3 minutos o usuário está apostando. Zero fricção — é o que diferencia a Predict de qualquer fintech tradicional.', spotlight:'.ob-card',         btn:'Reiniciar tour'},
 ];
 
@@ -902,7 +1610,7 @@ function renderTourStep(){
   // navigate
   showPage(s.page, null);
   // sync nav tab highlight
-  const tabMap={home:0,listing:1,market:2,dashboard:3,pitch:4,onboard:5};
+  const tabMap={home:0,listing:1,market:2,dashboard:3,markets:4,financial:5,pitch:6,onboard:7};
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   const tab=document.querySelectorAll('.nav-tab')[tabMap[s.page]];
   if(tab) tab.classList.add('active');
