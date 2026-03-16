@@ -1541,6 +1541,259 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <script>
+
+/* ══════════════════════════════════════════════════════════════
+   API CLIENT — connects frontend to localhost:3001
+   ══════════════════════════════════════════════════════════════ */
+const API_BASE = 'https://baculiform-pachydermatously-kylie.ngrok-free.dev/api';
+let AUTH_TOKEN = localStorage.getItem('predict_token') || null;
+let CURRENT_USER = JSON.parse(localStorage.getItem('predict_user') || 'null');
+let CURRENT_MARKET_ID = null;
+
+async function apiReq(method, path, body) {
+  try {
+    const res = await fetch(API_BASE + path, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+        ...(AUTH_TOKEN ? { Authorization: 'Bearer ' + AUTH_TOKEN } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return await res.json();
+  } catch (e) {
+    console.warn('API offline, using demo data:', e.message);
+    return null;
+  }
+}
+
+function setAuth(user, token) {
+  AUTH_TOKEN = token;
+  CURRENT_USER = user;
+  localStorage.setItem('predict_token', token);
+  localStorage.setItem('predict_user', JSON.stringify(user));
+  updateUserUI();
+}
+
+function clearAuth() {
+  AUTH_TOKEN = null;
+  CURRENT_USER = null;
+  localStorage.removeItem('predict_token');
+  localStorage.removeItem('predict_user');
+  updateUserUI();
+}
+
+function updateUserUI() {
+  const loginBtn = document.querySelector('[data-page="onboard"]');
+  if (loginBtn) {
+    loginBtn.textContent = CURRENT_USER ? (CURRENT_USER.displayName || 'Conta') : 'Entrar';
+  }
+  // Update balance display if on dashboard
+  const balEl = document.getElementById('user-balance');
+  if (balEl && CURRENT_USER) {
+    balEl.textContent = 'R$ ' + parseFloat(CURRENT_USER.balancePlay).toLocaleString('pt-BR', {minimumFractionDigits:2});
+  }
+}
+
+/* ── MARKET DATA: API-first, fallback to hardcoded ── */
+async function loadMarketsFromAPI() {
+  const data = await apiReq('GET', '/markets?limit=20');
+  if (!data || !data.markets) return null;
+
+  return data.markets.map(m => ({
+    id: m.id,
+    q: m.title,
+    cat: mapCategory(m.category),
+    icon: catIcon[mapCategory(m.category)] || '📊',
+    yes: Math.round((m.prices?.find(p => p.outcomeId === 'yes')?.probability || 0.5) * 100),
+    vol: 'R$ ' + formatVol(parseFloat(m.totalVolume || 0)),
+    closes: formatDate(m.resolutionDate),
+    bg: catBg[mapCategory(m.category)] || 'rgba(29,158,117,0.1)',
+    rawData: m,
+  }));
+}
+
+function mapCategory(cat) {
+  const map = { economics: 'econ', sports: 'sport', politics: 'pol', crypto: 'crypto' };
+  return map[cat] || 'other';
+}
+
+function formatVol(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(0) + 'k';
+  return n.toFixed(0);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+}
+
+const catIcon = { econ:'📈', sport:'⚽', pol:'🗳', crypto:'₿', other:'💡' };
+const catBg   = { econ:'rgba(186,117,23,0.1)', sport:'rgba(29,158,117,0.1)', pol:'rgba(92,168,245,0.1)', crypto:'rgba(157,150,240,0.1)', other:'rgba(255,255,255,0.05)' };
+
+/* ── INIT: load real markets on page load ── */
+async function initMarketsData() {
+  const apiMarkets = await loadMarketsFromAPI();
+  if (apiMarkets && apiMarkets.length > 0) {
+    // Replace hardcoded MARKETS with real data
+    MARKETS.length = 0;
+    apiMarkets.forEach(m => MARKETS.push(m));
+    renderCards(MARKETS, document.getElementById('featured-grid'));
+    renderRows(MARKETS);
+    showAPIStatus(true);
+    console.log('✅ Loaded', MARKETS.length, 'markets from API');
+  } else {
+    showAPIStatus(false);
+    console.log('ℹ️ Using demo data (API offline)');
+  }
+}
+async function handleLogin() {
+  const emailEl = document.querySelector('#page-onboard input[type="email"]');
+  const passEl  = document.querySelector('#page-onboard input[type="password"]');
+  if (!emailEl || !passEl) return;
+  const result = await apiLogin(emailEl.value, passEl.value);
+  if (result.success) {
+    showToast('✅ Bem-vindo, ' + result.user.displayName + '!');
+    showPage('dashboard', null);
+  } else {
+    showToast('❌ ' + result.error);
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('api-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'api-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1D1F1E;border:1px solid rgba(29,158,117,0.3);color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;z-index:9999;transition:opacity 0.3s;font-family:var(--font-body)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 3000);
+}
+
+
+function showAPIStatus(connected) {
+  const ticker = document.querySelector('.ticker-inner');
+  if (!ticker) return;
+  const badge = document.createElement('span');
+  badge.style.cssText = 'background:' + (connected ? 'rgba(29,158,117,0.2)' : 'rgba(226,75,74,0.2)') +
+    ';color:' + (connected ? '#1D9E75' : '#E24B4A') +
+    ';padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600;margin-right:12px';
+  badge.textContent = connected ? '🟢 API CONECTADA' : '🔴 MODO DEMO';
+  ticker.prepend(badge);
+}
+
+/* ── LOGIN/REGISTER via API ── */
+async function apiLogin(email, password) {
+  const data = await apiReq('POST', '/auth/login', { email, password });
+  if (data && data.tokens) {
+    setAuth(data.user, data.tokens.accessToken);
+    return { success: true, user: data.user };
+  }
+  return { success: false, error: data?.error || 'Erro ao fazer login' };
+}
+
+async function apiRegister(email, password, displayName) {
+  const data = await apiReq('POST', '/auth/register', { email, password, displayName });
+  if (data && data.tokens) {
+    setAuth(data.user, data.tokens.accessToken);
+    return { success: true, user: data.user };
+  }
+  return { success: false, error: data?.error || 'Erro ao criar conta' };
+}
+
+/* ── PLACE BET via API ── */
+async function apiBet(marketId, outcomeId, amount) {
+  if (!AUTH_TOKEN) {
+    showPage('onboard', null);
+    return { success: false, error: 'Faça login primeiro' };
+  }
+  const data = await apiReq('POST', '/trades', {
+    marketId, outcomeId, side: 'buy', amount, isPlayMoney: true,
+  });
+  if (data && data.trade) {
+    // Update local user balance
+    if (CURRENT_USER) {
+      CURRENT_USER.balancePlay = data.balanceAfter;
+      localStorage.setItem('predict_user', JSON.stringify(CURRENT_USER));
+      updateUserUI();
+    }
+    // Refresh market price
+    await refreshMarketPrice(marketId);
+    return { success: true, trade: data };
+  }
+  return { success: false, error: data?.error || 'Erro ao registrar aposta' };
+}
+
+/* ── REFRESH MARKET PRICE after bet ── */
+async function refreshMarketPrice(marketId) {
+  const data = await apiReq('GET', '/markets/' + marketId);
+  if (!data) return;
+  const yesPrice = data.prices?.find(p => p.outcomeId === 'yes')?.probability || 0.5;
+  // Update probability display
+  const probEl = document.getElementById('prob-pct');
+  if (probEl) probEl.textContent = Math.round(yesPrice * 100) + '%';
+  const barEl = document.querySelector('.prob-bar-fill');
+  if (barEl) barEl.style.width = Math.round(yesPrice * 100) + '%';
+  // Update MARKETS array
+  const mkt = MARKETS.find(m => m.id === marketId);
+  if (mkt) mkt.yes = Math.round(yesPrice * 100);
+}
+
+/* ── LOAD PORTFOLIO ── */
+async function loadPortfolio() {
+  if (!AUTH_TOKEN) return;
+  const data = await apiReq('GET', '/users/me/portfolio');
+  if (!data || !Array.isArray(data)) return;
+
+  const posEl = document.getElementById('positions-list');
+  if (!posEl) return;
+
+  if (data.length === 0) {
+    posEl.innerHTML = '<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.3);font-size:13px">Sem posições abertas</div>';
+    return;
+  }
+
+  posEl.innerHTML = data.map(pos => {
+    const pnl = parseFloat(pos.unrealizedPnl || 0);
+    const pnlColor = pnl >= 0 ? '#1D9E75' : '#E24B4A';
+    const pnlSign = pnl >= 0 ? '+' : '';
+    return `<div class="pos-row">
+      <div class="pos-body">
+        <div class="pos-q">${pos.market?.title?.slice(0,60) || 'Mercado'}</div>
+        <div class="pos-meta">${parseFloat(pos.shares).toFixed(2)} ações · ${pos.outcomeId.toUpperCase()} · investido R$${parseFloat(pos.totalInvested).toFixed(2)}</div>
+      </div>
+      <div class="pos-pnl" style="color:${pnlColor}">${pnlSign}R$ ${Math.abs(pnl).toFixed(2)}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── LOAD LEADERBOARD ── */
+async function loadLeaderboard() {
+  const data = await apiReq('GET', '/leaderboard');
+  if (!data || !Array.isArray(data)) return;
+
+  const el = document.getElementById('leaderboard-list');
+  if (!el) return;
+
+  el.innerHTML = data.slice(0,10).map((u, i) => {
+    const isYou = CURRENT_USER && u.id === CURRENT_USER.id;
+    return `<div class="lb-row${isYou ? ' lb-you' : ''}">
+      <div class="lb-rank">${i+1}</div>
+      <div class="lb-name">${u.displayName}${isYou ? ' <span style="color:var(--teal);font-size:10px">(Você)</span>' : ''}</div>
+      <div class="lb-score">${u.calibScore ? u.calibScore.toFixed(1) : '—'}</div>
+      <div class="lb-pnl" style="color:${parseFloat(u.totalPnl)>=0?'#1D9E75':'#E24B4A'}">
+        ${parseFloat(u.totalPnl)>=0?'+':''}R$ ${Math.abs(parseFloat(u.totalPnl)).toLocaleString('pt-BR',{minimumFractionDigits:2})}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 const MARKETS=[
   {id:1,q:"Selic será cortada na próxima reunião do COPOM em agosto 2025?",cat:"econ",icon:"📈",yes:67,vol:"R$ 284k",closes:"06 ago",bg:"rgba(186,117,23,0.1)"},
   {id:2,q:"Flamengo será campeão do Brasileirão 2025?",cat:"sport",icon:"⚽",yes:41,vol:"R$ 192k",closes:"10 dez",bg:"rgba(29,158,117,0.1)"},
@@ -1562,7 +1815,7 @@ function renderCards(markets,el,lim=6){
   el.innerHTML='';
   markets.slice(0,lim).forEach(m=>{
     const no=100-m.yes;
-    el.innerHTML+=`<div class="mcard" onclick="openMarket()"><span class="mcat ${catCls[m.cat]}">${catLbl[m.cat]}</span><div class="mq">${m.q}</div><div class="mbar"><div class="mbar-y" style="width:${m.yes}%"></div><div class="mbar-n" style="width:${no}%"></div></div><div class="mprobs"><span class="mp-y">SIM ${m.yes}%</span><span class="mp-n">NÃO ${no}%</span></div><div class="mfoot"><div><div class="mvol">Vol: <b>${m.vol}</b></div></div><button class="btn-bet-xs">Apostar →</button></div></div>`;
+    el.innerHTML+=`<div class="mcard" onclick="openMarket('${m.id}')"><span class="mcat ${catCls[m.cat]}">${catLbl[m.cat]}</span><div class="mq">${m.q}</div><div class="mbar"><div class="mbar-y" style="width:${m.yes}%"></div><div class="mbar-n" style="width:${no}%"></div></div><div class="mprobs"><span class="mp-y">SIM ${m.yes}%</span><span class="mp-n">NÃO ${no}%</span></div><div class="mfoot"><div><div class="mvol">Vol: <b>${m.vol}</b></div></div><button class="btn-bet-xs">Apostar →</button></div></div>`;
   });
 }
 function renderRows(markets){
@@ -1571,7 +1824,7 @@ function renderRows(markets){
   el.innerHTML='';
   markets.forEach(m=>{
     const no=100-m.yes;
-    el.innerHTML+=`<div class="mrow" onclick="openMarket()"><div class="mrow-icon" style="background:${m.bg}">${m.icon}</div><div class="mrow-body"><div class="mrow-q">${m.q}</div><div class="mrow-meta">${catLbl[m.cat]} · Encerra ${m.closes}</div></div><div class="mrow-bar"><div class="mrow-track"><div class="mrow-fill" style="width:${m.yes}%"></div></div><div class="mrow-pcts"><span class="mry">SIM ${m.yes}%</span><span class="mrn">NÃO ${no}%</span></div></div><div class="mrow-vol"><b>${m.vol}</b>volume</div></div>`;
+    el.innerHTML+=`<div class="mrow" onclick="openMarket('${m.id}')"><div class="mrow-icon" style="background:${m.bg}">${m.icon}</div><div class="mrow-body"><div class="mrow-q">${m.q}</div><div class="mrow-meta">${catLbl[m.cat]} · Encerra ${m.closes}</div></div><div class="mrow-bar"><div class="mrow-track"><div class="mrow-fill" style="width:${m.yes}%"></div></div><div class="mrow-pcts"><span class="mry">SIM ${m.yes}%</span><span class="mrn">NÃO ${no}%</span></div></div><div class="mrow-vol"><b>${m.vol}</b>volume</div></div>`;
   });
 }
 function filterM(cat,btn){
@@ -1579,7 +1832,20 @@ function filterM(cat,btn){
   btn.classList.add('active');
   renderRows(cat==='all'?MARKETS:MARKETS.filter(m=>m.cat===cat));
 }
-function openMarket(){showPage('market',null);}
+function openMarket(marketId){
+  CURRENT_MARKET_ID = marketId || (MARKETS[0]?.id || null);
+  const mkt = MARKETS.find(m => m.id === CURRENT_MARKET_ID);
+  if (mkt) {
+    // Update market page with real data
+    const titleEl = document.querySelector('.prob-box h2, .market-title');
+    if (titleEl) titleEl.textContent = mkt.q;
+    const probEl = document.getElementById('prob-pct');
+    if (probEl) probEl.textContent = mkt.yes + '%';
+    const barEl = document.querySelector('.prob-bar-fill');
+    if (barEl) barEl.style.width = mkt.yes + '%';
+  }
+  showPage('market',null);
+}
 
 function showPage(id,btn,closeMobile){
   // hide all pages
@@ -1613,6 +1879,7 @@ function showPage(id,btn,closeMobile){
   if(id==='calibration') setTimeout(initCalibCharts,100);
   if(id==='market') setTimeout(injectAISummary,400);
   if(id==='share') launchConfetti(true);
+  if(id==='dashboard') { setTimeout(loadPortfolio,200); setTimeout(loadLeaderboard,300); }
 }
 function toggleMenu(){
   document.getElementById('mobile-menu').classList.toggle('open');
@@ -1635,7 +1902,10 @@ function setBet(side,btn){
 function setAmt(v){document.getElementById('bet-amt').value=v;calcBet();}
 function calcBet(){
   const amt=parseFloat(document.getElementById('bet-amt').value)||0;
-  const price=betSide==='sim'?0.67:0.33;
+  // Use real price from API if available
+  const mkt=MARKETS.find(m=>m.id===CURRENT_MARKET_ID);
+  const yesProb = mkt ? mkt.yes/100 : 0.67;
+  const price=betSide==='sim'?yesProb:(1-yesProb);
   const shares=amt/price;
   const profit=shares-amt;
   document.getElementById('bc-p').textContent='R$ '+price.toFixed(2);
@@ -1694,6 +1964,9 @@ function initGrowthChart(){
 renderCards(MARKETS,document.getElementById('featured-grid'));
 renderRows(MARKETS);
 calcBet();
+// Load real data from API (replaces hardcoded data if API is running)
+initMarketsData();
+updateUserUI();
 
 
 /* ══ BINARY MARKET ══ */
