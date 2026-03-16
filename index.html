@@ -1488,7 +1488,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
         <div class="ob-feat"><div class="ob-feat-ico">⚡</div>Depósito e saque via PIX instantâneo</div>
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
-      <button class="ob-skip" onclick="showPage('home',null)">Já tenho conta — entrar</button>
+      <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
     </div>
 
     <!-- step 1: dados pessoais -->
@@ -1497,11 +1497,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <div class="ob-h">Seus dados</div>
       <p class="ob-p">Crie sua conta em menos de 1 minuto.</p>
       <div class="kyc-form">
-        <div><div class="kyc-label">Nome completo</div><input class="kyc-input" type="text" placeholder="Pedro Marques Neto"></div>
-        <div><div class="kyc-label">E-mail</div><input class="kyc-input" type="email" placeholder="pedro@email.com"></div>
-        <div><div class="kyc-label">Senha</div><input class="kyc-input" type="password" placeholder="Mínimo 8 caracteres"></div>
+        <div><div class="kyc-label">Nome completo</div><input class="kyc-input" id="ob-input-name" type="text" placeholder="Pedro Marques Neto"></div>
+        <div><div class="kyc-label">E-mail</div><input class="kyc-input" id="ob-input-email" type="email" placeholder="pedro@email.com"></div>
+        <div><div class="kyc-label">Senha</div><input class="kyc-input" id="ob-input-password" type="password" placeholder="Mínimo 8 caracteres"></div>
       </div>
-      <button class="ob-btn" onclick="obStep(2)">Continuar →</button>
+      <button class="ob-btn" onclick="obRegister()">Criar conta →</button>
       <button class="ob-skip" onclick="obStep(0)">← Voltar</button>
     </div>
 
@@ -1542,10 +1542,151 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
 <script>
 
+/* ══════════════════════════════════════════════════════
+   API INTEGRATION — connects to real backend via ngrok
+   ══════════════════════════════════════════════════════ */
+const API_BASE = 'https://baculiform-pachydermatously-kylie.ngrok-free.dev/api';
+let authToken = localStorage.getItem('predict_token') || null;
+let currentUser = JSON.parse(localStorage.getItem('predict_user') || 'null');
+
+// ── API helper ────────────────────────────────────────
+async function api(method, path, body) {
+  try {
+    const res = await fetch(API_BASE + path, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+        ...(authToken ? { Authorization: 'Bearer ' + authToken } : {})
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return await res.json();
+  } catch (err) {
+    console.warn('API error:', err.message);
+    return null;
+  }
+}
+
+// ── Load real markets from API ────────────────────────
+async function loadRealMarkets() {
+  const data = await api('GET', '/markets');
+  if (!data || !data.markets) return;
+
+  // Update the MARKETS array with real data
+  const catMap = { economics: 'econ', sports: 'sport', politics: 'pol', crypto: 'crypto' };
+  const iconMap = { economics: '📈', sports: '⚽', politics: '🗳', crypto: '₿', other: '💡' };
+
+  data.markets.forEach((m, i) => {
+    if (i < MARKETS.length) {
+      const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
+      MARKETS[i].q     = m.title;
+      MARKETS[i].yes   = Math.round((yesPrice?.probability || 0.5) * 100);
+      MARKETS[i].cat   = catMap[m.category] || 'other';
+      MARKETS[i].icon  = iconMap[m.category] || '💡';
+      MARKETS[i].apiId = m.id;
+      MARKETS[i].vol   = 'R$ ' + Math.round(parseFloat(m.totalVolume || 0) / 1000) + 'k';
+    }
+  });
+
+  // Also add new markets from API that aren't in array
+  if (data.markets.length > MARKETS.length) {
+    for (let i = MARKETS.length; i < data.markets.length; i++) {
+      const m = data.markets[i];
+      const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
+      MARKETS.push({
+        id: i + 1,
+        q: m.title,
+        cat: catMap[m.category] || 'other',
+        icon: iconMap[m.category] || '💡',
+        yes: Math.round((yesPrice?.probability || 0.5) * 100),
+        vol: 'R$ ' + Math.round(parseFloat(m.totalVolume || 0) / 1000) + 'k',
+        closes: new Date(m.resolutionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+        bg: 'rgba(29,158,117,0.1)',
+        apiId: m.id,
+      });
+    }
+  }
+
+  // Re-render the listing page if visible
+  const listing = document.getElementById('page-listing');
+  if (listing && listing.classList.contains('active')) {
+    renderListing();
+  }
+
+  // Update ticker
+  updateTicker();
+
+  console.log('✅ Loaded', data.markets.length, 'real markets from API');
+}
+
+// ── Real login ────────────────────────────────────────
+async function apiLogin(email, password) {
+  const data = await api('POST', '/auth/login', { email, password });
+  if (data?.tokens?.accessToken) {
+    authToken = data.tokens.accessToken;
+    currentUser = data.user;
+    localStorage.setItem('predict_token', authToken);
+    localStorage.setItem('predict_user', JSON.stringify(data.user));
+    console.log('✅ Logged in as', data.user.displayName);
+    return { ok: true, user: data.user };
+  }
+  return { ok: false, error: data?.error || 'Login failed' };
+}
+
+// ── Real register ─────────────────────────────────────
+async function apiRegister(email, password, displayName) {
+  const data = await api('POST', '/auth/register', { email, password, displayName });
+  if (data?.tokens?.accessToken) {
+    authToken = data.tokens.accessToken;
+    currentUser = data.user;
+    localStorage.setItem('predict_token', authToken);
+    localStorage.setItem('predict_user', JSON.stringify(data.user));
+    return { ok: true, user: data.user };
+  }
+  return { ok: false, error: data?.error || 'Register failed' };
+}
+
+// ── Real bet ──────────────────────────────────────────
+async function apiPlaceBet(marketApiId, outcomeId, amount) {
+  if (!authToken) return { ok: false, error: 'Faça login para apostar' };
+  const data = await api('POST', '/trades', {
+    marketId: marketApiId,
+    outcomeId,
+    side: 'buy',
+    amount: parseFloat(amount),
+    isPlayMoney: true,
+  });
+  if (data?.trade) {
+    // Update user balance
+    if (currentUser) {
+      currentUser.balancePlay = data.balanceAfter;
+      localStorage.setItem('predict_user', JSON.stringify(currentUser));
+    }
+    return { ok: true, trade: data.trade, priceAfter: data.priceAfter, balanceAfter: data.balanceAfter };
+  }
+  return { ok: false, error: data?.error || 'Bet failed' };
+}
+
+// ── Update nav with real user balance ─────────────────
+function updateNavUser() {
+  if (!currentUser) return;
+  const balEl = document.querySelector('.nav-balance');
+  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay).toFixed(2);
+}
+
+// ── Init: load markets on page load ───────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadRealMarkets();
+  updateNavUser();
+});
+
+
+
 /* ══════════════════════════════════════════════════════════════
    API CLIENT — connects frontend to localhost:3001
    ══════════════════════════════════════════════════════════════ */
-const API_BASE = 'https://baculiform-pachydermatously-kylie.ngrok-free.dev/api';
+
 let AUTH_TOKEN = localStorage.getItem('predict_token') || null;
 let CURRENT_USER = JSON.parse(localStorage.getItem('predict_user') || 'null');
 let CURRENT_MARKET_ID = null;
@@ -1915,11 +2056,68 @@ function calcBet(){
   document.getElementById('bc-pr').style.color=profit>=0?'var(--teal)':'var(--red)';
 }
 function placeBet(){
-  const btn=document.getElementById('bet-btn');
-  const orig=btn.textContent;
-  btn.textContent='✓ Aposta registrada!';
-  btn.style.opacity='0.7';
-  setTimeout(()=>{btn.textContent=orig;btn.style.opacity='1';},2000);
+  // Get bet details
+  var amtEl = document.querySelector('.preset-btn.active') || document.querySelector('.bp-input input');
+  var amount = amtEl ? parseFloat(amtEl.dataset.amount || amtEl.value || 100) : 100;
+  var sideEl = document.querySelector('.side-btn.active');
+  var side   = sideEl ? (sideEl.textContent.includes('SIM') ? 'yes' : 'no') : 'yes';
+  var market = _apiMarketsCache ? _apiMarketsCache[0] : null;
+
+  // If no auth, go to login
+  if (!authToken) {
+    alert('Faça login para apostar!');
+    showPage('onboard', null);
+    return;
+  }
+
+  var btn = document.getElementById('bet-btn');
+  btn.textContent = 'Processando...';
+  btn.style.opacity = '0.7';
+  btn.disabled = true;
+
+  var marketId = market?.raw?.id || null;
+  if (!marketId) {
+    // Use first market from cache
+    fetchMarketsFromAPI().then(function(markets) {
+      _apiMarketsCache = markets;
+      if (markets && markets[0]) {
+        _executeBet(markets[0].raw.id, side, amount, btn);
+      } else {
+        btn.textContent = 'Apostar SIM →';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+        alert('Nenhum mercado disponível');
+      }
+    });
+    return;
+  }
+  _executeBet(marketId, side, amount, btn);
+}
+
+function _executeBet(marketId, side, amount, btn) {
+  apiBet(marketId, side, amount).then(function(result) {
+    btn.textContent = '✓ Aposta confirmada!';
+    btn.style.background = 'rgba(29,158,117,0.5)';
+    btn.disabled = false;
+    // Update balance display
+    var balDisplay = document.querySelector('.bp-balance strong');
+    if (balDisplay) balDisplay.textContent = 'R$' + parseFloat(result.balanceAfter).toFixed(2);
+    // Show toast
+    var shares = parseFloat(result.trade.shares).toFixed(2);
+    var pctAfter = (parseFloat(result.priceAfter)*100).toFixed(1);
+    console.log('✅ Bet placed:', shares, 'shares | new price:', pctAfter + '%');
+    setTimeout(function() {
+      btn.textContent = 'Apostar SIM →';
+      btn.style.opacity = '1';
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 3000);
+  }).catch(function(e) {
+    btn.textContent = 'Apostar SIM →';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+    alert('Erro: ' + e.message);
+  });
 }
 
 let obCurrent=0;
@@ -2419,6 +2617,15 @@ function waSend(){
 }
 
 
+
+/* ══════════════════════════════════════════
+   REAL API CONNECTION
+   ngrok tunnel → localhost:3001
+══════════════════════════════════════════ */
+const API_URL = 'https://baculiform-pachydermatously-kylie.ngrok-free.dev';
+const API_HEADERS = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' };
+
+// Auth state
 /* ══════════════════════════════════════════
    DEMO TOUR SYSTEM
 ══════════════════════════════════════════ */
