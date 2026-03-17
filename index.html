@@ -724,6 +724,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   <div class="nav-right">
     <div class="nav-bal" id="nav-bal-wrap" style="display:none">Saldo: <b id="nav-bal-amount">R$ 0,00</b></div>
     <button class="btn-dep" onclick="showPage('onboard',null)" style="display:none">+ Depositar</button>
+    <button id="lang-btn" onclick="toggleLang()" style="background:none;border:1px solid var(--dark-border);color:rgba(255,255,255,0.5);padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-left:4px">EN</button>
     <div class="hamburger" onclick="toggleMenu()" id="hamburger">
       <span></span><span></span><span></span>
     </div>
@@ -1996,52 +1997,47 @@ async function api(method, path, body) {
 // ── Load real markets from API ────────────────────────
 async function loadRealMarkets() {
   const data = await api('GET', '/markets');
-  if (!data || !data.markets) return;
 
-  // Update the MARKETS array with real data
-  const catMap = { economics: 'econ', sports: 'sport', politics: 'pol', crypto: 'crypto' };
+  // Clear MARKETS — API is the single source of truth, no hardcoded fallback
+  MARKETS.length = 0;
+
+  if (!data || !data.markets || data.markets.length === 0) {
+    // Empty state — clear the UI
+    const featGrid = document.getElementById('featured-grid');
+    if (featGrid) featGrid.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px;text-align:center;grid-column:1/-1">Nenhum mercado disponível de momento.</div>';
+    const rowsEl = document.getElementById('market-rows');
+    if (rowsEl) rowsEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px;text-align:center">Nenhum mercado disponível de momento.</div>';
+    const listCount = document.getElementById('list-count');
+    if (listCount) listCount.textContent = '0 mercados';
+    if (typeof updateTicker === 'function') updateTicker();
+    console.log('✅ No markets from API — listing cleared');
+    return;
+  }
+
+  const catMap  = { economics: 'econ', sports: 'sport', politics: 'pol', crypto: 'crypto' };
   const iconMap = { economics: '📈', sports: '⚽', politics: '🗳', crypto: '₿', other: '💡' };
 
   data.markets.forEach((m, i) => {
-    if (i < MARKETS.length) {
-      const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
-      MARKETS[i].q     = m.title;
-      MARKETS[i].yes   = Math.round((yesPrice?.probability || 0.5) * 100);
-      MARKETS[i].cat   = catMap[m.category] || 'other';
-      MARKETS[i].icon  = iconMap[m.category] || '💡';
-      MARKETS[i].apiId = m.id;
-      MARKETS[i].vol   = 'R$ ' + Math.round(parseFloat(m.totalVolume || 0) / 1000) + 'k';
-    }
+    const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
+    const yesPct   = Math.round((yesPrice?.probability || 0.5) * 100);
+    MARKETS.push({
+      id:     i + 1,
+      q:      m.title,
+      cat:    catMap[m.category] || 'other',
+      icon:   iconMap[m.category] || '💡',
+      yes:    yesPct,
+      vol:    'R$ ' + Math.round(parseFloat(m.totalVolume || 0) / 1000) + 'k',
+      closes: new Date(m.resolutionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+      bg:     'rgba(29,158,117,0.1)',
+      apiId:  m.id,
+    });
   });
 
-  // Also add new markets from API that aren't in array
-  if (data.markets.length > MARKETS.length) {
-    for (let i = MARKETS.length; i < data.markets.length; i++) {
-      const m = data.markets[i];
-      const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
-      MARKETS.push({
-        id: i + 1,
-        q: m.title,
-        cat: catMap[m.category] || 'other',
-        icon: iconMap[m.category] || '💡',
-        yes: Math.round((yesPrice?.probability || 0.5) * 100),
-        vol: 'R$ ' + Math.round(parseFloat(m.totalVolume || 0) / 1000) + 'k',
-        closes: new Date(m.resolutionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
-        bg: 'rgba(29,158,117,0.1)',
-        apiId: m.id,
-      });
-    }
-  }
-
-  // Re-render the listing page if visible
-  const listing = document.getElementById('page-listing');
-  if (listing && listing.classList.contains('active')) {
-    renderListing();
-  }
-
-  // Update ticker
-  updateTicker();
-
+  // Render both views
+  const featGrid = document.getElementById('featured-grid');
+  if (featGrid && typeof renderCards === 'function') renderCards(MARKETS, featGrid);
+  if (typeof renderRows === 'function') renderRows(MARKETS);
+  if (typeof updateTicker === 'function') updateTicker();
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
 
@@ -2227,6 +2223,159 @@ async function showUserDetail(userId, userName) {
   }
 }
 
+
+// ── LANGUAGE SUPPORT ────────────────────────────────
+var currentLang = 'pt';
+
+const TRANSLATIONS = {
+  pt: {
+    // Nav
+    'nav.home':        'Início',
+    'nav.market':      'Mercado',
+    'nav.account':     'Minha Conta',
+    'nav.experience':  'Experiência',
+    'nav.foryou':      'Para Você',
+    'nav.create':      'Criar Mercado',
+    'nav.enter':       'Entrar',
+    // Onboard
+    'ob.welcome':      'Bem-vindo à Predict',
+    'ob.tagline':      'O primeiro mercado de probabilidades do Brasil. Aposte com conhecimento, não com sorte.',
+    'ob.create_btn':   'Criar conta gratuita →',
+    'ob.login_link':   'Já tenho conta — entrar',
+    'ob.enter_btn':    'Entrar →',
+    'ob.back':         '← Voltar',
+    'ob.email':        'E-mail',
+    'ob.password':     'Senha',
+    'ob.name':         'Nome completo',
+    'ob.create_acc':   'Criar conta →',
+    // Listing
+    'listing.title':   'Explorar Mercados',
+    'listing.empty':   'Nenhum mercado disponível de momento.',
+    // Bet
+    'bet.yes':         'SIM',
+    'bet.no':          'NÃO',
+    'bet.volume':      'Vol:',
+    'bet.closes':      'Encerra',
+    'bet.btn':         'Apostar',
+    // General
+    'beta.badge':      'BETA',
+    'error.credentials': 'Email ou senha incorretos',
+  },
+  en: {
+    // Nav
+    'nav.home':        'Home',
+    'nav.market':      'Market',
+    'nav.account':     'My Account',
+    'nav.experience':  'Experience',
+    'nav.foryou':      'For You',
+    'nav.create':      'Create Market',
+    'nav.enter':       'Sign In',
+    // Onboard
+    'ob.welcome':      'Welcome to Predict',
+    'ob.tagline':      'Brazil\'s first prediction market. Bet with knowledge, not luck.',
+    'ob.create_btn':   'Create free account →',
+    'ob.login_link':   'Already have an account — sign in',
+    'ob.enter_btn':    'Sign In →',
+    'ob.back':         '← Back',
+    'ob.email':        'Email',
+    'ob.password':     'Password',
+    'ob.name':         'Full name',
+    'ob.create_acc':   'Create account →',
+    // Listing
+    'listing.title':   'Explore Markets',
+    'listing.empty':   'No markets available at the moment.',
+    // Bet
+    'bet.yes':         'YES',
+    'bet.no':          'NO',
+    'bet.volume':      'Vol:',
+    'bet.closes':      'Closes',
+    'bet.btn':         'Bet',
+    // General
+    'beta.badge':      'BETA',
+    'error.credentials': 'Incorrect email or password',
+  }
+};
+
+function t(key) {
+  return TRANSLATIONS[currentLang]?.[key] || TRANSLATIONS['pt'][key] || key;
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'pt' ? 'en' : 'pt';
+  const btn = document.getElementById('lang-btn');
+  if (btn) btn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+  applyTranslations();
+}
+
+function applyTranslations() {
+  const lang = currentLang;
+  // Nav tabs
+  const navMap = {
+    'home':       t('nav.home'),
+    'market':     t('nav.market'),
+    'dashboard':  t('nav.account'),
+    'experience': t('nav.experience'),
+    'pitch':      t('nav.foryou'),
+    'create':     t('nav.create'),
+    'onboard':    t('nav.enter'),
+  };
+  document.querySelectorAll('.nav-tab[data-page]').forEach(btn => {
+    const page = btn.dataset.page;
+    if (navMap[page] && btn.id !== 'nav-dashboard') {
+      btn.textContent = navMap[page];
+    }
+  });
+  // nav-dashboard (dynamic — keep · name if logged in)
+  const dashBtn = document.getElementById('nav-dashboard');
+  if (dashBtn) {
+    if (currentUser) {
+      const parts = (currentUser.displayName || '').split(' ');
+      const name  = parts.length >= 2 ? parts[1] : parts[0];
+      dashBtn.textContent = t('nav.account') + ' · ' + name;
+    } else {
+      dashBtn.textContent = t('nav.account');
+    }
+  }
+  // nav-entrar
+  const entrarBtn = document.getElementById('nav-entrar');
+  if (entrarBtn) entrarBtn.textContent = t('nav.enter');
+
+  // Onboard page
+  const obWelcome = document.querySelector('#ob-0 .ob-h');
+  if (obWelcome) obWelcome.textContent = t('ob.welcome');
+  const obTagline = document.querySelector('#ob-0 .ob-p');
+  if (obTagline) obTagline.textContent = t('ob.tagline');
+  const obCreateBtn = document.querySelector('#ob-0 .ob-btn');
+  if (obCreateBtn) obCreateBtn.textContent = t('ob.create_btn');
+  const obLoginLink = document.querySelector('#ob-0 .ob-skip');
+  if (obLoginLink) obLoginLink.textContent = t('ob.login_link');
+  const obEnterBtn = document.querySelector('[onclick="handleLogin()"]');
+  if (obEnterBtn) obEnterBtn.textContent = t('ob.enter_btn');
+  const obErrorEl = document.querySelector('.kyc-label[for-field="email"]');
+
+  // Labels
+  document.querySelectorAll('.kyc-label').forEach(el => {
+    const txt = el.textContent.trim();
+    if (txt === 'E-mail' || txt === 'Email') el.textContent = t('ob.email');
+    if (txt === 'Senha' || txt === 'Password') el.textContent = t('ob.password');
+    if (txt === 'Nome completo' || txt === 'Full name') el.textContent = t('ob.name');
+  });
+
+  // Listing title
+  const listTitle = document.querySelector('#page-listing h2, .list-hero h2');
+  if (listTitle) listTitle.textContent = t('listing.title');
+
+  // Re-render markets with new language
+  if (MARKETS.length > 0) {
+    if (typeof renderRows === 'function') renderRows(MARKETS);
+    const featGrid = document.getElementById('featured-grid');
+    if (featGrid && typeof renderCards === 'function') renderCards(MARKETS, featGrid);
+  }
+  
+  // Store preference
+  try { localStorage.setItem('predict_lang', lang); } catch(e) {}
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -2251,6 +2400,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   loadRealMarkets();
   updateNavUser();
+  // Restore language preference
+  try {
+    const savedLang = localStorage.getItem('predict_lang');
+    if (savedLang && savedLang !== 'pt') { currentLang = savedLang; toggleLang(); }
+  } catch(e) {}
 });
 
 
@@ -2348,19 +2502,8 @@ const catBg   = { econ:'rgba(186,117,23,0.1)', sport:'rgba(29,158,117,0.1)', pol
 
 /* ── INIT: load real markets on page load ── */
 async function initMarketsData() {
-  const apiMarkets = await loadMarketsFromAPI();
-  if (apiMarkets && apiMarkets.length > 0) {
-    // Replace hardcoded MARKETS with real data
-    MARKETS.length = 0;
-    apiMarkets.forEach(m => MARKETS.push(m));
-    renderCards(MARKETS, document.getElementById('featured-grid'));
-    renderRows(MARKETS);
-    showAPIStatus(true);
-    console.log('✅ Loaded', MARKETS.length, 'markets from API');
-  } else {
-    showAPIStatus(false);
-    console.log('ℹ️ Using demo data (API offline)');
-  }
+  // Delegate to loadRealMarkets — single source of truth
+  await loadRealMarkets();
 }
 async function handleLogin() {
   const emailEl = document.getElementById('ob-login-email');
@@ -2539,20 +2682,7 @@ async function loadLeaderboard() {
   }).join('');
 }
 
-const MARKETS=[
-  {id:1,q:"Selic será cortada na próxima reunião do COPOM em agosto 2025?",cat:"econ",icon:"📈",yes:67,vol:"R$ 284k",closes:"06 ago",bg:"rgba(186,117,23,0.1)"},
-  {id:2,q:"Flamengo será campeão do Brasileirão 2025?",cat:"sport",icon:"⚽",yes:41,vol:"R$ 192k",closes:"10 dez",bg:"rgba(29,158,117,0.1)"},
-  {id:3,q:"IPCA ficará abaixo de 4% ao final de 2026?",cat:"econ",icon:"📊",yes:72,vol:"R$ 156k",closes:"15 jan",bg:"rgba(186,117,23,0.1)"},
-  {id:4,q:"Bitcoin vai superar USD 200.000 em 2026?",cat:"crypto",icon:"₿",yes:38,vol:"R$ 143k",closes:"31 dez",bg:"rgba(83,74,183,0.1)"},
-  {id:5,q:"Brasil crescerá mais de 2,5% do PIB em 2026?",cat:"econ",icon:"🏦",yes:54,vol:"R$ 128k",closes:"31 mar",bg:"rgba(186,117,23,0.1)"},
-  {id:6,q:"Lula será reeleito nas eleições de 2026?",cat:"pol",icon:"🗳",yes:48,vol:"R$ 319k",closes:"01 nov",bg:"rgba(24,95,165,0.1)"},
-  {id:7,q:"Palmeiras vai vencer a Libertadores 2026?",cat:"sport",icon:"🏆",yes:29,vol:"R$ 87k",closes:"22 nov",bg:"rgba(29,158,117,0.1)"},
-  {id:8,q:"Dólar fechará acima de R$ 6,50 em dezembro 2025?",cat:"econ",icon:"💵",yes:44,vol:"R$ 74k",closes:"31 dez",bg:"rgba(186,117,23,0.1)"},
-  {id:9,q:"Ethereum vai superar R$ 20.000 até junho 2026?",cat:"crypto",icon:"⟠",yes:51,vol:"R$ 68k",closes:"30 jun",bg:"rgba(83,74,183,0.1)"},
-  {id:10,q:"Brasil vai à final da Copa do Mundo 2026?",cat:"sport",icon:"🇧🇷",yes:63,vol:"R$ 211k",closes:"14 jul",bg:"rgba(29,158,117,0.1)"},
-  {id:11,q:"Reforma tributária aprovada no senado até 2026?",cat:"pol",icon:"⚖️",yes:66,vol:"R$ 94k",closes:"15 dez",bg:"rgba(24,95,165,0.1)"},
-  {id:12,q:"Nubank vai lançar conta investimentos em 2025?",cat:"econ",icon:"💜",yes:78,vol:"R$ 52k",closes:"20 dez",bg:"rgba(83,74,183,0.1)"},
-];
+const MARKETS = []; // Populated from API only — no hardcoded data
 const catCls={econ:"c-econ",sport:"c-sport",pol:"c-pol",crypto:"c-crypto"};
 const catLbl={econ:"📈 Economia",sport:"⚽ Esportes",pol:"🗳 Política",crypto:"₿ Cripto"};
 
@@ -2567,6 +2697,11 @@ function renderRows(markets){
   const el=document.getElementById('market-rows');
   document.getElementById('list-count').textContent=markets.length+' mercados';
   el.innerHTML='';
+  document.getElementById('list-count').textContent = markets.length + ' mercados';
+  if (markets.length === 0) {
+    el.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:40px;text-align:center">Nenhum mercado disponível de momento.<br><br><span style="font-size:11px">Os mercados aparecem aqui assim que forem criados.</span></div>';
+    return;
+  }
   markets.forEach(m=>{
     const no=100-m.yes;
     el.innerHTML+=`<div class="mrow" onclick="openMarket('${m.id}')"><div class="mrow-icon" style="background:${m.bg}">${m.icon}</div><div class="mrow-body"><div class="mrow-q">${m.q}</div><div class="mrow-meta">${catLbl[m.cat]} · Encerra ${m.closes}</div></div><div class="mrow-bar"><div class="mrow-track"><div class="mrow-fill" style="width:${m.yes}%"></div></div><div class="mrow-pcts"><span class="mry">SIM ${m.yes}%</span><span class="mrn">NÃO ${no}%</span></div></div><div class="mrow-vol"><b>${m.vol}</b>volume</div></div>`;
