@@ -3519,11 +3519,11 @@ async function showAdmin() {
   if (!currentUser || currentUser.role !== 'admin') {
     alert('Acesso restrito a administradores'); return;
   }
-  // Show admin page
-  document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
+  // Show admin page directly
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  const ap = document.getElementById('page-admin');
-  if (ap) ap.style.display = 'block';
+  const adminPage = document.getElementById('page-admin');
+  if (adminPage) adminPage.style.display = 'block';
   // Load data
   await adminRefresh();
 }
