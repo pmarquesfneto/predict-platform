@@ -2063,7 +2063,7 @@ async function loadRealMarkets() {
   }
 
   // Update ticker
-  updateTicker();
+  if(typeof updateTicker==="function")updateTicker();
 
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
@@ -2168,6 +2168,8 @@ async function updateDashboard() {
     } catch(e) { /* silent fail */ }
   }
 }
+
+function updateTicker(){}
 
 function updateNavUser() {
   const dashBtn = document.getElementById('nav-dashboard');
@@ -3472,13 +3474,11 @@ async function handleLogin() {
 // ADMIN PANEL
 // ══════════════════════════════════════════════════
 async function showAdmin(){
-  if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito a administradores');return;}
-  // Show admin page
+  if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito');return;}
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
   const ap=document.getElementById('page-admin');
-  if(ap) ap.style.display='block';
-  // Load data with proper await
+  if(ap)ap.style.display='block';
   await adminRefresh();
 }
 
