@@ -713,7 +713,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>Predict</div>
   <div class="nav-tabs">
     <button class="nav-tab active" data-page="home" onclick="showPage('home',this)">Início</button>
-    <button class="nav-tab" data-page="listing" onclick="showPage('listing',this)">Explorar</button>
+    
     <button class="nav-tab" data-page="market" onclick="showPage('market',this)">Mercado</button>
     <button class="nav-tab" data-page="dashboard" onclick="showPage('dashboard',this)" id="nav-dashboard">Minha Conta</button>
     <button class="nav-tab" data-page="experience" onclick="showPage('experience',this)">Experiência</button>
@@ -732,7 +732,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
 <div class="mobile-menu" id="mobile-menu">
   <button class="mobile-tab active" data-page="home" onclick="showPage('home',this,true)">Início</button>
-  <button class="mobile-tab" data-page="listing" onclick="showPage('listing',this,true)">Explorar</button>
+  
   <button class="mobile-tab" data-page="market" onclick="showPage('market',this,true)">Mercado</button>
   <button class="mobile-tab" data-page="dashboard" onclick="showPage('dashboard',this,true)">Minha Conta</button>
   <button class="mobile-tab" data-page="markets" onclick="showPage('markets',this,true)">Tipos de Mercado</button>
@@ -1671,13 +1671,24 @@ id="uc-form-4" style="display:none">
 
     <!-- Sub-tabs -->
     <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin-bottom:28px;overflow-x:auto">
-      <button onclick="expTab('types')" id="exp-tab-types" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">📊 Tipos de Mercado</button>
+      <button onclick="expTab('explore')" id="exp-tab-explore" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Explorar</button>
+      <button onclick="expTab('types')" id="exp-tab-types" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">📊 Tipos de Mercado</button>
       <button onclick="expTab('model')" id="exp-tab-model" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">🧮 Modelo Financeiro</button>
       <button onclick="expTab('calib')" id="exp-tab-calib" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">🎯 Calibração</button>
       <button onclick="expTab('whatsapp')" id="exp-tab-whatsapp" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">💬 WhatsApp Bot</button>
     </div>
 
-    <!-- Types panel -->
+    <!-- Explorar panel -->
+    <div id="exp-panel-explore">
+      <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:20px;line-height:1.6">
+        Explora exemplos de mercados activos. Esta secção é apenas para demonstração — as apostas mostradas são ilustrativas e não podem ser feitas aqui.
+      </div>
+      <div id="exp-explore-list">
+        <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:13px">A carregar exemplos...</div>
+      </div>
+    </div>
+
+        <!-- Types panel -->
     <div id="exp-panel-types">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
         <div class="dark-card" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
@@ -3542,6 +3553,7 @@ function adminStatus(msg, type) {
 }
 
 function adminTab(tab) {
+  currentAdminTab = tab;
   ['users','markets','trades'].forEach(t => {
     const panel = document.getElementById('adm-panel-' + t);
     const btn   = document.getElementById('adm-tab-' + t);
@@ -3899,15 +3911,60 @@ async function seedMoreMarkets() {
 
 // ── EXPERIENCE TAB ────────────────────────────────
 function expTab(tab) {
-  ['types','model','calib','whatsapp'].forEach(t => {
+  ['explore','types','model','calib','whatsapp'].forEach(t => {
     const p = document.getElementById('exp-panel-' + t);
     const b = document.getElementById('exp-tab-' + t);
     if (p) p.style.display = t === tab ? 'block' : 'none';
     if (b) {
-      b.style.borderBottomColor = t === tab ? 'var(--teal)' : 'transparent';
+      b.style.borderBottom = t === tab ? '2px solid var(--teal)' : '2px solid transparent';
       b.style.color = t === tab ? 'var(--teal)' : 'rgba(255,255,255,0.4)';
     }
   });
+  // Load explore data when tab selected
+  if (tab === 'explore') loadExploreMarkets();
+}
+
+async function loadExploreMarkets() {
+  const list = document.getElementById('exp-explore-list');
+  if (!list) return;
+  if (list.dataset.loaded) return; // already loaded
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:13px">A carregar mercados...</div>';
+  try {
+    const data = await api('GET', '/markets?limit=6');
+    const markets = data?.markets || [];
+    if (markets.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:13px">Sem mercados disponíveis de momento.</div>';
+      return;
+    }
+    list.innerHTML = markets.map(m => {
+      const yes = m.outcomes ? (m.outcomes[0]?.quantity || 0) : 0;
+      const no  = m.outcomes ? (m.outcomes[1]?.quantity || 0) : 0;
+      const pct = Math.round(yes / Math.max(1, yes + no) * 100);
+      const vol = parseFloat(m.totalVolume || 0).toFixed(0);
+      return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:18px;margin-bottom:12px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">'
+        + '<div style="flex:1;margin-right:12px">'
+        + '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + m.title + '</div>'
+        + '<div style="font-size:11px;color:rgba(255,255,255,0.35)">' + (m.category||'') + ' · Vol: R$ ' + vol + '</div>'
+        + '</div>'
+        + '<span style="font-size:11px;background:rgba(29,158,117,0.12);color:var(--teal);padding:3px 8px;border-radius:6px;white-space:nowrap">🌐 Aberto</span>'
+        + '</div>'
+        + '<div style="margin-bottom:6px">'
+        + '<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px">'
+        + '<span style="color:var(--teal)">SIM ' + pct + '%</span>'
+        + '<span style="color:#ff4455">NÃO ' + (100-pct) + '%</span>'
+        + '</div>'
+        + '<div style="height:6px;background:var(--dark-border);border-radius:100px;overflow:hidden">'
+        + '<div style="height:100%;width:' + pct + '%;background:var(--teal);border-radius:100px"></div>'
+        + '</div>'
+        + '</div>'
+        + '<div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:8px;font-style:italic">🔒 Demonstração — apostas disponíveis após criar conta</div>'
+        + '</div>';
+    }).join('');
+    list.dataset.loaded = '1';
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:13px">Erro ao carregar: ' + e.message + '</div>';
+  }
 }
 
 
