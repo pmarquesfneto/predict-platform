@@ -2170,19 +2170,22 @@ async function updateDashboard() {
 }
 
 function updateNavUser() {
-  if (!currentUser) return;
-  // Update balance
-  const balEl = document.querySelector('.nav-balance');
-  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
-  // Dynamic "Minha Conta · Nome" button
   const dashBtn = document.getElementById('nav-dashboard');
-  if (dashBtn) {
-    const firstName = (currentUser.displayName || 'Eu').split(' ')[0];
-    dashBtn.textContent = 'Minha Conta · ' + firstName;
-  }
-  // Hide "Entrar" button when logged in
   const entrarBtn = document.getElementById('nav-entrar');
-  if (entrarBtn) entrarBtn.style.display = 'none';
+  if (!currentUser) {
+    if (dashBtn) dashBtn.textContent = 'Minha Conta';
+    if (entrarBtn) entrarBtn.style.cssText = 'display:inline-block!important';
+    if (document.querySelector('.nav-balance')) document.querySelector('.nav-balance').textContent = '';
+    return;
+  }
+  const balEl = document.querySelector('.nav-balance');
+  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay||0).toFixed(2);
+  if (dashBtn) {
+    const first = currentUser.displayName.split(' ');
+    const name = first.length >= 2 ? first[1] : first[0];
+    dashBtn.textContent = 'Minha Conta · ' + name;
+  }
+  if (entrarBtn) entrarBtn.style.cssText = 'display:none!important';
 }
 
 // ── Init: load markets on page load ───────────────────
@@ -3921,12 +3924,18 @@ async function adminAdjustBalance(userId, name) {
 
 window.addEventListener('DOMContentLoaded', () => {
   // Restore session from localStorage
-  const storedToken = localStorage.getItem('predict_token');
-  const storedUser = localStorage.getItem('predict_user');
-  if (storedToken && storedUser) {
-    authToken = storedToken;
-    currentUser = JSON.parse(storedUser);
-    console.log('✅ Session restored:', currentUser.displayName);
+  const _st = localStorage.getItem('predict_token');
+  const _su = localStorage.getItem('predict_user');
+  if (_st && _su) {
+    const _u = JSON.parse(_su);
+    if (_u.role === 'admin') {
+      localStorage.removeItem('predict_token');
+      localStorage.removeItem('predict_user');
+    } else {
+      authToken = _st;
+      currentUser = _u;
+      console.log('✅ Session restored:', currentUser.displayName);
+    }
   }
   loadRealMarkets();
   updateNavUser();
