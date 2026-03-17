@@ -2063,7 +2063,7 @@ async function loadRealMarkets() {
   }
 
   // Update ticker
-  if (typeof updateTicker === "function") updateTicker(); // safe
+  updateTicker();
 
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
@@ -2120,9 +2120,6 @@ async function apiPlaceBet(marketApiId, outcomeId, amount) {
 
 // ── UPDATE DASHBOARD with real user data ─────────────
 async function updateDashboard() {
-  // Hide admin panel link from normal users
-  const adminPanel = document.getElementById('page-admin');
-  if (adminPanel && currentUser?.role !== 'admin') adminPanel.style.display = 'none';
   if (!currentUser) {
     // Try loading from localStorage
     const stored = localStorage.getItem('predict_user');
@@ -2172,32 +2169,20 @@ async function updateDashboard() {
   }
 }
 
-function updateTicker(){}
-
 function updateNavUser() {
-  if (!currentUser) {
-    // Logged out state
-    const db = document.getElementById('nav-dashboard');
-    if (db) db.textContent = 'Minha Conta';
-    const eb = document.getElementById('nav-entrar');
-    if (eb) eb.style.cssText = 'display:inline-block!important';
-    return;
-  }
+  if (!currentUser) return;
   // Update balance
   const balEl = document.querySelector('.nav-balance');
   if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
   // Dynamic "Minha Conta · Nome" button
   const dashBtn = document.getElementById('nav-dashboard');
   if (dashBtn) {
-    const parts = (currentUser.displayName || 'Eu').split(' '); const firstName = parts.length >= 3 ? parts[1] : parts[0];
+    const firstName = (currentUser.displayName || 'Eu').split(' ')[0];
     dashBtn.textContent = 'Minha Conta · ' + firstName;
   }
   // Hide "Entrar" button when logged in
   const entrarBtn = document.getElementById('nav-entrar');
-  if (entrarBtn) {
-    entrarBtn.style.display = 'none';
-    entrarBtn.style.setProperty('display', 'none', 'important');
-  }
+  if (entrarBtn) entrarBtn.style.display = 'none';
 }
 
 // ── Init: load markets on page load ───────────────────
@@ -3541,20 +3526,6 @@ async function adminRefresh() {
   }
 }
 
-async function adminAdjustBalance(userId, name) {
-  const amount = prompt('Ajustar saldo de ' + name + '\nValor a adicionar (negativo para remover):\nEx: 500 ou -200');
-  if (amount === null) return;
-  const val = parseFloat(amount);
-  if (isNaN(val)) { alert('Valor inválido'); return; }
-  try {
-    await api('PUT', '/users/' + userId, { balancePlayAdjust: val });
-    adminStatus('Saldo de ' + name + ' ajustado: ' + (val > 0 ? '+' : '') + val + ' créditos ✅', 'ok');
-    await adminRefresh();
-  } catch(e) {
-    adminStatus('Erro: ' + e.message, 'err');
-  }
-}
-
 async function adminResetAll() {
   if (!confirm('Isto vai apagar TODOS os mercados e apostas para o live test. Os utilizadores sao mantidos. Tens a certeza?')) return;
   if (!confirm("ULTIMA CONFIRMACAO — reset completo da BD para live test?")) return;
@@ -3620,13 +3591,7 @@ function doLogout() {
   currentUser = null;
   localStorage.removeItem('predict_token');
   localStorage.removeItem('predict_user');
-  // Show home page directly
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-  const homePage = document.getElementById('page-home');
-  if (homePage) homePage.style.display = 'block';
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  const homeBtn = document.querySelector('[data-page="home"]');
-  if (homeBtn) homeBtn.classList.add('active');
+  showPage('home', null);
   updateNavUser();
   // Update entrar button
   const adminBtn = document.getElementById('admin-nav-btn');
@@ -3895,30 +3860,17 @@ function logout() {
   currentUser = null;
   localStorage.removeItem('predict_token');
   localStorage.removeItem('predict_user');
-
-  // Reset "Minha Conta · Nome" back to "Minha Conta"
-  const dashBtn = document.getElementById('nav-dashboard');
-  if (dashBtn) dashBtn.textContent = 'Minha Conta';
-
-  // Show "Entrar" button again
-  const entrarBtn = document.getElementById('nav-entrar');
-  if (entrarBtn) entrarBtn.style.cssText = 'display:inline-block!important';
-
-  // Clear balance
+  // Reset nav immediately without reload
+  const entrarBtn = document.querySelector('[data-page="onboard"]');
+  if (entrarBtn) entrarBtn.textContent = 'Entrar';
   const balEl = document.querySelector('.nav-balance');
   if (balEl) balEl.textContent = '';
-
-  // Go to home page directly
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-  const homePage = document.getElementById('page-home');
-  if (homePage) homePage.style.display = 'block';
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  const homeBtn = document.querySelector('[data-page="home"]');
-  if (homeBtn) homeBtn.classList.add('active');
-
-  // Reset onboard form
-  if (typeof obHideLogin === 'function') obHideLogin();
-  setTimeout(() => { if (typeof obStep === 'function') obStep(0); }, 50);
+  const adminBtn = document.getElementById('admin-nav-btn');
+  if (adminBtn) adminBtn.style.display = 'none';
+  // Go to onboarding step 0
+  showPage('onboard', null);
+  obHideLogin();
+  if (typeof obStep === 'function') setTimeout(() => obStep(0), 50);
 }
 
 </script>
