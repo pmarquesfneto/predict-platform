@@ -2002,7 +2002,7 @@ function updateNavUser() {
   if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
   // Show admin button only for admins
   const adminBtn = document.getElementById('admin-nav-btn');
-  if (adminBtn) adminBtn.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+  if (adminBtn) adminBtn.style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
   // Change Entrar to show user name
   const entrarBtn = document.querySelector('[data-page="onboard"]');
   if (entrarBtn) entrarBtn.textContent = currentUser.displayName?.split(' ')[0] || 'Conta';
@@ -3259,8 +3259,8 @@ async function obRegister() {
   try {
     const result = await apiRegister(email, password, name);
     if (result.ok || result.success) {
-      obStep(2);
       updateNavUser();
+      obStep(2);
     } else {
       alert('Erro: ' + (result.error || 'Tente novamente'));
     }
@@ -3278,9 +3278,9 @@ async function handleLogin() {
     const result = await apiLogin(emailEl.value, passEl.value);
     if (result.ok || result.success) {
       obHideLogin();
-      showPage('dashboard', null);
       updateNavUser();
       setTimeout(updateDashboard, 200);
+      showPage('dashboard', null);
     } else {
       const errEl = document.getElementById('ob-error');
       if (errEl) errEl.textContent = result.error || 'Email ou senha incorretos';
