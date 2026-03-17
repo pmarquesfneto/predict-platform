@@ -2063,7 +2063,7 @@ async function loadRealMarkets() {
   }
 
   // Update ticker
-  updateTicker();
+  if (typeof updateTicker === "function") updateTicker(); // safe
 
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
@@ -2169,6 +2169,8 @@ async function updateDashboard() {
   }
 }
 
+function updateTicker(){}
+
 function updateNavUser() {
   if (!currentUser) return;
   // Update balance
@@ -2177,7 +2179,7 @@ function updateNavUser() {
   // Dynamic "Minha Conta · Nome" button
   const dashBtn = document.getElementById('nav-dashboard');
   if (dashBtn) {
-    const firstName = (currentUser.displayName || 'Eu').split(' ')[0];
+    const parts = (currentUser.displayName || 'Eu').split(' '); const firstName = parts.length >= 3 ? parts[1] : parts[0];
     dashBtn.textContent = 'Minha Conta · ' + firstName;
   }
   // Hide "Entrar" button when logged in
