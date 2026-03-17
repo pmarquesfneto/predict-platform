@@ -3291,7 +3291,6 @@ async function handleLogin() {
 
 
 
-async showPage('admin',null);await adminRefresh();}
 async function showAdmin(){
   if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito a administradores');return;}
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
