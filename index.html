@@ -3541,6 +3541,20 @@ async function adminRefresh() {
   }
 }
 
+async function adminAdjustBalance(userId, name) {
+  const amount = prompt('Ajustar saldo de ' + name + '\nValor a adicionar (negativo para remover):\nEx: 500 ou -200');
+  if (amount === null) return;
+  const val = parseFloat(amount);
+  if (isNaN(val)) { alert('Valor inválido'); return; }
+  try {
+    await api('PUT', '/users/' + userId, { balancePlayAdjust: val });
+    adminStatus('Saldo de ' + name + ' ajustado: ' + (val > 0 ? '+' : '') + val + ' créditos ✅', 'ok');
+    await adminRefresh();
+  } catch(e) {
+    adminStatus('Erro: ' + e.message, 'err');
+  }
+}
+
 async function adminResetAll() {
   if (!confirm('Isto vai apagar TODOS os mercados e apostas para o live test. Os utilizadores sao mantidos. Tens a certeza?')) return;
   if (!confirm("ULTIMA CONFIRMACAO — reset completo da BD para live test?")) return;
