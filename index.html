@@ -2171,23 +2171,25 @@ async function updateDashboard() {
 
 function updateTicker(){}
 
-function updateNavUser() {
-  const dashBtn = document.getElementById('nav-dashboard');
-  const entrarBtn = document.getElementById('nav-entrar');
-  if (!currentUser) {
-    if (dashBtn) dashBtn.textContent = 'Minha Conta';
-    if (entrarBtn) entrarBtn.style.cssText = 'display:inline-block!important';
-    if (document.querySelector('.nav-balance')) document.querySelector('.nav-balance').textContent = '';
+function updateNavUser(){
+  const dashBtn=document.getElementById('nav-dashboard');
+  const entrarBtn=document.getElementById('nav-entrar');
+  const balEl=document.querySelector('.nav-balance');
+  if(!currentUser){
+    // Logged out — reset everything to clean state
+    if(dashBtn)dashBtn.textContent='Minha Conta';
+    if(entrarBtn)entrarBtn.style.cssText='display:inline-block!important';
+    if(balEl)balEl.textContent='';
     return;
   }
-  const balEl = document.querySelector('.nav-balance');
-  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay||0).toFixed(2);
-  if (dashBtn) {
-    const first = currentUser.displayName.split(' ');
-    const name = first.length >= 2 ? first[1] : first[0];
-    dashBtn.textContent = 'Minha Conta · ' + name;
+  // Logged in
+  if(balEl)balEl.textContent='R$ '+parseFloat(currentUser.balancePlay||0).toFixed(2);
+  if(dashBtn){
+    const parts=currentUser.displayName.split(' ');
+    const name=parts.length>=2?parts[1]:parts[0];
+    dashBtn.textContent='Minha Conta · '+name;
   }
-  if (entrarBtn) entrarBtn.style.cssText = 'display:none!important';
+  if(entrarBtn)entrarBtn.style.cssText='display:none!important';
 }
 
 // ── Init: load markets on page load ───────────────────
