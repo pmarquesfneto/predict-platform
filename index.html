@@ -720,9 +720,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <button class="nav-tab" data-page="pitch" onclick="showPage('pitch',this)">Para Você</button>
     <button class="nav-tab" data-page="create" onclick="showPage('create',this)">Criar Mercado</button>
     <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)" id="nav-entrar">Entrar</button>
-  </div>
+    </div>
   <div class="nav-right">
-    
     <div class="nav-bal">Saldo: <b>R$ 847,50</b></div>
     <button class="btn-dep" onclick="showPage('onboard',null)">+ Depositar</button>
     <div class="hamburger" onclick="toggleMenu()" id="hamburger">
@@ -906,62 +905,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   <div class="dash">
     <div class="dash-hd">
       <div>
-        <div class="dash-welcome">Olá, <span id="dash-name">Usuário</span> 👋 <button onclick="logout()" style="float:right;background:rgba(255,255,255,0.05);border:1px solid var(--dark-border);color:rgba(255,255,255,0.4);padding:4px 12px;border-radius:100px;font-size:11px;cursor:pointer">Sair</button></div>
+        <div class="dash-welcome">Olá, <span id="dash-name">Usuário</span> 👋</div>
         <div class="dash-score">Score de calibração: <b id="dash-score">—</b></div>
       </div>
-      <div style="display:flex;gap:8px"><button onclick="doLogout()" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.25);color:rgba(255,100,100,0.8);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer">Sair →</button></div>
+      <div style="display:flex;gap:8px">
+      <button onclick="doLogout()" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.25);color:rgba(255,100,100,0.8);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer">Sair →</button>
+    </div>
     </div>
     <div class="kpis">
       <div class="kpi"><div class="kpi-l">Saldo de créditos</div><div class="kpi-v" id="dash-balance">R$ —</div><div class="kpi-d">créditos de simulação</div></div>
       <div class="kpi"><div class="kpi-l">P&L total</div><div class="kpi-v g" id="dash-pnl">R$ 0</div><div class="kpi-d" id="dash-pnl-sub">total acumulado</div></div>
       <div class="kpi"><div class="kpi-l">Apostas vencidas</div><div class="kpi-v" id="dash-wins">0</div><div class="kpi-d" id="dash-losses">0 perdidas</div></div>
-      <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="dash-volume">R$ 0</div>
-    <!-- Dashboard tabs -->
-    <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin:24px 0 20px">
-      <button onclick="dashTab('positions')" id="dt-positions" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer">📊 Posições</button>
-      <button onclick="dashTab('account')" id="dt-account" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">👤 Minha Conta</button>
-    </div>
-
-    <!-- Positions tab -->
-    <div id="dash-panel-positions">
-      <div id="dash-positions-list" style="margin-bottom:20px">
-        <div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">As tuas posições aparecem aqui após apostares...</div>
-      </div>
-    </div>
-
-    <!-- Account tab -->
-    <div id="dash-panel-account" style="display:none">
-      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;margin-bottom:16px">
-        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px">Dados da conta</div>
-        <div style="display:grid;gap:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Nome</span>
-            <span style="font-size:13px;font-weight:600" id="acc-name">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">E-mail</span>
-            <span style="font-size:13px;font-weight:600" id="acc-email">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Tipo de conta</span>
-            <span style="font-size:13px;font-weight:600" id="acc-role">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Saldo de créditos</span>
-            <span style="font-size:14px;font-weight:700;color:var(--teal)" id="acc-balance">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Código de referência</span>
-            <span style="font-size:13px;font-weight:600;color:var(--amber)" id="acc-referral">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
-            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Status KYC</span>
-            <span style="font-size:13px;font-weight:600" id="acc-kyc">—</span>
-          </div>
-        </div>
-      </div>
-      <button onclick="logout()" style="width:100%;padding:12px;background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.25);color:#ff4455;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Terminar sessão</button>
-    </div><div class="kpi-d">apostado</div></div>
+      <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="dash-volume">R$ 0</div><div class="kpi-d">apostado</div></div>
       <div class="kpi"><div class="kpi-l">Apostas ganhas</div><div class="kpi-v">19/26</div><div class="kpi-d">total resolvidas</div></div>
     </div>
     <div class="dash-grid">
@@ -1310,45 +1265,77 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
 <!-- ══ PITCH / INVESTOR ═══════════════════════════════════════════ -->
 <div class="page" id="page-pitch">
-  <div class="pitch">
-    <div class="pitch-inner">
-      <div class="pitch-top">
-        <div>
-          <div class="pitch-badge">📊 Para Investidores</div>
-          <div class="pitch-h">O maior mercado de<br>predição do <em>Brasil.</em></div>
-          <p class="pitch-p">Prediction markets são a próxima fronteira de inteligência coletiva. Nos EUA, Polymarket movimenta mais de USD 1 bilhão por mês. No Brasil, o mercado está em aberto — e a Predict chega primeiro.</p>
-          <div class="pitch-bullets">
-            <div class="pbullet"><div class="pbullet-dot"></div>Modelo de receita: spread de 2% em cada aposta + assinatura Pro para traders avançados</div>
-            <div class="pbullet"><div class="pbullet-dot"></div>Tecnologia LMSR garante liquidez imediata sem necessidade de contraparte</div>
-            <div class="pbullet"><div class="pbullet-dot"></div>Resolução automática via APIs oficiais (BCB, IBGE, Sportradar) elimina risco operacional</div>
-            <div class="pbullet"><div class="pbullet-dot"></div>Regulação: Lei 14.790/2023 abre caminho para operação legal no Brasil</div>
-            <div class="pbullet"><div class="pbullet-dot"></div>Distribuição via PIX — zero fricção para o usuário brasileiro</div>
+  <div style="max-width:860px;margin:0 auto;padding:24px 16px">
+    <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;margin-right:6px"></span>Para Você</div>
+    <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:4px">Como a Predict se adapta a ti</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:32px">Para pessoas físicas, empresas e profissionais de análise</div>
+
+    <div style="display:grid;gap:20px">
+
+      <!-- Pessoa Física -->
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px">
+        <div style="display:flex;gap:16px;align-items:start;margin-bottom:16px">
+          <div style="font-size:32px">👤</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:4px">Pessoa Física</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.4)">Para quem quer testar o seu conhecimento sobre eventos reais</div>
           </div>
         </div>
-        <div class="pitch-chart-box">
-          <div class="pitch-chart-lbl">Projeção de volume mensal</div>
-          <div class="pitch-chart-val">R$ 50M</div>
-          <canvas id="growth-chart" height="160"></canvas>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Começa com R$ 1.000 em créditos grátis</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Apostas em economia, política e desporto</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Score de calibração pessoal</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Rankings e leaderboard semanal</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Cria mercados privados com amigos</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Acesso via WhatsApp Bot</div>
         </div>
+        <button onclick="showPage('onboard',null)" class="ob-btn" style="width:auto;padding:10px 24px;margin-top:16px">Criar conta grátis →</button>
       </div>
 
-      <div class="sec-title" style="margin-bottom:20px">Modelo de negócio</div>
-      <div class="biz-cards">
-        <div class="biz-card"><div class="biz-icon">💰</div><div class="biz-title">Spread por transação</div><div class="biz-body">2% de fee em cada aposta. Com R$ 50M/mês de volume, isso representa R$ 1M/mês de receita bruta recorrente.</div></div>
-        <div class="biz-card"><div class="biz-icon">⭐</div><div class="biz-title">Assinatura Pro</div><div class="biz-body">R$ 49/mês para traders avançados: sem limite de apostas, analytics avançado, acesso antecipado a novos mercados.</div></div>
-        <div class="biz-card"><div class="biz-icon">🏢</div><div class="biz-title">B2B — Mercados privados</div><div class="biz-body">Empresas e fundos criam mercados privados internos para forecasting. Preço sob consulta. Pipeline: 3 empresas interessadas.</div></div>
-        <div class="biz-card"><div class="biz-icon">📡</div><div class="biz-title">Dados de probabilidade</div><div class="biz-body">API de probabilidades em tempo real para jornalistas, analistas e pesquisadores. Modelo freemium com plano pago.</div></div>
+      <!-- Empresas -->
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px">
+        <div style="display:flex;gap:16px;align-items:start;margin-bottom:16px">
+          <div style="font-size:32px">🏢</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:4px">Empresas</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.4)">Previsões internas, análise de cenários e tomada de decisão colectiva</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--amber)">✓</span> Mercados fechados internos (com código)</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--amber)">✓</span> Previsão de resultados de negócio</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--amber)">✓</span> Análise de senso colectivo da equipa</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--amber)">✓</span> Dashboard de gestão exclusivo</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--amber)">✓</span> Integração via API</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--amber)">✓</span> White label disponível</div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:12px">Exemplos: "O nosso produto vai atingir 10k MAU até Q3?", "Qual vai ser a margem do trimestre?"</div>
+        <a href="mailto:pmarquesfneto@bluewin.ch" style="display:inline-block;background:rgba(239,159,39,0.12);border:1px solid rgba(239,159,39,0.3);color:var(--amber);padding:10px 24px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none">Falar com a equipa →</a>
       </div>
 
-      <div class="sec-title" style="margin-bottom:16px">Oportunidade de mercado</div>
-      <div class="market-opp">
-        <div class="opp-item"><div class="opp-val">R$<span>2T</span></div><div class="opp-lbl">Mercado de apostas Brasil (projeção 2026)</div></div>
-        <div class="opp-item"><div class="opp-val"><span>USD 1B</span></div><div class="opp-lbl">Volume mensal Polymarket (EUA)</div></div>
-        <div class="opp-item"><div class="opp-val"><span>0</span></div><div class="opp-lbl">Concorrentes diretos no Brasil</div></div>
-        <div class="opp-item"><div class="opp-val">R$<span>50M</span></div><div class="opp-lbl">Meta de volume mensal (12 meses)</div></div>
+      <!-- Analistas / Profissionais -->
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px">
+        <div style="display:flex;gap:16px;align-items:start;margin-bottom:16px">
+          <div style="font-size:32px">📊</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:4px">Analistas & Profissionais</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.4)">Para economistas, jornalistas, investigadores e consultores</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Dados de previsão colectiva em tempo real</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> API pública para extracção de dados</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Criação de mercados sobre temas especializados</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Histórico de previsões exportável</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Score de track record verificável</div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)"><span style="color:var(--teal)">✓</span> Citação pública de previsões</div>
+        </div>
+        <a href="mailto:pmarquesfneto@bluewin.ch" style="display:inline-block;background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--teal);padding:10px 24px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none">Acesso beta →</a>
       </div>
+
     </div>
   </div>
+</div
 </div>
 
 
@@ -1564,7 +1551,7 @@ id="uc-form-4" style="display:none">
         <div style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;gap:16px;flex-wrap:wrap"><span id="uc-review-cat">📈 Economia</span><span id="uc-review-date">Encerra: —</span><span id="uc-review-liq">Liquidez: R$100</span><span id="uc-review-prob">Prob. inicial: 50%</span></div>
       </div>
       <div style="font-size:12px;color:rgba(255,255,255,0.3);line-height:1.7;margin-bottom:20px">Ao enviar, você aceita os <span style="color:var(--teal);cursor:pointer">Termos de Criação de Mercados</span>. Sua proposta será avaliada pela comunidade por 48h. Se aprovada, você ganha <b style="color:var(--teal)">50 pontos</b> de reputação.</div>
-      <div class="ucreate-nav"><button class="ob-skip" onclick="ucGoStep(2)">← Voltar</button><button class="ob-btn" style="width:auto;padding:11px 28px;margin:0" onclick="ucSubmit()">🚀 Enviar para votação</button></div>
+      <div class="ucreate-nav"><button class="ob-skip" onclick="ucGoStep(3)">← Voltar</button><button class="ob-btn" style="width:auto;padding:11px 28px;margin:0" onclick="ucSubmit()">🚀 Publicar Mercado</button></div>
     </div>
 
     <div class="ucommunity">
@@ -1674,35 +1661,221 @@ id="uc-form-4" style="display:none">
 
 
 
+
+<!-- ══ EXPERIÊNCIA PAGE ════════════════════════════════ -->
+<div class="page" id="page-experience">
+  <div style="max-width:860px;margin:0 auto;padding:24px 16px">
+    <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;margin-right:6px"></span>Experiência</div>
+    <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:4px">Como a Predict funciona</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px">Tecnologia, calibração e canais de acesso à plataforma</div>
+
+    <!-- Sub-tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin-bottom:28px;overflow-x:auto">
+      <button onclick="expTab('types')" id="exp-tab-types" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">📊 Tipos de Mercado</button>
+      <button onclick="expTab('model')" id="exp-tab-model" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">🧮 Modelo Financeiro</button>
+      <button onclick="expTab('calib')" id="exp-tab-calib" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">🎯 Calibração</button>
+      <button onclick="expTab('whatsapp')" id="exp-tab-whatsapp" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">💬 WhatsApp Bot</button>
+    </div>
+
+    <!-- Types panel -->
+    <div id="exp-panel-types">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <div class="dark-card" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">⚖️</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Binário (SIM/NÃO)</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7">Pergunta com duas respostas possíveis. Ideal para eventos com desfecho claro. Ex: "O Brasil vai vencer a Copa 2026?"</div>
+        </div>
+        <div class="dark-card" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">🎯</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Múltipla Escolha</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7">Diversas opções possíveis. Ideal para competições. Ex: "Quem ganha o Brasileirão 2025?" com todos os times.</div>
+        </div>
+        <div class="dark-card" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">📈</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Escalar (Numérico)</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7">Aposta num valor contínuo. Ex: "Qual será a Selic em dezembro?" — apostas num número específico.</div>
+        </div>
+        <div class="dark-card" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">🔒</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Mercado Privado</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7">Acesso por código. Ideal para grupos, empresas ou bolões privados entre amigos.</div>
+        </div>
+      </div>
+      <div style="background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:10px;padding:16px">
+        <div style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:6px">⚡ Algoritmo LMSR</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7">Todos os mercados usam o algoritmo LMSR (Logarithmic Market Scoring Rule) para preços matemáticos automáticos. Não há necessidade de contraparte — o mercado é sempre líquido.</div>
+      </div>
+    </div>
+
+    <!-- Model panel -->
+    <div id="exp-panel-model" style="display:none">
+      <div style="display:grid;gap:16px;margin-bottom:24px">
+        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--teal)">🧮 Modelo LMSR</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8">O preço de cada outcome é calculado automaticamente com base nas apostas acumuladas. A fórmula garante que os preços reflictam as probabilidades do mercado em tempo real, sem spreads artificiais.</div>
+          <div style="margin-top:12px;padding:12px;background:var(--dark-bg);border-radius:8px;font-family:monospace;font-size:12px;color:var(--teal)">P(outcome) = e^(q/b) / Σ e^(q_i/b)</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:20px;margin-bottom:6px">📊</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Liquidez B</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Parâmetro que controla a profundidade do mercado</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:20px;margin-bottom:6px">💰</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Market Maker</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">A plataforma garante sempre liquidez inicial</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:20px;margin-bottom:6px">⚡</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Tempo Real</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Preços actualizados a cada aposta</div>
+          </div>
+        </div>
+        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--amber)">🏦 Resolução de Mercados</div>
+          <div style="display:grid;gap:10px">
+            <div style="display:flex;gap:12px;align-items:start">
+              <div style="font-size:18px;min-width:24px">🤖</div>
+              <div><div style="font-size:13px;font-weight:600">Automática (Oracle)</div><div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">Banco Central (Selic, IPCA), resultados desportivos via API oficial</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:start">
+              <div style="font-size:18px;min-width:24px">👤</div>
+              <div><div style="font-size:13px;font-weight:600">Manual (Admin)</div><div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">O administrador valida o resultado com base em fonte verificável</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:start">
+              <div style="font-size:18px;min-width:24px">🔀</div>
+              <div><div style="font-size:13px;font-weight:600">Híbrida</div><div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">Oracle confirma, admin valida em caso de disputa</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calibration panel -->
+    <div id="exp-panel-calib" style="display:none">
+      <div style="display:grid;gap:16px;margin-bottom:24px">
+        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:20px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--teal)">🎯 O que é calibração?</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8">Um forecaster calibrado é aquele cujas probabilidades reflectem a realidade. Quando dizes que algo tem 80% de chance, deve acontecer 80% das vezes. A Predict mede a tua calibração automaticamente.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">📊</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Brier Score</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.5">Mede o erro quadrático médio das tuas previsões. Quanto mais baixo, melhor.</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">🏆</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Ranking Global</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.5">Compara o teu score com todos os traders da plataforma.</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">📈</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Evolução Temporal</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.5">Vê como a tua calibração melhora com o tempo e experiência.</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:20px;margin-bottom:8px">🎓</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Treino Guiado</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.5">Exercícios para melhorar a calibração antes de apostar com dinheiro real.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WhatsApp panel -->
+    <div id="exp-panel-whatsapp" style="display:none">
+      <div style="display:grid;gap:16px">
+        <div style="background:linear-gradient(135deg,rgba(37,211,102,0.08),rgba(37,211,102,0.02));border:1px solid rgba(37,211,102,0.2);border-radius:var(--r-lg);padding:24px;text-align:center">
+          <div style="font-size:40px;margin-bottom:12px">💬</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:8px">Predict no WhatsApp</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;max-width:400px;margin:0 auto">Apostas directamente pelo WhatsApp. Sem app, sem browser — apenas manda mensagem e o bot trata de tudo.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:18px;margin-bottom:8px">📋</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">/mercados</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Lista os mercados activos</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:18px;margin-bottom:8px">💰</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">/apostar [id] [sim/nao] [valor]</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Faz uma aposta directamente</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:18px;margin-bottom:8px">📊</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">/posicoes</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Ver as tuas apostas activas</div>
+          </div>
+          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px">
+            <div style="font-size:18px;margin-bottom:8px">🏆</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">/ranking</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4)">Leaderboard da semana</div>
+          </div>
+        </div>
+        <div style="background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.2);border-radius:10px;padding:16px;text-align:center">
+          <div style="font-size:13px;color:rgba(255,255,255,0.5)">Bot em desenvolvimento — disponível em breve</div>
+          <button class="ob-btn" style="width:auto;padding:10px 24px;margin-top:12px;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25d366">Entrar na lista de espera</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ ADMIN PAGE ══════════════════════════════════════ -->
 <div class="page" id="page-admin">
   <div style="max-width:900px;margin:0 auto;padding:24px 16px">
     <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:6px"></span>Admin</div>
     <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--amber);margin-bottom:4px">Painel Administrativo</div>
-    <div style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:24px">Visivel apenas para administradores &middot; <span id="adm-timestamp" style="opacity:0.5"></span></div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:24px">Visível apenas para administradores · <span id="adm-timestamp" style="opacity:0.5"></span></div>
+
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
       <div class="kpi"><div class="kpi-l">Utilizadores</div><div class="kpi-v" id="adm-users">—</div></div>
       <div class="kpi"><div class="kpi-l">Mercados</div><div class="kpi-v" id="adm-markets">—</div></div>
       <div class="kpi"><div class="kpi-l">Apostas</div><div class="kpi-v" id="adm-trades">—</div></div>
       <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="adm-volume">R$ 0</div></div>
     </div>
+
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
-      <button onclick="adminRefresh()" style="background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--teal);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Actualizar</button>
-      <button onclick="adminResetAll()" style="background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.3);color:#ff4455;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Reset para live test</button>
-      <button onclick="adminSeedMarkets()" style="background:rgba(239,159,39,0.08);border:1px solid rgba(239,159,39,0.3);color:var(--amber);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Seed mercados</button>
+      <button onclick="adminRefresh()" style="background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--teal);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">🔄 Actualizar</button>
+      <button onclick="adminResetAll()" style="background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.3);color:#ff4455;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">🗑 Reset para live test</button>
+      <button onclick="adminSeedMarkets()" style="background:rgba(239,159,39,0.08);border:1px solid rgba(239,159,39,0.3);color:var(--amber);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">🌱 Seed mercados</button>
     </div>
+
+    
+    <!-- Resolution Model Selector -->
+    <div style="background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.2);border-radius:12px;padding:20px;margin-bottom:24px">
+      <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">⚙ Modelo de Resolução Global</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <label style="display:flex;gap:8px;align-items:center;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;cursor:pointer">
+          <input type="radio" name="resolution-model" value="oracle" style="accent-color:var(--teal)">
+          <div><div style="font-size:12px;font-weight:600">🤖 Oracle</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">Fonte oficial automática</div></div>
+        </label>
+        <label style="display:flex;gap:8px;align-items:center;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;cursor:pointer">
+          <input type="radio" name="resolution-model" value="manual" checked style="accent-color:var(--amber)">
+          <div><div style="font-size:12px;font-weight:600">👤 Manual</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">Admin valida resultado</div></div>
+        </label>
+        <label style="display:flex;gap:8px;align-items:center;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;cursor:pointer">
+          <input type="radio" name="resolution-model" value="hybrid" style="accent-color:var(--teal)">
+          <div><div style="font-size:12px;font-weight:600">🔀 Híbrida</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">Oracle + validação admin</div></div>
+        </label>
+      </div>
+    </div>
+
     <div id="adm-status" style="padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none"></div>
+
     <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin-bottom:20px">
-      <button onclick="adminTab('users')" id="adm-tab-users" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer">Utilizadores</button>
-      <button onclick="adminTab('markets')" id="adm-tab-markets" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">Mercados</button>
-      <button onclick="adminTab('trades')" id="adm-tab-trades" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">Apostas</button>
+      <button onclick="adminTab('users')" id="adm-tab-users" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer">👥 Utilizadores</button>
+      <button onclick="adminTab('markets')" id="adm-tab-markets" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">📊 Mercados</button>
+      <button onclick="adminTab('trades')" id="adm-tab-trades" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">💰 Apostas</button>
     </div>
-    <div id="adm-panel-users"><div id="adm-users-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar...</div></div></div>
-    <div id="adm-panel-markets" style="display:none"><div id="adm-markets-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar...</div></div></div>
-    <div id="adm-panel-trades" style="display:none"><div id="adm-trades-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar...</div></div></div>
+
+    <div id="adm-panel-users"><div id="adm-users-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar para carregar...</div></div></div>
+    <div id="adm-panel-markets" style="display:none"><div id="adm-markets-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar para carregar...</div></div></div>
+    <div id="adm-panel-trades" style="display:none"><div id="adm-trades-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar para carregar...</div></div></div>
   </div>
 </div>
-
 
 <!-- ══ ONBOARDING ══════════════════════════════════════════════════ -->
 <div class="page" id="page-onboard">
@@ -1727,14 +1900,21 @@ id="uc-form-4" style="display:none">
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
       <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
       <div id="ob-login-form" style="display:none;margin-top:20px">
-        <div style="height:1px;background:var(--dark-border);margin-bottom:20px"></div>
+        <div style="height:1px;background:var(--dark-border);margin:0 0 20px"></div>
         <div class="kyc-form">
-          <div><div class="kyc-label">E-mail</div><input class="kyc-input" id="ob-login-email" type="email" placeholder="pedro@email.com"></div>
-          <div><div class="kyc-label">Senha</div><input class="kyc-input" id="ob-login-password" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+          <div>
+            <div class="kyc-label">E-mail</div>
+            <input class="kyc-input" id="ob-login-email" type="email" placeholder="pedro@email.com">
+          </div>
+          <div>
+            <div class="kyc-label">Senha</div>
+            <input class="kyc-input" id="ob-login-password" type="password" placeholder="Sua senha"
+              onkeydown="if(event.key==='Enter')handleLogin()">
+          </div>
         </div>
-        <div id="ob-error" style="color:#ff4455;font-size:12px;min-height:16px;margin:8px 0"></div>
+        <div id="ob-error" style="color:#ff4455;font-size:12px;min-height:18px;margin:8px 0"></div>
         <button class="ob-btn" onclick="handleLogin()" style="margin-top:4px">Entrar →</button>
-        <button class="ob-skip" onclick="obHideLogin()">← Voltar</button>
+        <button class="ob-skip" onclick="obHideLogin()" style="margin-top:8px">← Voltar</button>
       </div>
     </div>
 
@@ -1883,7 +2063,7 @@ async function loadRealMarkets() {
   }
 
   // Update ticker
-  if (typeof updateTicker === "function") updateTicker();
+  updateTicker();
 
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
@@ -1989,53 +2169,23 @@ async function updateDashboard() {
   }
 }
 
-function updateTicker() { /* ticker placeholder */ }
-
 function updateNavUser() {
   if (!currentUser) return;
+  // Update balance
   const balEl = document.querySelector('.nav-balance');
   if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
-  // Show admin button only for admins
-  const adminBtn = document.getElementById('admin-nav-btn');
-  if (adminBtn) adminBtn.style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
-  // Change Entrar to show user name
-  const entrarBtn = document.querySelector('[data-page="onboard"]');
-  if (entrarBtn) {
-    if (currentUser.role === 'admin') {
-      entrarBtn.textContent = '⚙ Admin';
-      entrarBtn.onclick = function() { showAdmin(); };
-    } else {
-      entrarBtn.textContent = currentUser.displayName?.split(' ')[0] || 'Conta';
-      entrarBtn.onclick = function() { showPage('dashboard', null); };
-    }
+  // Dynamic "Minha Conta · Nome" button
+  const dashBtn = document.getElementById('nav-dashboard');
+  if (dashBtn) {
+    const firstName = (currentUser.displayName || 'Eu').split(' ')[0];
+    dashBtn.textContent = 'Minha Conta · ' + firstName;
   }
+  // Hide "Entrar" button when logged in
+  const entrarBtn = document.getElementById('nav-entrar');
+  if (entrarBtn) entrarBtn.style.display = 'none';
 }
 
 // ── Init: load markets on page load ───────────────────
-
-function obShowLogin() {
-  const f = document.getElementById('ob-login-form');
-  if (f) { f.style.display='block'; document.getElementById('ob-login-email')?.focus(); }
-  const e = document.getElementById('ob-error'); if(e) e.textContent='';
-}
-function obHideLogin() {
-  const f = document.getElementById('ob-login-form'); if(f) f.style.display='none';
-}
-function logout() {
-  authToken = null; currentUser = null;
-  localStorage.removeItem('predict_token');
-  localStorage.removeItem('predict_user');
-  const eb = document.querySelector('[data-page="onboard"]');
-  if (eb) eb.textContent = 'Entrar';
-  const bb = document.querySelector('.nav-balance');
-  if (bb) bb.textContent = '';
-  const ab = document.getElementById('admin-nav-btn');
-  if (ab) ab.style.display = 'none';
-  showPage('onboard', null);
-  if (typeof obHideLogin === 'function') obHideLogin();
-  setTimeout(() => { if (typeof obStep === 'function') obStep(0); }, 50);
-}
-
 window.addEventListener('DOMContentLoaded', () => {
   loadRealMarkets();
   updateNavUser();
@@ -2151,40 +2301,15 @@ async function initMarketsData() {
   }
 }
 async function handleLogin() {
-  const emailEl = document.getElementById('ob-login-email');
-  const passEl  = document.getElementById('ob-login-password');
-  const errEl   = document.getElementById('ob-error');
-  if (!emailEl || !passEl) { alert('Formulario nao encontrado'); return; }
-  const email    = emailEl.value.trim();
-  const password = passEl.value.trim();
-  if (!email || !password) { if(errEl) errEl.textContent = 'Preencha email e senha'; return; }
-  const btn = document.querySelector('[onclick="handleLogin()"]');
-  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
-  if (errEl) errEl.textContent = '';
-  try {
-    const data = await api('POST', '/auth/login', { email, password });
-    if (data && data.tokens && data.tokens.accessToken) {
-      authToken = data.tokens.accessToken;
-      currentUser = data.user;
-      localStorage.setItem('predict_token', authToken);
-      localStorage.setItem('predict_user', JSON.stringify(data.user));
-      obHideLogin();
-      updateNavUser();
-      // ADMIN -> admin page, USER -> dashboard
-      if (currentUser.role === 'admin') {
-        await showAdmin();
-      } else {
-        showPage('dashboard', null);
-        setTimeout(updateDashboard, 200);
-      }
-    } else {
-      const msg = data?.error || 'Email ou senha incorretos';
-      if (errEl) errEl.textContent = msg; else alert(msg);
-    }
-  } catch(e) {
-    if (errEl) errEl.textContent = 'Erro: ' + e.message; else alert('Erro: ' + e.message);
-  } finally {
-    if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
+  const emailEl = document.querySelector('#page-onboard input[type="email"]');
+  const passEl  = document.querySelector('#page-onboard input[type="password"]');
+  if (!emailEl || !passEl) return;
+  const result = await apiLogin(emailEl.value, passEl.value);
+  if (result.success) {
+    showToast('✅ Bem-vindo, ' + result.user.displayName + '!');
+    showPage('dashboard', null);
+  } else {
+    showToast('❌ ' + result.error);
   }
 }
 
@@ -3287,8 +3412,8 @@ async function obRegister() {
   try {
     const result = await apiRegister(email, password, name);
     if (result.ok || result.success) {
-      updateNavUser();
       obStep(2);
+      updateNavUser();
     } else {
       alert('Erro: ' + (result.error || 'Tente novamente'));
     }
@@ -3305,10 +3430,8 @@ async function handleLogin() {
   try {
     const result = await apiLogin(emailEl.value, passEl.value);
     if (result.ok || result.success) {
-      obHideLogin();
-      updateNavUser();
-      setTimeout(updateDashboard, 200);
       showPage('dashboard', null);
+      updateNavUser();
     } else {
       const errEl = document.getElementById('ob-error');
       if (errEl) errEl.textContent = result.error || 'Email ou senha incorretos';
@@ -3319,44 +3442,402 @@ async function handleLogin() {
 }
 
 
-
-async function showAdmin(){
-  if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito a administradores');return;}
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
-  const ap=document.getElementById('page-admin');
-  if(ap){ap.style.display='block';}
+// ══════════════════════════════════════════════════
+// ADMIN PANEL
+// ══════════════════════════════════════════════════
+async function showAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('Acesso restrito a administradores'); return;
+  }
+  showPage('admin', null);
   await adminRefresh();
 }
-function adminStatus(msg,type){const el=document.getElementById('adm-status');if(!el)return;el.style.display='block';const c={ok:{bg:'rgba(29,158,117,0.12)',b:'rgba(29,158,117,0.3)',col:'var(--teal)'},err:{bg:'rgba(255,68,85,0.12)',b:'rgba(255,68,85,0.3)',col:'#ff4455'},info:{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'}}[type]||{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'};el.style.background=c.bg;el.style.border='1px solid '+c.b;el.style.color=c.col;el.textContent=msg;if(type!=='info')setTimeout(()=>el.style.display='none',5000);}
-function adminTab(tab){['users','markets','trades'].forEach(t=>{const p=document.getElementById('adm-panel-'+t),b=document.getElementById('adm-tab-'+t);if(p)p.style.display=t===tab?'block':'none';if(b){b.style.borderBottomColor=t===tab?'var(--teal)':'transparent';b.style.color=t===tab?'var(--teal)':'rgba(255,255,255,0.4)';}});}
-async function adminRefresh(){adminStatus('A carregar...','info');const ts=document.getElementById('adm-timestamp');if(ts)ts.textContent='Actualizado: '+new Date().toLocaleTimeString('pt-BR');try{const lb=await api('GET','/leaderboard');if(lb&&Array.isArray(lb)){document.getElementById('adm-users').textContent=lb.length;document.getElementById('adm-users-list').innerHTML=lb.map(u=>'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-size:14px;font-weight:600">'+(u.displayName||u.email||'—')+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+(u.email||'')+' · '+(u.role||'user')+'</div></div><div style="text-align:right"><div style="font-size:14px;color:var(--teal);font-weight:600">R$ '+parseFloat(u.balancePlay||0).toFixed(2)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35)">P&amp;L: R$ '+parseFloat(u.totalPnl||0).toFixed(2)+'</div></div></div>').join('');}const m=await api('GET','/markets?limit=100');if(m&&m.markets){document.getElementById('adm-markets').textContent=m.total||m.markets.length;let v=0;document.getElementById('adm-markets-list').innerHTML=m.markets.map(mkt=>{v+=parseFloat(mkt.totalVolume||0);return'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600">'+mkt.title.slice(0,65)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+mkt.category+' · '+mkt.status+'</div></div><div style="font-size:11px;color:'+(mkt.visibility==='closed'?'var(--amber)':'var(--teal)')+'">'+( mkt.visibility==='closed'?'Fechado':'Aberto')+'</div></div>';}).join('');document.getElementById('adm-volume').textContent='R$ '+v.toFixed(0);}adminStatus('OK','ok');}catch(e){adminStatus('Erro: '+e.message,'err');}}
-async function adminResetAll(){if(!confirm('Apagar TODOS os mercados e apostas para live test? Utilizadores mantidos.'))return;if(!confirm('Ultima confirmacao!'))return;adminStatus('A fazer reset...','info');try{const m=await api('GET','/markets?limit=100');let d=0;if(m&&m.markets){for(const mkt of m.markets){try{await api('DELETE','/markets/'+mkt.id);d++;}catch(e){}}}adminStatus(d+' mercados apagados. Pronto para live test!','ok');document.getElementById('adm-markets').textContent='0';document.getElementById('adm-trades').textContent='0';document.getElementById('adm-volume').textContent='R$ 0';document.getElementById('adm-markets-list').innerHTML='<div style="color:var(--teal);font-size:13px;padding:20px 0">BD limpa. Pronto para live test!</div>';await loadRealMarkets();}catch(e){adminStatus('Erro: '+e.message,'err');}}
-async function adminSeedMarkets(){adminStatus('A criar mercados...','info');const ms=[{title:'O Flamengo vai ser campiao do Brasileirao 2025?',category:'sports'},{title:'O Bitcoin vai superar R$ 600.000 ate dezembro 2025?',category:'crypto'},{title:'A inflacao IPCA ficara abaixo de 5% em 2025?',category:'economics'},{title:'Lula completara seu mandato ate 2026?',category:'politics'},{title:'O dolar vai ultrapassar R$ 6,50 ate junho 2025?',category:'economics'},{title:'O Brasil vai classificar para a Copa do Mundo 2026?',category:'sports'},{title:'A Petrobras vai pagar dividendos acima de R$ 3/acao em 2025?',category:'economics'},{title:'O Corinthians vai cair para a Serie B em 2025?',category:'sports'},{title:'A taxa de desemprego no Brasil cai abaixo de 6% em 2025?',category:'economics'},{title:'O Nubank vai superar o Itau em valor de mercado ate 2026?',category:'economics'},{title:'O Banco Central vai cortar a Selic para abaixo de 12% em 2025?',category:'economics'},{title:'O Sao Paulo vai ganhar a Copa do Brasil 2025?',category:'sports'}];let ok=0;for(const m of ms){try{const r=await api('POST','/markets',{title:m.title,description:m.title,category:m.category,marketType:'binary',visibility:'open',resolutionDate:new Date(Date.now()+180*24*60*60*1000).toISOString(),outcomes:[{id:'yes',label:'SIM'},{id:'no',label:'NAO'}],liquidityB:100});if(r&&r.id)ok++;}catch(e){}}adminStatus(ok+' mercados criados!','ok');await adminRefresh();await loadRealMarkets();}
+
+function adminStatus(msg, type) {
+  const el = document.getElementById('adm-status');
+  if (!el) return;
+  el.style.display = 'block';
+  const colors = {
+    ok:   { bg: 'rgba(29,158,117,0.12)', border: 'rgba(29,158,117,0.3)', color: 'var(--teal)' },
+    err:  { bg: 'rgba(255,68,85,0.12)',  border: 'rgba(255,68,85,0.3)',  color: '#ff4455' },
+    info: { bg: 'rgba(239,159,39,0.08)', border: 'rgba(239,159,39,0.25)', color: 'var(--amber)' }
+  };
+  const c = colors[type] || colors.info;
+  el.style.background = c.bg;
+  el.style.border = '1px solid ' + c.border;
+  el.style.color = c.color;
+  el.textContent = msg;
+  if (type !== 'info') setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
+function adminTab(tab) {
+  ['users','markets','trades'].forEach(t => {
+    const panel = document.getElementById('adm-panel-' + t);
+    const btn   = document.getElementById('adm-tab-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (btn) {
+      btn.style.borderBottomColor = t === tab ? 'var(--teal)' : 'transparent';
+      btn.style.color = t === tab ? 'var(--teal)' : 'rgba(255,255,255,0.4)';
+    }
+  });
+}
+
+async function adminRefresh() {
+  adminStatus('A carregar dados...', 'info');
+  const ts = document.getElementById('adm-timestamp');
+  if (ts) ts.textContent = 'Actualizado: ' + new Date().toLocaleTimeString('pt-BR');
+  try {
+    // Users
+    const lb = await api('GET', '/leaderboard');
+    if (lb && Array.isArray(lb)) {
+      document.getElementById('adm-users').textContent = lb.length;
+      document.getElementById('adm-users-list').innerHTML = lb.map(u =>
+        '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+        '<div><div style="font-size:14px;font-weight:600">' + (u.displayName||'—') + '</div>' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">' + (u.email||'') + ' · ' + (u.role||'user') + '</div></div>' +
+        '<div style="text-align:right"><div style="font-size:14px;color:var(--teal);font-weight:600">R$ ' + parseFloat(u.balancePlay||0).toFixed(2) + '</div>' +
+        '<div style="font-size:11px;color:rgba(255,255,255,0.35)">P&L: R$ ' + parseFloat(u.totalPnl||0).toFixed(2) + '</div></div></div>'
+      ).join('');
+    }
+
+    // Markets
+    const m = await api('GET', '/markets?limit=100');
+    if (m && m.markets) {
+      document.getElementById('adm-markets').textContent = m.total || m.markets.length;
+      let totalVol = 0;
+      document.getElementById('adm-markets-list').innerHTML = m.markets.map(mkt => {
+        const vol = parseFloat(mkt.totalVolume||0);
+        totalVol += vol;
+        const pct = mkt.outcomes ? Math.round((mkt.outcomes[0]?.quantity||0) / ((mkt.outcomes[0]?.quantity||0) + (mkt.outcomes[1]?.quantity||1)) * 100) : 50;
+        return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;margin-bottom:8px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">' +
+          '<div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:600">' + mkt.title.slice(0,65) + (mkt.title.length>65?'...':'') + '</div>' +
+          '<div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">' + mkt.category + ' · ' + mkt.status + ' · Vol: R$ ' + vol.toFixed(0) + '</div></div>' +
+          '<div style="font-size:11px;color:' + (mkt.visibility==='closed'?'var(--amber)':'var(--teal)') + ';white-space:nowrap">' + (mkt.visibility==='closed'?'🔒 Fechado':'🌐 Aberto') + '</div></div>' +
+          '<div style="height:4px;background:var(--dark-border);border-radius:100px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--teal);border-radius:100px"></div></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px"><span>SIM ' + pct + '%</span><span>NÃO ' + (100-pct) + '%</span></div></div>';
+      }).join('');
+      document.getElementById('adm-volume').textContent = 'R$ ' + totalVol.toFixed(0);
+    }
+
+    adminStatus('Dados actualizados ✅', 'ok');
+  } catch(e) {
+    adminStatus('Erro: ' + e.message, 'err');
+  }
+}
+
+async function adminResetAll() {
+  if (!confirm('Isto vai apagar TODOS os mercados e apostas para o live test. Os utilizadores sao mantidos. Tens a certeza?')) return;
+  if (!confirm("ULTIMA CONFIRMACAO — reset completo da BD para live test?")) return;
+  adminStatus('A fazer reset...', 'info');
+  try {
+    const m = await api('GET', '/markets?limit=100');
+    let deleted = 0;
+    if (m && m.markets) {
+      for (const mkt of m.markets) {
+        try { await api('DELETE', '/markets/' + mkt.id); deleted++; } catch(e) {}
+      }
+    }
+    adminStatus('Reset completo! ' + deleted + ' mercados apagados. Pronto para live test ✅', 'ok');
+    document.getElementById('adm-markets').textContent = '0';
+    document.getElementById('adm-trades').textContent = '0';
+    document.getElementById('adm-volume').textContent = 'R$ 0';
+    document.getElementById('adm-markets-list').innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">BD limpa. Pronto para live test!</div>';
+    await loadRealMarkets();
+  } catch(e) {
+    adminStatus('Erro: ' + e.message, 'err');
+  }
+}
+
+async function adminSeedMarkets() {
+  adminStatus('A criar mercados de demonstração...', 'info');
+  const markets = [
+    { title: 'O Flamengo vai ser campeão do Brasileirão 2025?', category: 'sports' },
+    { title: 'O Bitcoin vai superar R$ 600.000 até dezembro 2025?', category: 'crypto' },
+    { title: 'A inflação IPCA ficará abaixo de 5% em 2025?', category: 'economics' },
+    { title: 'Lula completará seu mandato até 2026?', category: 'politics' },
+    { title: 'O dólar vai ultrapassar R$ 6,50 até junho 2025?', category: 'economics' },
+    { title: 'O Brasil vai classificar para a Copa do Mundo 2026?', category: 'sports' },
+    { title: 'A Petrobras vai pagar dividendos acima de R$ 3/ação em 2025?', category: 'economics' },
+    { title: 'O Corinthians vai cair para a Série B em 2025?', category: 'sports' },
+    { title: 'A taxa de desemprego no Brasil cai abaixo de 6% em 2025?', category: 'economics' },
+    { title: 'O Nubank vai superar o Itaú em valor de mercado até 2026?', category: 'economics' },
+    { title: 'O Banco Central vai cortar a Selic para abaixo de 12% em 2025?', category: 'economics' },
+    { title: 'O São Paulo vai ganhar a Copa do Brasil 2025?', category: 'sports' },
+  ];
+  let ok = 0;
+  for (const m of markets) {
+    try {
+      const r = await api('POST', '/markets', {
+        title: m.title, description: m.title, category: m.category,
+        marketType: 'binary', visibility: 'open',
+        resolutionDate: new Date(Date.now() + 180*24*60*60*1000).toISOString(),
+        outcomes: [{ id: 'yes', label: 'SIM' }, { id: 'no', label: 'NÃO' }],
+        liquidityB: 100
+      });
+      if (r && r.id) ok++;
+    } catch(e) {}
+  }
+  adminStatus(ok + ' mercados criados ✅', 'ok');
+  await adminRefresh();
+  await loadRealMarkets();
+}
 
 
-function dashTab(tab) {
-  ['positions','account'].forEach(t => {
-    const p = document.getElementById('dash-panel-' + t);
-    const b = document.getElementById('dt-' + t);
+// ── LOGOUT ─────────────────────────────────────────
+function doLogout() {
+  if (!confirm('Tens a certeza que queres sair?')) return;
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('predict_token');
+  localStorage.removeItem('predict_user');
+  showPage('home', null);
+  updateNavUser();
+  // Update entrar button
+  const adminBtn = document.getElementById('admin-nav-btn');
+  if (adminBtn) adminBtn.style.display = 'none';
+  console.log('✅ Logged out');
+}
+
+// ── ADMIN PANEL ─────────────────────────────────────
+let currentAdminTab = 'users';
+
+async function showAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('Acesso restrito a administradores');
+    return;
+  }
+  showPage('admin', null);
+  await loadAdminData();
+}
+
+function adminTab(tab) {
+  currentAdminTab = tab;
+  ['users','markets','trades'].forEach(t => {
+    const panel = document.getElementById('adm-panel-' + t);
+    const btn = document.getElementById('adm-tab-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = t === tab ? 'rgba(239,159,39,0.15)' : 'var(--dark-card)';
+      btn.style.color = t === tab ? 'var(--amber)' : 'rgba(255,255,255,0.5)';
+      btn.style.border = t === tab ? '1px solid rgba(239,159,39,0.3)' : '1px solid var(--dark-border)';
+      btn.style.fontWeight = t === tab ? '600' : '400';
+    }
+  });
+}
+
+async function loadAdminData() {
+  if (!authToken) return;
+  try {
+    const [lb, mkt, trades] = await Promise.all([
+      api('GET', '/leaderboard'),
+      api('GET', '/markets?limit=100'),
+      api('GET', '/admin/trades').catch(() => ({ trades: [], total: 0 })),
+    ]);
+
+    // Stats
+    const users = Array.isArray(lb) ? lb : [];
+    const markets = mkt?.markets || [];
+    const tradesList = trades?.trades || [];
+    const totalVol = markets.reduce((s, m) => s + parseFloat(m.totalVolume || 0), 0);
+
+    document.getElementById('adm-users').textContent = users.length;
+    document.getElementById('adm-markets').textContent = markets.length;
+    document.getElementById('adm-trades').textContent = tradesList.length || '—';
+    document.getElementById('adm-volume').textContent = 'R$ ' + totalVol.toFixed(0);
+
+    // Users list
+    document.getElementById('adm-users-list').innerHTML = users.length ? users.map(u => `
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div style="font-size:13px;font-weight:600">${u.displayName || '—'}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35)">${u.email || ''} · <span style="color:${u.role==='admin'?'var(--amber)':'var(--teal)'}">${u.role || 'user'}</span></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;color:var(--teal);font-weight:600">R$ ${parseFloat(u.balancePlay||0).toFixed(2)}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35)">P&L: ${parseFloat(u.totalPnl||0).toFixed(2)} · Vol: ${parseFloat(u.totalVolume||0).toFixed(0)}</div>
+        </div>
+      </div>
+    `).join('') : '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:20px">Nenhum utilizador</div>';
+
+    // Markets list
+    document.getElementById('adm-markets-list').innerHTML = markets.length ? markets.map(m => `
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="flex:1;margin-right:16px">
+          <div style="font-size:13px;font-weight:600">${m.title.slice(0,60)}${m.title.length>60?'...':''}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35)">${m.category} · ${m.status} · Vol: R$ ${parseFloat(m.totalVolume||0).toFixed(0)}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:11px;color:${m.visibility==='closed'?'var(--amber)':'var(--teal)'}">${m.visibility==='closed'?'🔒':'🌐'}</span>
+          <button onclick="adminResolveMarket('${m.id}','yes')" style="background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.2);color:var(--teal);padding:4px 10px;border-radius:100px;font-size:11px;cursor:pointer">✓ SIM</button>
+          <button onclick="adminResolveMarket('${m.id}','no')" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.2);color:rgba(255,100,100,0.8);padding:4px 10px;border-radius:100px;font-size:11px;cursor:pointer">✗ NÃO</button>
+        </div>
+      </div>
+    `).join('') : '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:20px">Nenhum mercado</div>';
+
+  } catch(e) {
+    console.error('Admin load error:', e);
+  }
+}
+
+async function adminCreateTestMarket() {
+  if (!authToken) return;
+  const title = prompt('Pergunta do mercado:');
+  if (!title) return;
+  const result = await api('POST', '/markets', {
+    title,
+    description: 'Mercado de teste criado pelo admin',
+    category: 'economics',
+    marketType: 'binary',
+    resolutionDate: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
+    liquidityB: 100,
+    outcomes: [{id:'yes',label:'SIM',quantity:0},{id:'no',label:'NÃO',quantity:0}]
+  });
+  if (result.market || result.id) {
+    alert('✅ Mercado criado!');
+    loadAdminData();
+  } else {
+    alert('Erro: ' + (result.error || JSON.stringify(result)));
+  }
+}
+
+async function adminResolveMarket(id, outcome) {
+  if (!authToken) return;
+  if (!confirm('Resolver mercado com: ' + outcome.toUpperCase() + '?')) return;
+  const result = await api('POST', '/markets/' + id + '/resolve', { outcome });
+  if (result.ok || result.market || result.success) {
+    alert('✅ Mercado resolvido!');
+    loadAdminData();
+  } else {
+    alert('Erro: ' + (result.error || JSON.stringify(result)));
+  }
+}
+
+async function adminClearTrades() {
+  if (!confirm('⚠️ Apagar TODAS as apostas? Irreversível!')) return;
+  const result = await api('DELETE', '/admin/trades');
+  alert(result.ok || result.success ? '✅ Apostas apagadas!' : 'Erro: ' + result.error);
+  loadAdminData();
+}
+
+async function adminClearMarkets() {
+  if (!confirm('⚠️ Apagar TODOS os mercados? Irreversível!')) return;
+  const result = await api('DELETE', '/admin/markets');
+  alert(result.ok || result.success ? '✅ Mercados apagados!' : 'Erro: ' + result.error);
+  loadAdminData();
+  loadRealMarkets();
+}
+
+async function adminResetUsers() {
+  if (!confirm('⚠️ Reset saldo de TODOS os utilizadores para R$1000?')) return;
+  const result = await api('POST', '/admin/reset-balances');
+  alert(result.ok || result.success ? '✅ Saldos resetados!' : 'Erro: ' + result.error);
+  loadAdminData();
+}
+
+
+// ── LOGIN TOGGLE ─────────────────────────────────
+function obShowLogin() {
+  const f = document.getElementById('ob-login-form');
+  if (f) { f.style.display = 'block'; document.getElementById('ob-login-email')?.focus(); }
+  const errEl = document.getElementById('ob-error');
+  if (errEl) errEl.textContent = '';
+}
+function obHideLogin() {
+  const f = document.getElementById('ob-login-form');
+  if (f) f.style.display = 'none';
+}
+
+
+// ── SEED MARKETS (admin only) ───────────────────
+async function seedMoreMarkets() {
+  if (!authToken || currentUser?.role !== 'admin') return;
+  const markets = [
+    { title: 'O Flamengo vai ser campeão do Brasileirão 2025?', category: 'sports' },
+    { title: 'O Bitcoin vai superar R$ 600.000 até dezembro 2025?', category: 'crypto' },
+    { title: 'A inflação IPCA ficará abaixo de 5% em 2025?', category: 'economics' },
+    { title: 'Lula completará seu mandato até 2026?', category: 'politics' },
+    { title: 'O dólar vai ultrapassar R$ 6,50 até junho 2025?', category: 'economics' },
+    { title: 'O Brasil vai sediar algum evento esportivo global em 2025?', category: 'sports' },
+    { title: 'A Petrobras vai pagar dividendos acima de R$ 3/ação em 2025?', category: 'economics' },
+    { title: 'O Corinthians vai cair para a Série B em 2025?', category: 'sports' },
+    { title: 'A taxa de desemprego no Brasil cai abaixo de 6% em 2025?', category: 'economics' },
+    { title: 'O Banco Central vai cortar a Selic para abaixo de 12% em 2025?', category: 'economics' },
+  ];
+  let created = 0;
+  for (const m of markets) {
+    try {
+      const r = await api('POST', '/markets', {
+        title: m.title, description: m.title, category: m.category,
+        marketType: 'binary', visibility: 'open',
+        resolutionDate: new Date(Date.now() + 180*24*60*60*1000).toISOString(),
+        outcomes: [{ id: 'yes', label: 'SIM' }, { id: 'no', label: 'NÃO' }],
+        liquidityB: 100
+      });
+      if (r && r.id) created++;
+    } catch(e) { console.log('Seed error:', e.message); }
+  }
+  console.log('Seeded:', created, 'markets');
+  loadRealMarkets();
+  return created;
+}
+
+
+// ── EXPERIENCE TAB ────────────────────────────────
+function expTab(tab) {
+  ['types','model','calib','whatsapp'].forEach(t => {
+    const p = document.getElementById('exp-panel-' + t);
+    const b = document.getElementById('exp-tab-' + t);
     if (p) p.style.display = t === tab ? 'block' : 'none';
     if (b) {
       b.style.borderBottomColor = t === tab ? 'var(--teal)' : 'transparent';
       b.style.color = t === tab ? 'var(--teal)' : 'rgba(255,255,255,0.4)';
     }
   });
-  if (tab === 'account') updateAccountTab();
 }
 
-function updateAccountTab() {
-  if (!currentUser) return;
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
-  set('acc-name', currentUser.displayName);
-  set('acc-email', currentUser.email);
-  set('acc-role', currentUser.role === 'admin' ? 'Administrador' : 'Utilizador');
-  set('acc-balance', 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2));
-  set('acc-referral', currentUser.referralCode || '—');
-  set('acc-kyc', currentUser.kycStatus === 'approved' ? '✅ Aprovado' : currentUser.kycStatus === 'none' ? '⏳ Pendente' : currentUser.kycStatus);
+
+// ── ADMIN ACTIONS ─────────────────────────────────
+async function adminWarnUser(userId, name) {
+  const msg = prompt('Mensagem de advertência para ' + name + ':');
+  if (!msg) return;
+  adminStatus('Advertência enviada para ' + name, 'ok');
+  // TODO: POST /api/admin/users/:id/warn
+}
+
+async function adminBanUser(userId, name) {
+  if (!confirm('Banir o utilizador ' + name + '? Esta ação suspende o acesso.')) return;
+  try {
+    await api('PUT', '/users/' + userId, { isActive: false });
+    adminStatus(name + ' foi banido ✅', 'ok');
+    await adminRefresh();
+  } catch(e) {
+    adminStatus('Erro ao banir: ' + e.message, 'err');
+  }
+}
+
+async function adminResolveMarket(marketId, outcome) {
+  const label = outcome === 'yes' ? 'SIM' : 'NÃO';
+  if (!confirm('Resolver este mercado com resultado ' + label + '?')) return;
+  try {
+    const r = await api('POST', '/markets/' + marketId + '/resolve', { outcome, resolution: 'manual' });
+    adminStatus('Mercado resolvido: ' + label + ' ✅', 'ok');
+    await adminRefresh();
+  } catch(e) {
+    adminStatus('Erro ao resolver: ' + e.message, 'err');
+  }
+}
+
+async function adminCancelMarket(marketId) {
+  if (!confirm('Cancelar este mercado? As apostas serão reembolsadas.')) return;
+  try {
+    await api('DELETE', '/markets/' + marketId);
+    adminStatus('Mercado cancelado ✅', 'ok');
+    await adminRefresh();
+    loadRealMarkets();
+  } catch(e) {
+    adminStatus('Erro ao cancelar: ' + e.message, 'err');
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -3366,16 +3847,31 @@ window.addEventListener('DOMContentLoaded', () => {
   if (storedToken && storedUser) {
     authToken = storedToken;
     currentUser = JSON.parse(storedUser);
-    console.log('✅ Session restored:', currentUser.displayName, '| role:', currentUser.role);
+    console.log('✅ Session restored:', currentUser.displayName);
   }
   loadRealMarkets();
   updateNavUser();
-  // Admin auto-redirect on session restore
-  if (window._isAdmin && currentUser?.role === 'admin') {
-    setTimeout(showAdmin, 500);
-  }
-  // tour disabled
+  setTimeout(startTour, 1000);
 });
+
+// Logout helper
+function logout() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('predict_token');
+  localStorage.removeItem('predict_user');
+  // Reset nav immediately without reload
+  const entrarBtn = document.querySelector('[data-page="onboard"]');
+  if (entrarBtn) entrarBtn.textContent = 'Entrar';
+  const balEl = document.querySelector('.nav-balance');
+  if (balEl) balEl.textContent = '';
+  const adminBtn = document.getElementById('admin-nav-btn');
+  if (adminBtn) adminBtn.style.display = 'none';
+  // Go to onboarding step 0
+  showPage('onboard', null);
+  obHideLogin();
+  if (typeof obStep === 'function') setTimeout(() => obStep(0), 50);
+}
 
 </script>
 
