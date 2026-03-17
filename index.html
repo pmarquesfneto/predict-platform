@@ -1884,7 +1884,6 @@ id="uc-form-4" style="display:none">
       <div class="ob-dot active" id="dot-0"></div>
       <div class="ob-dot" id="dot-1"></div>
       <div class="ob-dot" id="dot-2"></div>
-      <div class="ob-dot" id="dot-3"></div>
     </div>
 
     <!-- step 0: welcome -->
@@ -1895,7 +1894,7 @@ id="uc-form-4" style="display:none">
       <div class="ob-features">
         <div class="ob-feat"><div class="ob-feat-ico">📊</div>Preços matemáticos via algoritmo LMSR</div>
         <div class="ob-feat"><div class="ob-feat-ico">🏦</div>Resolução automática via Banco Central</div>
-        <div class="ob-feat" style="display:none"><div class="ob-feat-ico">⚡</div>Depósito e saque via PIX instantâneo</div>
+        <div class="ob-feat"><div class="ob-feat-ico">🎮</div>Versão beta — 100% gratuito, sem dinheiro real</div>
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
       <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
@@ -1908,8 +1907,7 @@ id="uc-form-4" style="display:none">
           </div>
           <div>
             <div class="kyc-label">Senha</div>
-            <input class="kyc-input" id="ob-login-password" type="password" placeholder="Sua senha"
-              onkeydown="if(event.key==='Enter')handleLogin()">
+            <input class="kyc-input" id="ob-login-password" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')handleLogin()">
           </div>
         </div>
         <div id="ob-error" style="color:#ff4455;font-size:12px;min-height:18px;margin:8px 0"></div>
@@ -1932,12 +1930,8 @@ id="uc-form-4" style="display:none">
       <button class="ob-skip" onclick="obStep(0)">← Voltar</button>
     </div>
 
-    <!-- step 2: KYC -->
+    <!-- step 2: free credits -->
     <div id="ob-2" class="ob-card" style="display:none">
-      <div class="ob-icon">🪪</div>
-
-    <!-- step 3: free credits -->
-    <div id="ob-3" class="ob-card" style="display:none">
       <div class="credits-coin">🎮</div>
       <div class="credits-amount">R$ 1.000</div>
       <div class="credits-label">em créditos de simulação — grátis!</div>
@@ -1952,35 +1946,7 @@ id="uc-form-4" style="display:none">
         Ao continuar você aceita os <span style="color:var(--teal);cursor:pointer" onclick="showPage('terms',null)">Termos de Uso</span>.
       </div>
       <button class="ob-btn" onclick="obFinish()">🚀 Começar a apostar →</button>
-      <button class="ob-skip" onclick="obStep(2)">← Voltar</button>
-    </div>
-      <div class="ob-h">Verificação de identidade</div>
-      <p class="ob-p">Necessário para apostas com dinheiro real. Processo 100% digital, leva 2 minutos.</p>
-      <div class="kyc-form">
-        <div><div class="kyc-label">CPF</div><input class="kyc-input" type="text" placeholder="000.000.000-00" maxlength="14"></div>
-        <div><div class="kyc-label">Data de nascimento</div><input class="kyc-input" type="date"></div>
-        <div><div style="display:none" class="kyc-label">Telefone (WhatsApp)</div><input class="kyc-input" type="tel" placeholder="+55 (11) 99999-9999"></div>
-      </div>
-      <div class="kyc-note">🔒 Seus dados são protegidos pela LGPD (Lei 13.709/2018) e nunca compartilhados com terceiros.</div>
-      <br>
-      <button class="ob-btn" onclick="obStep(3)">Verificar identidade →</button>
       <button class="ob-skip" onclick="obStep(1)">← Voltar</button>
-    </div>
-
-    <!-- step 3: PIX deposit -->
-    <div style="display:none"
-      <div class="ob-h">Fazer primeiro depósito</div>
-      <p class="ob-p">Escolha o valor e pague via PIX. O saldo aparece em segundos.</p>
-      <div class="pix-amount-row">
-        <button class="pix-amount-btn" onclick="selPix(this,'50')">R$50</button>
-        <button class="pix-amount-btn sel" onclick="selPix(this,'100')">R$100</button>
-        <button class="pix-amount-btn" onclick="selPix(this,'250')">R$250</button>
-        <button class="pix-amount-btn" onclick="selPix(this,'500')">R$500</button>
-      </div>
-      <div class="pix-qr"><div class="pix-qr-inner">⚡</div></div>
-      <div class="pix-key">00020126580014br.gov.bcb.pix0136a629532e-7693-4846-b8d4-predict-0001</div>
-      <button class="ob-btn" onclick="showPage('home',null)">✓ Já paguei — ir para mercados</button>
-      <!-- BETA: Depositar depois hidden -->
     </div>
   </div>
 </div>
@@ -3599,7 +3565,7 @@ async function adminRefresh() {
       document.getElementById('adm-users-list').innerHTML = lb.map(u => {
         if (u.role === 'admin') return '<div style="background:var(--dark-card);border:1px solid rgba(239,159,39,0.2);border-radius:10px;padding:14px;margin-bottom:8px"><b>' + (u.displayName||u.email) + '</b> — Administrador</div>';
         const uid = u.id; const uname = (u.displayName||'').replace(/'/g,'');
-        return '<div data-uid="'+uid+'" data-uname="'+uname+'" style="cursor:pointer;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px" onmouseover="this.style.borderColor=\'rgba(29,158,117,0.4)\'" onmouseout="this.style.borderColor=\'var(--dark-border)\'"'+'>'
+        return '<div data-mid="'+mid+'" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
           + '<div><div style="font-size:14px;font-weight:700">' + (u.displayName||'—') + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">' + (u.email||'') + '</div>'
@@ -3635,7 +3601,7 @@ async function adminRefresh() {
         const no  = mkt.outcomes ? (mkt.outcomes[1]?.quantity||0) : 0;
         const pct = Math.round(yes / Math.max(1, yes+no) * 100);
         const mid = mkt.id;
-        return '<div data-uid="'+uid+'" data-uname="'+uname+'" style="cursor:pointer;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px" onmouseover="this.style.borderColor=\'rgba(29,158,117,0.4)\'" onmouseout="this.style.borderColor=\'var(--dark-border)\'"'+'>'
+        return '<div data-mid="'+mid+'" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">'
           + '<div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">' + mkt.title + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">' + mkt.category + ' · ' + mkt.status + ' · Vol: R$ ' + vol.toFixed(0) + '</div></div>'
