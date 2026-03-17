@@ -1995,8 +1995,8 @@ id="uc-form-4" style="display:none">
    API INTEGRATION — connects to real backend via ngrok
    ══════════════════════════════════════════════════════ */
 const API_BASE = 'https://predict-backend-44i1.onrender.com/api';
-let authToken = localStorage.getItem('predict_token') || null;
-let currentUser = JSON.parse(localStorage.getItem('predict_user') || 'null');
+let authToken = null;  // Set by DOMContentLoaded — never read from localStorage directly
+let currentUser = null; // Set by DOMContentLoaded — never read from localStorage directly
 
 // ── API helper ────────────────────────────────────────
 async function api(method, path, body) {
@@ -2194,26 +2194,6 @@ function updateNavUser() {
 
 // ── Init: load markets on page load ───────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // AUTO-FIX: Always clear admin sessions on page load (admin must login each visit)
-  try {
-    var _su = localStorage.getItem('predict_user');
-    if (_su) {
-      var _u = JSON.parse(_su);
-      if (_u && _u.role === 'admin') {
-        localStorage.removeItem('predict_token');
-        localStorage.removeItem('predict_user');
-      }
-    }
-  } catch(_e) {
-    localStorage.removeItem('predict_token');
-    localStorage.removeItem('predict_user');
-  }
-  // Support ?reset=1 to clear any session
-  if (location.search.includes('reset=1')) {
-    localStorage.removeItem('predict_token');
-    localStorage.removeItem('predict_user');
-    history.replaceState({}, '', location.pathname);
-  }
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
   const storedUser  = localStorage.getItem('predict_user');
@@ -3983,19 +3963,7 @@ async function adminAdjustBalance(userId, name) {
   } catch(e) { adminStatus('Erro: ' + e.message, 'err'); }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  // Restore session from localStorage
-  const storedToken = localStorage.getItem('predict_token');
-  const storedUser = localStorage.getItem('predict_user');
-  if (storedToken && storedUser) {
-    authToken = storedToken;
-    currentUser = JSON.parse(storedUser);
-    console.log('✅ Session restored:', currentUser.displayName);
-  }
-  loadRealMarkets();
-  updateNavUser();
-  setTimeout(startTour, 1000);
-});
+// Old DOMContentLoaded removed — session managed above
 
 // Logout helper
 function logout() {
@@ -4037,3 +4005,44 @@ function logout() {
     <div class="access-error" id="access-error"></div>
     <div class="access-btns">
       <but
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
