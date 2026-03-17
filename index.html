@@ -2331,15 +2331,42 @@ async function initMarketsData() {
   }
 }
 async function handleLogin() {
-  const emailEl = document.querySelector('#page-onboard input[type="email"]');
-  const passEl  = document.querySelector('#page-onboard input[type="password"]');
-  if (!emailEl || !passEl) return;
-  const result = await apiLogin(emailEl.value, passEl.value);
-  if (result.success) {
-    showToast('✅ Bem-vindo, ' + result.user.displayName + '!');
-    showPage('dashboard', null);
-  } else {
-    showToast('❌ ' + result.error);
+  const emailEl = document.getElementById('ob-login-email');
+  const passEl  = document.getElementById('ob-login-password');
+  const errEl   = document.getElementById('ob-error');
+  if (!emailEl || !passEl) { alert('Formulário não encontrado'); return; }
+  const email    = emailEl.value.trim();
+  const password = passEl.value.trim();
+  if (!email || !password) {
+    if (errEl) errEl.textContent = 'Preencha email e senha';
+    return;
+  }
+  const btn = document.querySelector('[onclick="handleLogin()"]');
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+  if (errEl) errEl.textContent = '';
+  try {
+    const data = await api('POST', '/auth/login', { email, password });
+    if (data && data.tokens && data.tokens.accessToken) {
+      authToken = data.tokens.accessToken;
+      currentUser = data.user;
+      localStorage.setItem('predict_token', authToken);
+      localStorage.setItem('predict_user', JSON.stringify(data.user));
+      updateNavUser();
+      if (typeof obHideLogin === 'function') obHideLogin();
+      if (currentUser.role === 'admin') {
+        await showAdmin();
+      } else {
+        showPage('dashboard', null);
+        setTimeout(updateDashboard, 200);
+      }
+    } else {
+      const msg = data?.error || 'Email ou senha incorretos';
+      if (errEl) errEl.textContent = msg; else alert(msg);
+    }
+  } catch(e) {
+    if (errEl) errEl.textContent = 'Erro: ' + e.message; else alert('Erro: ' + e.message);
+  } finally {
+    if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
 }
 
