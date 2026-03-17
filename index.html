@@ -3070,6 +3070,50 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeAccessModal();
 });
 
+
+// ── ONBOARDING FUNCTIONS ────────────────────────────
+let obCurrent2 = 0; // backup in case obCurrent not defined
+
+async function obRegister() {
+  const email = document.getElementById('ob-input-email')?.value?.trim();
+  const password = document.getElementById('ob-input-password')?.value?.trim();
+  const name = document.getElementById('ob-input-name')?.value?.trim();
+  if (!email || !password || !name) { alert('Preencha todos os campos'); return; }
+  if (password.length < 6) { alert('Senha mínima de 6 caracteres'); return; }
+  const btn = document.querySelector('[onclick="obRegister()"]');
+  if (btn) { btn.textContent = 'Criando...'; btn.disabled = true; }
+  try {
+    const result = await apiRegister(email, password, name);
+    if (result.ok || result.success) {
+      obStep(2);
+      updateNavUser();
+    } else {
+      alert('Erro: ' + (result.error || 'Tente novamente'));
+    }
+  } catch(e) { alert('Erro: ' + e.message); }
+  finally { if (btn) { btn.textContent = 'Criar conta →'; btn.disabled = false; } }
+}
+
+async function handleLogin() {
+  const emailEl = document.querySelector('#page-onboard input[type="email"]');
+  const passEl  = document.querySelector('#page-onboard input[type="password"]');
+  if (!emailEl || !passEl) return;
+  const btn = document.querySelector('[onclick="handleLogin()"]');
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+  try {
+    const result = await apiLogin(emailEl.value, passEl.value);
+    if (result.ok || result.success) {
+      showPage('dashboard', null);
+      updateNavUser();
+    } else {
+      const errEl = document.getElementById('ob-error');
+      if (errEl) errEl.textContent = result.error || 'Email ou senha incorretos';
+      else alert(result.error || 'Login falhou');
+    }
+  } catch(e) { alert('Erro: ' + e.message); }
+  finally { if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; } }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   loadRealMarkets();
   updateNavUser();
