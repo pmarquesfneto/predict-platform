@@ -3291,16 +3291,15 @@ async function handleLogin() {
 
 
 
+async showPage('admin',null);await adminRefresh();}
 async function showAdmin(){
   if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito a administradores');return;}
-  // Make admin page visible like other pages
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
   const ap=document.getElementById('page-admin');
   if(ap){ap.style.display='block';}
-  // Update nav
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
   await adminRefresh();
-}showPage('admin',null);await adminRefresh();}
+}
 function adminStatus(msg,type){const el=document.getElementById('adm-status');if(!el)return;el.style.display='block';const c={ok:{bg:'rgba(29,158,117,0.12)',b:'rgba(29,158,117,0.3)',col:'var(--teal)'},err:{bg:'rgba(255,68,85,0.12)',b:'rgba(255,68,85,0.3)',col:'#ff4455'},info:{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'}}[type]||{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'};el.style.background=c.bg;el.style.border='1px solid '+c.b;el.style.color=c.col;el.textContent=msg;if(type!=='info')setTimeout(()=>el.style.display='none',5000);}
 function adminTab(tab){['users','markets','trades'].forEach(t=>{const p=document.getElementById('adm-panel-'+t),b=document.getElementById('adm-tab-'+t);if(p)p.style.display=t===tab?'block':'none';if(b){b.style.borderBottomColor=t===tab?'var(--teal)':'transparent';b.style.color=t===tab?'var(--teal)':'rgba(255,255,255,0.4)';}});}
 async function adminRefresh(){adminStatus('A carregar...','info');const ts=document.getElementById('adm-timestamp');if(ts)ts.textContent='Actualizado: '+new Date().toLocaleTimeString('pt-BR');try{const lb=await api('GET','/leaderboard');if(lb&&Array.isArray(lb)){document.getElementById('adm-users').textContent=lb.length;document.getElementById('adm-users-list').innerHTML=lb.map(u=>'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-size:14px;font-weight:600">'+(u.displayName||u.email||'—')+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+(u.email||'')+' · '+(u.role||'user')+'</div></div><div style="text-align:right"><div style="font-size:14px;color:var(--teal);font-weight:600">R$ '+parseFloat(u.balancePlay||0).toFixed(2)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35)">P&amp;L: R$ '+parseFloat(u.totalPnl||0).toFixed(2)+'</div></div></div>').join('');}const m=await api('GET','/markets?limit=100');if(m&&m.markets){document.getElementById('adm-markets').textContent=m.total||m.markets.length;let v=0;document.getElementById('adm-markets-list').innerHTML=m.markets.map(mkt=>{v+=parseFloat(mkt.totalVolume||0);return'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600">'+mkt.title.slice(0,65)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+mkt.category+' · '+mkt.status+'</div></div><div style="font-size:11px;color:'+(mkt.visibility==='closed'?'var(--amber)':'var(--teal)')+'">'+( mkt.visibility==='closed'?'Fechado':'Aberto')+'</div></div>';}).join('');document.getElementById('adm-volume').textContent='R$ '+v.toFixed(0);}adminStatus('OK','ok');}catch(e){adminStatus('Erro: '+e.message,'err');}}
