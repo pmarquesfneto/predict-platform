@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Predict — Mercado de Probabilidades</title><!-- deploy:2026-03-17T16:15:12.995Z -->
+<title>Predict — Mercado de Probabilidades</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -1899,7 +1899,7 @@ id="uc-form-4" style="display:none">
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
       <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
-      <div id="ob-login-form" style="display:none;margin-top:16px">
+      <div id="ob-login-form" style="display:none;margin-top:20px">
         <div style="height:1px;background:var(--dark-border);margin:0 0 20px"></div>
         <div class="kyc-form">
           <div>
@@ -1988,20 +1988,6 @@ id="uc-form-4" style="display:none">
 
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ══ SECURITY: Clear admin sessions on page load ══
-(function(){
-  try {
-    var su = localStorage.getItem('predict_user');
-    if (su) {
-      var u = JSON.parse(su);
-      if (u && u.role === 'admin') {
-        localStorage.removeItem('predict_token');
-        localStorage.removeItem('predict_user');
-      }
-    }
-  } catch(e) {}
-})();
-
 
 
 
@@ -2077,7 +2063,7 @@ async function loadRealMarkets() {
   }
 
   // Update ticker
-  if(typeof updateTicker==="function")updateTicker();
+  updateTicker();
 
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
@@ -2183,56 +2169,54 @@ async function updateDashboard() {
   }
 }
 
-function updateTicker(){}
+function updateNavUser() {
+  const dashBtn  = document.getElementById('nav-dashboard');
+  const entrarBtn = document.getElementById('nav-entrar');
+  const balEl    = document.querySelector('.nav-balance');
 
-function updateNavUser(){
-  const dashBtn=document.getElementById('nav-dashboard');
-  const entrarBtn=document.getElementById('nav-entrar');
-  const balEl=document.querySelector('.nav-balance');
-  if(!currentUser){
-    // Logged out — reset everything to clean state
-    if(dashBtn)dashBtn.textContent='Minha Conta';
-    if(entrarBtn)entrarBtn.style.cssText='display:inline-block!important';
-    if(balEl)balEl.textContent='';
+  if (!currentUser) {
+    // LOGGED OUT — reset to clean state
+    if (dashBtn)   dashBtn.textContent = 'Minha Conta';
+    if (entrarBtn) { entrarBtn.style.display = ''; entrarBtn.removeAttribute('style'); }
+    if (balEl)     balEl.textContent = '';
     return;
   }
-  // Logged in
-  if(balEl)balEl.textContent='R$ '+parseFloat(currentUser.balancePlay||0).toFixed(2);
-  if(dashBtn){
-    const parts=currentUser.displayName.split(' ');
-    const name=parts.length>=2?parts[1]:parts[0];
-    dashBtn.textContent='Minha Conta · '+name;
+
+  // LOGGED IN
+  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
+  if (dashBtn) {
+    const parts = (currentUser.displayName || '').split(' ');
+    const name  = parts.length >= 2 ? parts[1] : parts[0];
+    dashBtn.textContent = 'Minha Conta · ' + name;
   }
-  if(entrarBtn)entrarBtn.style.cssText='display:none!important';
+  if (entrarBtn) entrarBtn.style.display = 'none';
 }
 
 // ── Init: load markets on page load ───────────────────
-
-function authTab(tab) {
-  const regPanel = document.getElementById('ob-register-panel');
-  const loginPanel = document.getElementById('ob-login-form');
-  const regTab = document.getElementById('tab-register');
-  const loginTab = document.getElementById('tab-login');
-  if (tab === 'login') {
-    if (regPanel) regPanel.style.display = 'none';
-    if (loginPanel) loginPanel.style.display = 'block';
-    if (regTab) { regTab.style.borderBottomColor='transparent'; regTab.style.color='rgba(255,255,255,0.4)'; }
-    if (loginTab) { loginTab.style.borderBottomColor='var(--teal)'; loginTab.style.color='var(--teal)'; }
-    setTimeout(() => document.getElementById('ob-login-email')?.focus(), 100);
-  } else {
-    if (regPanel) regPanel.style.display = 'block';
-    if (loginPanel) loginPanel.style.display = 'none';
-    if (regTab) { regTab.style.borderBottomColor='var(--teal)'; regTab.style.color='var(--teal)'; }
-    if (loginTab) { loginTab.style.borderBottomColor='transparent'; loginTab.style.color='rgba(255,255,255,0.4)'; }
-  }
-}
-// Update obShowLogin to use new tab system
-function obShowLogin() { authTab('login'); }
-function obHideLogin() { authTab('register'); }
-
 window.addEventListener('DOMContentLoaded', () => {
+  // Session restore — admin NEVER auto-restores (must login manually)
+  const storedToken = localStorage.getItem('predict_token');
+  const storedUser  = localStorage.getItem('predict_user');
+  if (storedToken && storedUser) {
+    try {
+      const u = JSON.parse(storedUser);
+      if (u && u.role !== 'admin') {
+        authToken   = storedToken;
+        currentUser = u;
+        AUTH_TOKEN   = storedToken;
+        CURRENT_USER = u;
+      } else {
+        // Admin session — clear it, must login each time
+        localStorage.removeItem('predict_token');
+        localStorage.removeItem('predict_user');
+      }
+    } catch (e) {
+      localStorage.removeItem('predict_token');
+      localStorage.removeItem('predict_user');
+    }
+  }
   loadRealMarkets();
-  updateNavUser(); // always called — handles null currentUser // always called — handles null currentUser
+  updateNavUser();
 });
 
 
@@ -2241,8 +2225,8 @@ window.addEventListener('DOMContentLoaded', () => {
    API CLIENT — connects frontend to localhost:3001
    ══════════════════════════════════════════════════════════════ */
 
-let AUTH_TOKEN = localStorage.getItem('predict_token') || null;
-let CURRENT_USER = JSON.parse(localStorage.getItem('predict_user') || 'null');
+let AUTH_TOKEN = null;
+let CURRENT_USER = null; // Session managed by DOMContentLoaded
 let CURRENT_MARKET_ID = null;
 
 async function apiReq(method, path, body) {
@@ -2348,37 +2332,52 @@ async function handleLogin() {
   const emailEl = document.getElementById('ob-login-email');
   const passEl  = document.getElementById('ob-login-password');
   const errEl   = document.getElementById('ob-error');
+
   if (!emailEl || !passEl) { alert('Formulário não encontrado'); return; }
+
   const email    = emailEl.value.trim();
   const password = passEl.value.trim();
   if (!email || !password) {
     if (errEl) errEl.textContent = 'Preencha email e senha';
     return;
   }
+
   const btn = document.querySelector('[onclick="handleLogin()"]');
   if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
   if (errEl) errEl.textContent = '';
+
   try {
     const data = await api('POST', '/auth/login', { email, password });
+
     if (data && data.tokens && data.tokens.accessToken) {
-      authToken = data.tokens.accessToken;
-      currentUser = data.user;
+      // Set session
+      authToken    = data.tokens.accessToken;
+      currentUser  = data.user;
+      AUTH_TOKEN   = authToken;
+      CURRENT_USER = currentUser;
       localStorage.setItem('predict_token', authToken);
-      localStorage.setItem('predict_user', JSON.stringify(data.user));
+      localStorage.setItem('predict_user', JSON.stringify(currentUser));
+
+      // Update nav
       updateNavUser();
+
+      // Close login form
       if (typeof obHideLogin === 'function') obHideLogin();
+      if (typeof authTab === 'function') authTab('register');
+
+      // Redirect based on role
       if (currentUser.role === 'admin') {
-        await showAdmin(); // admin goes to admin panel
+        await showAdmin();
       } else {
         showPage('dashboard', null);
-        setTimeout(updateDashboard, 200);
+        setTimeout(() => { if (typeof updateDashboard === 'function') updateDashboard(); }, 200);
       }
     } else {
       const msg = data?.error || 'Email ou senha incorretos';
-      if (errEl) errEl.textContent = msg; else alert(msg);
+      if (errEl) errEl.textContent = msg;
     }
-  } catch(e) {
-    if (errEl) errEl.textContent = 'Erro: ' + e.message; else alert('Erro: ' + e.message);
+  } catch (e) {
+    if (errEl) errEl.textContent = 'Erro: ' + e.message;
   } finally {
     if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
@@ -3516,16 +3515,19 @@ async function handleLogin() {
 // ══════════════════════════════════════════════════
 // ADMIN PANEL
 // ══════════════════════════════════════════════════
-
-
-async function showAdmin(){
-  if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito a administradores');return;}
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
-  const ap=document.getElementById('page-admin');
-  if(ap)ap.style.display='block';
+async function showAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('Acesso restrito a administradores'); return;
+  }
+  // Show admin page
+  document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  const ap = document.getElementById('page-admin');
+  if (ap) ap.style.display = 'block';
+  // Load data
   await adminRefresh();
 }
+
 function adminStatus(msg, type) {
   const el = document.getElementById('adm-status');
   if (!el) return;
@@ -3566,7 +3568,7 @@ async function adminRefresh() {
       document.getElementById('adm-users').textContent = lb.length;
       document.getElementById('adm-users-list').innerHTML = lb.map(u => {
         if (u.role === 'admin') return '<div style="background:var(--dark-card);border:1px solid rgba(239,159,39,0.2);border-radius:10px;padding:14px;margin-bottom:8px"><b>' + (u.displayName||u.email) + '</b> — Administrador</div>';
-        const uname = (u.displayName||'').replace(/"/g,'');
+        const uid = u.id; const uname = (u.displayName||'').replace(/'/g,'');
         return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
           + '<div><div style="font-size:14px;font-weight:700">' + (u.displayName||'—') + '</div>'
@@ -3575,17 +3577,11 @@ async function adminRefresh() {
           + '<div style="text-align:right"><div style="font-size:16px;font-weight:700;color:var(--teal)">R$ ' + parseFloat(u.balancePlay||0).toFixed(2) + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">P&L: R$ ' + parseFloat(u.totalPnl||0).toFixed(2) + '</div></div></div>'
           + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-          + '<button data-uid="' + u.id + '" data-uname="' + uname + '" data-action="warn" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>'
-          + '<button data-uid="' + u.id + '" data-uname="' + uname + '" data-action="ban" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>'
-          + '<button data-uid="' + u.id + '" data-uname="' + uname + '" data-action="balance" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>'
+          + '<button data-uid="' + uid + '" data-uname="' + uname + '" data-action="warn" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>'
+          + '<button data-uid="' + uid + '" data-uname="' + uname + '" data-action="ban" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>'
+          + '<button data-uid="' + uid + '" data-uname="' + uname + '" data-action="balance" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>'
           + '</div></div>';
       }).join('');
-      document.getElementById('adm-users-list').onclick = function(e) {
-        const btn = e.target.closest('.adm-user-btn'); if(!btn) return;
-        if (btn.dataset.action==='warn') adminWarnUser(btn.dataset.uid, btn.dataset.uname);
-        else if (btn.dataset.action==='ban') adminBanUser(btn.dataset.uid, btn.dataset.uname);
-        else if (btn.dataset.action==='balance') adminAdjustBalance(btn.dataset.uid, btn.dataset.uname);
-      };
       // Attach events via delegation
       document.getElementById('adm-users-list').onclick = function(e) {
         const btn = e.target.closest('.adm-user-btn');
@@ -3603,28 +3599,26 @@ async function adminRefresh() {
       document.getElementById('adm-markets').textContent = m.total || m.markets.length;
       let totalVol = 0;
       document.getElementById('adm-markets-list').innerHTML = m.markets.map(mkt => {
-        const vol = parseFloat(mkt.totalVolume||0); totalVol += vol;
+        const vol = parseFloat(mkt.totalVolume||0);
+        totalVol += vol;
         const yes = mkt.outcomes ? (mkt.outcomes[0]?.quantity||0) : 0;
         const no  = mkt.outcomes ? (mkt.outcomes[1]?.quantity||0) : 0;
         const pct = Math.round(yes / Math.max(1, yes+no) * 100);
+        const mid = mkt.id;
         return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">'
           + '<div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">' + mkt.title + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">' + mkt.category + ' · ' + mkt.status + ' · Vol: R$ ' + vol.toFixed(0) + '</div></div>'
           + '<span style="font-size:11px;color:' + (mkt.visibility==='closed'?'var(--amber)':'var(--teal)') + ';white-space:nowrap">' + (mkt.visibility==='closed'?'🔒 Fechado':'🌐 Aberto') + '</span></div>'
-          + '<div style="height:4px;background:var(--dark-border);border-radius:100px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:' + pct + '%;background:var(--teal);border-radius:100px"></div></div>'
+          + '<div style="height:4px;background:var(--dark-border);border-radius:100px;overflow:hidden;margin-bottom:4px">'
+          + '<div style="height:100%;width:' + pct + '%;background:var(--teal);border-radius:100px"></div></div>'
           + '<div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px"><span>SIM ' + pct + '%</span><span>NÃO ' + (100-pct) + '%</span></div>'
           + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-          + '<button data-mid="' + mkt.id + '" data-action="yes" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">✅ Resolver SIM</button>'
-          + '<button data-mid="' + mkt.id + '" data-action="no" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.3);color:#ff4455;background:rgba(255,68,85,0.06);border-radius:8px;cursor:pointer">❌ Resolver NÃO</button>'
-          + '<button data-mid="' + mkt.id + '" data-action="cancel" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid var(--dark-border);color:rgba(255,255,255,0.5);background:none;border-radius:8px;cursor:pointer">🗑 Cancelar</button>'
+          + '<button data-mid="' + mid + '" data-action="yes" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">✅ Resolver SIM</button>'
+          + '<button data-mid="' + mid + '" data-action="no" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.3);color:#ff4455;background:rgba(255,68,85,0.06);border-radius:8px;cursor:pointer">❌ Resolver NÃO</button>'
+          + '<button data-mid="' + mid + '" data-action="cancel" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid var(--dark-border);color:rgba(255,255,255,0.5);background:none;border-radius:8px;cursor:pointer">🗑 Cancelar</button>'
           + '</div></div>';
       }).join('');
-      document.getElementById('adm-markets-list').onclick = function(e) {
-        const btn = e.target.closest('.adm-mkt-btn'); if(!btn) return;
-        if (btn.dataset.action==='cancel') adminCancelMarket(btn.dataset.mid);
-        else adminResolveMarket(btn.dataset.mid, btn.dataset.action);
-      };
       // Attach events via delegation
       document.getElementById('adm-markets-list').onclick = function(e) {
         const btn = e.target.closest('.adm-mkt-btn');
@@ -3718,7 +3712,14 @@ function doLogout() {
 // ── ADMIN PANEL ─────────────────────────────────────
 let currentAdminTab = 'users';
 
-
+async function showAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('Acesso restrito a administradores');
+    return;
+  }
+  showPage('admin', null);
+  await loadAdminData();
+}
 
 function adminTab(tab) {
   currentAdminTab = tab;
@@ -3963,45 +3964,43 @@ async function adminAdjustBalance(userId, name) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // NEVER restore admin sessions — admin must always login manually
-  try {
-    const _st = localStorage.getItem('predict_token');
-    const _su = localStorage.getItem('predict_user');
-    if (_st && _su) {
-      const _u = JSON.parse(_su);
-      if (!_u || _u.role === 'admin') {
-        localStorage.clear();
-      } else {
-        authToken = _st;
-        currentUser = _u;
-      }
-    }
-  } catch(e) { localStorage.clear(); }
+  // Restore session from localStorage
+  const storedToken = localStorage.getItem('predict_token');
+  const storedUser = localStorage.getItem('predict_user');
+  if (storedToken && storedUser) {
+    authToken = storedToken;
+    currentUser = JSON.parse(storedUser);
+    console.log('✅ Session restored:', currentUser.displayName);
+  }
   loadRealMarkets();
   updateNavUser();
-});// Logout helper
+  setTimeout(startTour, 1000);
+});
+
+// Logout helper
 function logout() {
-  // Clear all session data
-  authToken = null;
-  currentUser = null;
+  // Clear all session state
+  authToken     = null;
+  currentUser   = null;
+  AUTH_TOKEN    = null;
+  CURRENT_USER  = null;
   localStorage.removeItem('predict_token');
   localStorage.removeItem('predict_user');
-  // Reset nav immediately
-  const dashBtn = document.getElementById('nav-dashboard');
-  if (dashBtn) dashBtn.textContent = 'Minha Conta';
-  const entrarBtn = document.getElementById('nav-entrar');
-  if (entrarBtn) entrarBtn.style.cssText = 'display:inline-block!important';
-  const balEl = document.querySelector('.nav-balance');
-  if (balEl) balEl.textContent = '';
-  // Go to home
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-  const hp = document.getElementById('page-home');
-  if (hp) hp.style.display = 'block';
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  const hBtn = document.querySelector('[data-page="home"]');
-  if (hBtn) hBtn.classList.add('active');
-  // Call updateNavUser to ensure clean state
+
+  // Reset nav via updateNavUser (which handles null currentUser)
   updateNavUser();
+
+  // Navigate to home
+  document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
+  const homePage = document.getElementById('page-home');
+  if (homePage) homePage.style.display = 'block';
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  const homeBtn = document.querySelector('[data-page="home"]');
+  if (homeBtn) homeBtn.classList.add('active');
+
+  // Reset onboard form
+  if (typeof obHideLogin === 'function') obHideLogin();
+  if (typeof authTab === 'function') authTab('register');
 }
 
 </script>
