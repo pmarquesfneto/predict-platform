@@ -2926,7 +2926,7 @@ function openMarket(marketId) {
 function showPage(id,btn,closeMobile){
   if(id==="dashboard") setTimeout(updateDashboard, 100);
   if(id==="share")     setTimeout(populateShareSelect, 100);
-  if(id==="onboard")   setTimeout(obResetToLogin, 100);
+  if(id==="onboard")   setTimeout(obShowLogin, 150);
   if(id==="experience") setTimeout(()=>expTab('explore'), 100);
   if(id==="listing")   setTimeout(()=>{ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
   if(id==="market" && MARKETS.length > 0 && !CURRENT_MARKET_ID) setTimeout(() => openMarket(MARKETS[0].id), 50);
@@ -4459,10 +4459,6 @@ function logout() {
 }
 
 </script>
-
-
-
-
 
 
 
