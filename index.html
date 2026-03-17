@@ -752,7 +752,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ HOME ══════════════════════════════════════════════════════ -->
-<div class="page active" id="page-home">
+<div class="page active" id="page-home" style="display:block">
   <div class="hero">
     <div class="hero-bg"></div><div class="hero-grid"></div>
     <div class="hero-content">
@@ -770,12 +770,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
         <div><div class="hnum-val"><span>138</span></div><div class="hnum-lbl">Mercados abertos</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="ticker-wrap">
+  
+<div class="ticker-wrap">
     <div class="tick-lbl"><div class="logo-dot" style="width:5px;height:5px"></div>AO VIVO</div>
     <div class="ticker-scroll"><div class="ticker-track" id="ticker"></div></div>    </div></div>
-  </div>
+  
 
   <div class="section">
     <div class="sec-hd"><div class="sec-title">🔥 Mercados em destaque</div><button class="sec-more" onclick="showPage('listing',null)">Ver todos →</button></div>
@@ -787,15 +786,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <p style="text-align:center;color:rgba(255,255,255,0.35);font-size:13px;max-width:460px;margin:0 auto">Cada aposta é embasada em probabilidades reais. Não é cassino — é inteligência coletiva.</p>
     <div class="why-grid">
       <div class="why-card"><div class="why-icon">📊</div><div class="why-t">Preços via LMSR</div><div class="why-b">Algoritmo matemático garante preços justos e liquidez imediata, sempre. Sem market makers.</div></div>
-      <div class="why-card"><div class="why-icon">🏦</div><div class="why-t">Resolução automática</div><div class="why-b">Selic, IPCA e PIB resolvidos via API oficial do Banco Central. Zero viés humano.</div></div>
-      <div class="why-card"><div class="why-icon">🎯</div><div class="why-t">Calibração pública</div><div class="why-b">Scores de acurácia visíveis para todos. Aprenda com quem realmente sabe prever.</div></div>
-      <div class="why-card"><div class="why-icon">⚡</div><div class="why-t">Sem dinheiro real</div><div class="why-b">Plataforma 100% gratuita. Comece com R$1.000 em créditos de simulação instantaneamente.</div></div>
-    </div>
-  </div>
+
 </div>
 
 <!-- ══ LISTING ════════════════════════════════════════════════════ -->
-<div class="page" id="page-listing">
+</div>
+<div class="page" id="page-listing" style="display:none">
   <div class="list-hero">
     <h2>Explorar Mercados</h2>
     <p class="list-sub" id="list-sub-text">A carregar...</p>
@@ -817,7 +813,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ MARKET DETAIL ══════════════════════════════════════════════ -->
-<div class="page" id="page-market">
+<div class="page" id="page-market" style="display:none">
   <div class="mkt-wrap">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
       <button class="back-btn" onclick="showPage('listing',null)">← Voltar</button>
@@ -879,7 +875,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ DASHBOARD ══════════════════════════════════════════════════ -->
-<div class="page" id="page-dashboard">
+<div class="page" id="page-dashboard" style="display:none">
   <div class="dash">
     <div class="dash-hd">
       <div>
@@ -911,7 +907,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ MARKET TYPES ═══════════════════════════════════════════════ -->
-<div class="page" id="page-markets">
+<div class="page" id="page-markets" style="display:none">
   <div class="mkt-types-hero">
     <div class="mkt-types-bg"></div>
     <div class="mkt-types-content">
@@ -1088,7 +1084,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ FINANCIAL MODEL ════════════════════════════════════════════ -->
-<div class="page" id="page-financial">
+<div class="page" id="page-financial" style="display:none">
   <div class="fin-hero">
     <div class="eyebrow" style="margin-bottom:16px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Modelo Financeiro Interativo</div>
     <h2 class="fin-h">Projete o potencial da Predict.</h2>
@@ -1228,7 +1224,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
 
 <!-- ══ PITCH / INVESTOR ═══════════════════════════════════════════ -->
-<div class="page" id="page-pitch">
+<div class="page" id="page-pitch" style="display:none">
   <div style="max-width:860px;margin:0 auto;padding:24px 16px">
     <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;margin-right:6px"></span>Para Você</div>
     <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:4px">Como a Predict se adapta a ti</div>
@@ -1304,7 +1300,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
 
 <!-- ══ SHARE RECEIPT ══════════════════════════════════════════════ -->
-<div class="page" id="page-share">
+<div class="page" id="page-share" style="display:none">
   <div class="share-page">
     <div class="eyebrow" style="margin-bottom:18px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Compartilhar Aposta</div>
     <div class="share-hero-h">Mostre que você acertou. 🏆</div>
@@ -1373,7 +1369,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ CALIBRATION ════════════════════════════════════════════════ -->
-<div class="page" id="page-calibration">
+<div class="page" id="page-calibration" style="display:none">
   <div class="calib-page">
     <div class="calib-header">
       <div class="eyebrow" style="margin-bottom:14px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Calibração</div>
@@ -1416,7 +1412,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <!-- ══ USER CREATE MARKET ═════════════════════════════════════════ -->
-<div class="page" id="page-create">
+<div class="page" id="page-create" style="display:none">
   <div class="ucreate-page">
     <div class="eyebrow" style="margin-bottom:14px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Criar Mercado</div>
     <div class="ucreate-h">Crie seu próprio mercado.</div>
@@ -1516,7 +1512,7 @@ id="uc-form-4" style="display:none">
 </div>
 
 <!-- ══ WHATSAPP BOT ════════════════════════════════════════════════ -->
-<div class="page" id="page-whatsapp">
+<div class="page" id="page-whatsapp" style="display:none">
   <div class="wa-page">
     <div class="eyebrow" style="margin-bottom:16px"><span style="width:5px;height:5px;border-radius:50%;background:#25D366;display:inline-block"></span> Predict no WhatsApp</div>
     <div class="wa-h">Aposte sem abrir o app.</div>
@@ -1562,7 +1558,7 @@ id="uc-form-4" style="display:none">
 
 
 <!-- ══ TERMS OF USE ══════════════════════════════════════════════ -->
-<div class="page" id="page-terms">
+<div class="page" id="page-terms" style="display:none">
   <div class="terms-page">
     <div class="eyebrow" style="margin-bottom:14px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Termos de Uso</div>
     <div class="terms-h">Termos de Uso e<br>Política de Simulação</div>
@@ -1615,7 +1611,7 @@ id="uc-form-4" style="display:none">
 
 
 <!-- ══ EXPERIÊNCIA PAGE ════════════════════════════════ -->
-<div class="page" id="page-experience">
+<div class="page" id="page-experience" style="display:none">
   <div style="max-width:860px;margin:0 auto;padding:24px 16px">
     <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;margin-right:6px"></span>Experiência</div>
     <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:4px">Como a Predict funciona</div>
@@ -1787,7 +1783,7 @@ id="uc-form-4" style="display:none">
 </div>
 
 <!-- ══ ADMIN PAGE ══════════════════════════════════════ -->
-<div class="page" id="page-admin">
+<div class="page" id="page-admin" style="display:none">
   <div style="max-width:900px;margin:0 auto;padding:24px 16px">
     <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:6px"></span>Admin</div>
     <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--amber);margin-bottom:4px">Painel Administrativo</div>
@@ -1841,7 +1837,7 @@ id="uc-form-4" style="display:none">
 </div>
 
 <!-- ══ ONBOARDING ══════════════════════════════════════════════════ -->
-<div class="page" id="page-onboard">
+<div class="page" id="page-onboard" style="display:none">
   <div class="onboard">
     <!-- Tab switcher -->
     <div style="display:flex;gap:0;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:4px;margin-bottom:24px">
@@ -2536,6 +2532,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('predict_lang');
     if (savedLang && savedLang !== 'pt') { currentLang = savedLang; toggleLang(); }
   } catch(e) {}
+  // Ensure home page is visible on load
+  showPage('home', null);
 });
 
 
@@ -2924,39 +2922,43 @@ function openMarket(marketId) {
 }
 
 function showPage(id,btn,closeMobile){
-  if(id==="dashboard") setTimeout(updateDashboard, 100);
-  if(id==="share")     setTimeout(populateShareSelect, 100);
-  if(id==="onboard")   setTimeout(obShowLogin, 150);
-  if(id==="experience") setTimeout(()=>expTab('explore'), 100);
-  if(id==="listing")   setTimeout(()=>{ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
-  if(id==="market" && MARKETS.length > 0 && !CURRENT_MARKET_ID) setTimeout(() => openMarket(MARKETS[0].id), 50);
+  // Side effects per page
+  if(id==='dashboard')  setTimeout(updateDashboard, 100);
+  if(id==='share')      setTimeout(populateShareSelect, 100);
+  if(id==='experience') setTimeout(function(){ if(typeof expTab==='function') expTab('explore'); }, 100);
+  if(id==='listing')    setTimeout(function(){ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
+  if(id==='onboard')    setTimeout(function(){ if(typeof obShowLogin==='function') obShowLogin(); }, 200);
 
-  // Hide ALL pages — both systems (classList + style.display)
-  document.querySelectorAll('.page').forEach(p=>{
-    p.classList.remove('active');
-    p.style.display = 'none';
-  });
+  // Hide every page — use BOTH style.display and classList
+  var all = document.querySelectorAll('.page');
+  for(var k=0;k<all.length;k++){
+    all[k].style.display = 'none';
+    all[k].classList.remove('active');
+  }
 
-  // Show target page — both systems
+  // Show the target page
   var pg = document.getElementById('page-'+id);
   if(pg){
-    pg.classList.add('active');
     pg.style.display = 'block';
+    pg.classList.add('active');
   }
+
+  // Scroll to top
   window.scrollTo(0,0);
 
-  // Update nav tab active state
-  document.querySelectorAll('.nav-tab').forEach(function(t){
-    t.classList.remove('active');
-    if(t.getAttribute('data-page')===id) t.classList.add('active');
-  });
+  // Update nav active state
+  var tabs = document.querySelectorAll('.nav-tab, .mobile-tab');
+  for(var j=0;j<tabs.length;j++){
+    tabs[j].classList.remove('active');
+    if(tabs[j].getAttribute('data-page')===id) tabs[j].classList.add('active');
+  }
   if(btn && btn.classList) btn.classList.add('active');
 
-  // Close mobile menu if requested
+  // Close mobile menu
   if(closeMobile){
     var mm=document.getElementById('mobile-menu');
-    if(mm) mm.classList.remove('open');
     var hb=document.getElementById('hamburger');
+    if(mm) mm.classList.remove('open');
     if(hb) hb.classList.remove('open');
   }
 }
@@ -3928,14 +3930,14 @@ async function showAdmin() {
   if (!currentUser || currentUser.role !== 'admin') {
     alert('Acesso restrito a administradores'); return;
   }
-  // Use unified showPage so both CSS systems are handled
-  document.querySelectorAll('.page').forEach(p=>{
-    p.classList.remove('active');
-    p.style.display = 'none';
-  });
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
-  const ap = document.getElementById('page-admin');
-  if (ap) { ap.classList.add('active'); ap.style.display = 'block'; }
+  var all = document.querySelectorAll('.page');
+  for(var k=0;k<all.length;k++){
+    all[k].style.display = 'none';
+    all[k].classList.remove('active');
+  }
+  document.querySelectorAll('.nav-tab, .mobile-tab').forEach(function(b){ b.classList.remove('active'); });
+  var ap = document.getElementById('page-admin');
+  if(ap){ ap.style.display = 'block'; ap.classList.add('active'); }
   await adminRefresh();
 }
 
