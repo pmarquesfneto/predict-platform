@@ -712,7 +712,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 <nav>
   <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>Predict</div>
   <div class="nav-tabs">
-    <button id="admin-nav-btn" onclick="showAdmin()" style="display:none;background:var(--amber);color:#000;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px">⚙ Admin</button>
     <button class="nav-tab active" data-page="home" onclick="showPage('home',this)">Início</button>
     <button class="nav-tab" data-page="listing" onclick="showPage('listing',this)">Explorar</button>
     <button class="nav-tab" data-page="market" onclick="showPage('market',this)">Mercado</button>
@@ -2005,7 +2004,15 @@ function updateNavUser() {
   if (adminBtn) adminBtn.style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
   // Change Entrar to show user name
   const entrarBtn = document.querySelector('[data-page="onboard"]');
-  if (entrarBtn) entrarBtn.textContent = currentUser.displayName?.split(' ')[0] || 'Conta';
+  if (entrarBtn) {
+    if (currentUser.role === 'admin') {
+      entrarBtn.textContent = '⚙ Admin';
+      entrarBtn.onclick = function() { showAdmin(); };
+    } else {
+      entrarBtn.textContent = currentUser.displayName?.split(' ')[0] || 'Conta';
+      entrarBtn.onclick = function() { showPage('dashboard', null); };
+    }
+  }
 }
 
 // ── Init: load markets on page load ───────────────────
@@ -2154,8 +2161,8 @@ async function handleLogin() {
   if (!emailEl || !passEl) { alert('Formulario nao encontrado'); return; }
   const email    = emailEl.value.trim();
   const password = passEl.value.trim();
-  if (!email || !password) { if(errEl) errEl.textContent='Preencha email e senha'; return; }
-  const btn = document.querySelector('#ob-0 [onclick="handleLogin()"]') || document.querySelector('[onclick="handleLogin()"]');
+  if (!email || !password) { if(errEl) errEl.textContent = 'Preencha email e senha'; return; }
+  const btn = document.querySelector('[onclick="handleLogin()"]');
   if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
   if (errEl) errEl.textContent = '';
   try {
@@ -2166,9 +2173,14 @@ async function handleLogin() {
       localStorage.setItem('predict_token', authToken);
       localStorage.setItem('predict_user', JSON.stringify(data.user));
       obHideLogin();
-      showPage('dashboard', null);
       updateNavUser();
-      setTimeout(updateDashboard, 200);
+      // ADMIN -> admin page, USER -> dashboard
+      if (currentUser.role === 'admin') {
+        await showAdmin();
+      } else {
+        showPage('dashboard', null);
+        setTimeout(updateDashboard, 200);
+      }
     } else {
       const msg = data?.error || 'Email ou senha incorretos';
       if (errEl) errEl.textContent = msg; else alert(msg);
@@ -3362,6 +3374,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   loadRealMarkets();
   updateNavUser();
+  // Admin auto-redirect on session restore
+  if (window._isAdmin && currentUser?.role === 'admin') {
+    setTimeout(showAdmin, 500);
+  }
   // tour disabled
 });
 
