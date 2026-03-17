@@ -2907,39 +2907,36 @@ function showPage(id,btn,closeMobile){
   if(id==="experience") setTimeout(()=>expTab('explore'), 100);
   if(id==="listing")   setTimeout(()=>{ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
   if(id==="market" && MARKETS.length > 0 && !CURRENT_MARKET_ID) openMarket(MARKETS[0].id);
-  if(id==="onboard")   { obStep(0); setTimeout(obShowLogin, 100); }
-  // hide all pages
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  // show target page
-  var pg=document.getElementById('page-'+id);
-  if(pg) pg.classList.add('active');
+  if(id==="onboard")   setTimeout(obShowLogin, 150);
+
+  // Hide ALL pages — both systems (classList + style.display)
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+
+  // Show target page — both systems
+  var pg = document.getElementById('page-'+id);
+  if(pg){
+    pg.classList.add('active');
+    pg.style.display = 'block';
+  }
   window.scrollTo(0,0);
-  // update nav tabs - match by data-page attribute
+
+  // Update nav tab active state
   document.querySelectorAll('.nav-tab').forEach(function(t){
     t.classList.remove('active');
     if(t.getAttribute('data-page')===id) t.classList.add('active');
   });
-  // if explicit btn passed, also mark it active
   if(btn && btn.classList) btn.classList.add('active');
-  // mobile menu
+
+  // Close mobile menu if requested
   if(closeMobile){
     var mm=document.getElementById('mobile-menu');
     if(mm) mm.classList.remove('open');
-    document.querySelectorAll('.mobile-tab').forEach(function(t){
-      t.classList.remove('active');
-      if(t.getAttribute('data-page')===id) t.classList.add('active');
-    });
+    var hb=document.getElementById('hamburger');
+    if(hb) hb.classList.remove('open');
   }
-  // init charts
-  if(id==='market') setTimeout(initProbChart,100);
-  if(id==='dashboard') setTimeout(initPnlChart,100);
-  if(id==='pitch') setTimeout(initGrowthChart,100);
-  if(id==='markets') setTimeout(initMarketTypesPage,100);
-  if(id==='financial') setTimeout(calcFin,100);
-  if(id==='calibration') setTimeout(initCalibCharts,100);
-  if(id==='market') setTimeout(injectAISummary,400);
-  if(id==='share') launchConfetti(true);
-  if(id==='dashboard') { setTimeout(loadPortfolio,200); setTimeout(loadLeaderboard,300); }
 }
 function toggleMenu(){
   document.getElementById('mobile-menu').classList.toggle('open');
@@ -3909,10 +3906,14 @@ async function showAdmin() {
   if (!currentUser || currentUser.role !== 'admin') {
     alert('Acesso restrito a administradores'); return;
   }
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  // Use unified showPage so both CSS systems are handled
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
   const ap = document.getElementById('page-admin');
-  if (ap) ap.style.display = 'block';
+  if (ap) { ap.classList.add('active'); ap.style.display = 'block'; }
   await adminRefresh();
 }
 
