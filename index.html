@@ -2218,7 +2218,7 @@ function obHideLogin() { authTab('register'); }
 
 window.addEventListener('DOMContentLoaded', () => {
   loadRealMarkets();
-  updateNavUser(); // always call to ensure clean nav state
+  updateNavUser(); // always called — handles null currentUser // always called — handles null currentUser
 });
 
 
