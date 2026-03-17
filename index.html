@@ -3493,7 +3493,7 @@ async function adminRefresh() {
       document.getElementById('adm-users').textContent = lb.length;
       document.getElementById('adm-users-list').innerHTML = lb.map(u => {
         if (u.role === 'admin') return '<div style="background:var(--dark-card);border:1px solid rgba(239,159,39,0.2);border-radius:10px;padding:14px;margin-bottom:8px"><b>' + (u.displayName||u.email) + '</b> — Administrador</div>';
-        const uid = u.id; const uname = (u.displayName||'').replace(/'/g,'');
+        const uname = (u.displayName||'').replace(/"/g,'');
         return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
           + '<div><div style="font-size:14px;font-weight:700">' + (u.displayName||'—') + '</div>'
@@ -3502,11 +3502,17 @@ async function adminRefresh() {
           + '<div style="text-align:right"><div style="font-size:16px;font-weight:700;color:var(--teal)">R$ ' + parseFloat(u.balancePlay||0).toFixed(2) + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">P&L: R$ ' + parseFloat(u.totalPnl||0).toFixed(2) + '</div></div></div>'
           + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-          + '<button data-uid="' + uid + '" data-uname="' + uname + '" data-action="warn" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>'
-          + '<button data-uid="' + uid + '" data-uname="' + uname + '" data-action="ban" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>'
-          + '<button data-uid="' + uid + '" data-uname="' + uname + '" data-action="balance" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>'
+          + '<button data-uid="' + u.id + '" data-uname="' + uname + '" data-action="warn" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>'
+          + '<button data-uid="' + u.id + '" data-uname="' + uname + '" data-action="ban" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>'
+          + '<button data-uid="' + u.id + '" data-uname="' + uname + '" data-action="balance" class="adm-user-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>'
           + '</div></div>';
       }).join('');
+      document.getElementById('adm-users-list').onclick = function(e) {
+        const btn = e.target.closest('.adm-user-btn'); if(!btn) return;
+        if (btn.dataset.action==='warn') adminWarnUser(btn.dataset.uid, btn.dataset.uname);
+        else if (btn.dataset.action==='ban') adminBanUser(btn.dataset.uid, btn.dataset.uname);
+        else if (btn.dataset.action==='balance') adminAdjustBalance(btn.dataset.uid, btn.dataset.uname);
+      };
       // Attach events via delegation
       document.getElementById('adm-users-list').onclick = function(e) {
         const btn = e.target.closest('.adm-user-btn');
@@ -3524,26 +3530,28 @@ async function adminRefresh() {
       document.getElementById('adm-markets').textContent = m.total || m.markets.length;
       let totalVol = 0;
       document.getElementById('adm-markets-list').innerHTML = m.markets.map(mkt => {
-        const vol = parseFloat(mkt.totalVolume||0);
-        totalVol += vol;
+        const vol = parseFloat(mkt.totalVolume||0); totalVol += vol;
         const yes = mkt.outcomes ? (mkt.outcomes[0]?.quantity||0) : 0;
         const no  = mkt.outcomes ? (mkt.outcomes[1]?.quantity||0) : 0;
         const pct = Math.round(yes / Math.max(1, yes+no) * 100);
-        const mid = mkt.id;
         return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
           + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">'
           + '<div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">' + mkt.title + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">' + mkt.category + ' · ' + mkt.status + ' · Vol: R$ ' + vol.toFixed(0) + '</div></div>'
           + '<span style="font-size:11px;color:' + (mkt.visibility==='closed'?'var(--amber)':'var(--teal)') + ';white-space:nowrap">' + (mkt.visibility==='closed'?'🔒 Fechado':'🌐 Aberto') + '</span></div>'
-          + '<div style="height:4px;background:var(--dark-border);border-radius:100px;overflow:hidden;margin-bottom:4px">'
-          + '<div style="height:100%;width:' + pct + '%;background:var(--teal);border-radius:100px"></div></div>'
+          + '<div style="height:4px;background:var(--dark-border);border-radius:100px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:' + pct + '%;background:var(--teal);border-radius:100px"></div></div>'
           + '<div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px"><span>SIM ' + pct + '%</span><span>NÃO ' + (100-pct) + '%</span></div>'
           + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-          + '<button data-mid="' + mid + '" data-action="yes" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">✅ Resolver SIM</button>'
-          + '<button data-mid="' + mid + '" data-action="no" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.3);color:#ff4455;background:rgba(255,68,85,0.06);border-radius:8px;cursor:pointer">❌ Resolver NÃO</button>'
-          + '<button data-mid="' + mid + '" data-action="cancel" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid var(--dark-border);color:rgba(255,255,255,0.5);background:none;border-radius:8px;cursor:pointer">🗑 Cancelar</button>'
+          + '<button data-mid="' + mkt.id + '" data-action="yes" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">✅ Resolver SIM</button>'
+          + '<button data-mid="' + mkt.id + '" data-action="no" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.3);color:#ff4455;background:rgba(255,68,85,0.06);border-radius:8px;cursor:pointer">❌ Resolver NÃO</button>'
+          + '<button data-mid="' + mkt.id + '" data-action="cancel" class="adm-mkt-btn" style="font-size:12px;padding:6px 14px;border:1px solid var(--dark-border);color:rgba(255,255,255,0.5);background:none;border-radius:8px;cursor:pointer">🗑 Cancelar</button>'
           + '</div></div>';
       }).join('');
+      document.getElementById('adm-markets-list').onclick = function(e) {
+        const btn = e.target.closest('.adm-mkt-btn'); if(!btn) return;
+        if (btn.dataset.action==='cancel') adminCancelMarket(btn.dataset.mid);
+        else adminResolveMarket(btn.dataset.mid, btn.dataset.action);
+      };
       // Attach events via delegation
       document.getElementById('adm-markets-list').onclick = function(e) {
         const btn = e.target.closest('.adm-mkt-btn');
