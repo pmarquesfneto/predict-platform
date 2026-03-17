@@ -722,7 +722,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)" id="nav-entrar">Entrar</button>
     </div>
   <div class="nav-right">
-    <div class="nav-bal">Saldo: <b>R$ 847,50</b></div>
+    <div class="nav-bal" id="nav-bal-wrap" style="display:none">Saldo: <b id="nav-bal-amount">R$ 0,00</b></div>
     <button class="btn-dep" onclick="showPage('onboard',null)" style="display:none">+ Depositar</button>
     <div class="hamburger" onclick="toggleMenu()" id="hamburger">
       <span></span><span></span><span></span>
@@ -1980,7 +1980,7 @@ id="uc-form-4" style="display:none">
       <div class="pix-qr"><div class="pix-qr-inner">⚡</div></div>
       <div class="pix-key">00020126580014br.gov.bcb.pix0136a629532e-7693-4846-b8d4-predict-0001</div>
       <button class="ob-btn" onclick="showPage('home',null)">✓ Já paguei — ir para mercados</button>
-      <button class="ob-skip" onclick="showPage('home',null)">Depositar depois</button>
+      <!-- BETA: Depositar depois hidden -->
     </div>
   </div>
 </div>
@@ -2178,9 +2178,13 @@ function updateNavUser() {
     if (dashBtn)   dashBtn.textContent = 'Minha Conta';
     if (entrarBtn) { entrarBtn.style.cssText = ''; }
     if (balEl)     balEl.textContent = '';
+    const nb = document.getElementById('nav-bal-wrap');
+    if (nb) nb.style.display = 'none';
     return;
   }
 
+  const navBalWrap = document.getElementById('nav-bal-wrap');
+  if (navBalWrap) navBalWrap.style.display = '';
   if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
   if (dashBtn) {
     const parts = (currentUser.displayName || '').split(' ');
@@ -3270,7 +3274,7 @@ const TOUR_STEPS=[
   {page:'dashboard',title:'Dashboard do Trader', body:'Acompanhe seu portfólio, P&L acumulado e posições abertas. O ranking mostra sua posição entre todos os traders da plataforma.',                           spotlight:'.kpis',            btn:'Ver pitch de investimento →'},
   {page:'markets', title:'5 Tipos de Mercado',       body:'Binário, Multi-resultado, Faixa, Escalar e Condicional. Cada tipo serve um caso de uso diferente — do apostador casual ao analista quantitativo.',  spotlight:'.mt-section',     btn:'Ver modelo financeiro →'},
   {page:'financial',title:'Modelo Financeiro',        body:'Ajuste os parâmetros e veja a projeção de receita em tempo real. Com 10.000 MAU e R$300 de ticket médio, a Predict projeta R$84k/mês de receita bruta.', spotlight:'.fin-kpis',       btn:'Ver pitch de investimento →'},
-  {page:'onboard',title:'Cadastro em 3 passos',  body:'CPF, dados básicos e PIX. Em menos de 3 minutos o usuário está apostando. Zero fricção — é o que diferencia a Predict de qualquer fintech tradicional.', spotlight:'.ob-card',         btn:'Reiniciar tour'},
+  {page:'onboard',title:'Cadastro em 3 passos',  body:'Cria a tua conta em menos de 1 minuto. Zero fricção — é o que diferencia a Predict de qualquer fintech tradicional.', spotlight:'.ob-card',         btn:'Reiniciar tour'},
 ];
 
 let tourStep=0,tourActive=false,tourTimer=null;
@@ -3751,7 +3755,7 @@ function doLogout() {
 }
 
 // ── ADMIN PANEL ─────────────────────────────────────
-let currentAdminTab = 'users';
+var currentAdminTab = 'users';
 
 async 
 
