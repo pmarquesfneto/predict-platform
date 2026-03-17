@@ -910,7 +910,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   <div class="dash">
     <div class="dash-hd">
       <div>
-        <div class="dash-welcome">Olá, <span id="dash-name">Usuário</span> 👋</div>
+        <div class="dash-welcome">Olá, <span id="dash-name">Usuário</span> 👋 <button onclick="logout()" style="float:right;background:rgba(255,255,255,0.05);border:1px solid var(--dark-border);color:rgba(255,255,255,0.4);padding:4px 12px;border-radius:100px;font-size:11px;cursor:pointer">Sair</button></div>
         <div class="dash-score">Score de calibração: <b id="dash-score">—</b></div>
       </div>
       <div style="display:flex;gap:8px"><button onclick="doLogout()" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.25);color:rgba(255,100,100,0.8);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer">Sair →</button></div>
@@ -1843,7 +1843,7 @@ async function loadRealMarkets() {
   }
 
   // Update ticker
-  updateTicker();
+  if (typeof updateTicker === "function") updateTicker();
 
   console.log('✅ Loaded', data.markets.length, 'real markets from API');
 }
@@ -1949,6 +1949,8 @@ async function updateDashboard() {
   }
 }
 
+function updateTicker() { /* ticker placeholder */ }
+
 function updateNavUser() {
   if (!currentUser) return;
   const balEl = document.querySelector('.nav-balance');
@@ -1956,6 +1958,9 @@ function updateNavUser() {
   // Show admin button only for admins
   const adminBtn = document.getElementById('admin-nav-btn');
   if (adminBtn) adminBtn.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+  // Change Entrar to show user name
+  const entrarBtn = document.querySelector('[data-page="onboard"]');
+  if (entrarBtn) entrarBtn.textContent = currentUser.displayName?.split(' ')[0] || 'Conta';
 }
 
 // ── Init: load markets on page load ───────────────────
@@ -3218,8 +3223,10 @@ async function handleLogin() {
   try {
     const result = await apiLogin(emailEl.value, passEl.value);
     if (result.ok || result.success) {
+      obHideLogin();
       showPage('dashboard', null);
       updateNavUser();
+      setTimeout(updateDashboard, 200);
     } else {
       const errEl = document.getElementById('ob-error');
       if (errEl) errEl.textContent = result.error || 'Email ou senha incorretos';
