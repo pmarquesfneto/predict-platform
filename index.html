@@ -1959,6 +1959,7 @@ async function loadRealMarkets() {
   if (!data || !data.markets || data.markets.length === 0) {
     // Empty state — clear the UI
     const featGrid = document.getElementById('featured-grid');
+
     if (featGrid) featGrid.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px;text-align:center;grid-column:1/-1">Nenhum mercado disponível de momento.</div>';
     const rowsEl = document.getElementById('market-rows');
     if (rowsEl) rowsEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px;text-align:center">Nenhum mercado disponível de momento.</div>';
@@ -2101,7 +2102,7 @@ async function updateDashboard() {
             + '</div>';
         }).join('');
       } else {
-        posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas. <span style="color:var(--teal);cursor:pointer" onclick="showPage('listing',null)">Explora os mercados →</span></div>';
+        posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas. <span style="color:var(--teal);cursor:pointer" onclick="showPage(\'listing\',null)">Explora os mercados →</span></div>';
       }
     } catch(e) {
       posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas.</div>';
@@ -4433,6 +4434,14 @@ function logout() {
   if (typeof authTab === 'function') authTab('register');
 }
 
+</script>
+
+
+
+
+
+
+
 - ══ ACCESS CODE MODAL ══════════════════════════════ -->
 <div class="access-modal" id="access-modal" style="display:none" onclick="if(event.target===this)closeAccessModal()">
   <div class="access-box">
@@ -4482,6 +4491,10 @@ function logout() {
     </div>
   </div>
 </div>
+
+
+
+
 
 
 <!-- ══ ADMIN MARKET DETAIL MODAL ══════════════════════════ -->
