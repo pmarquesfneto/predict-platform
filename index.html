@@ -832,15 +832,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 <!-- ══ MARKET DETAIL ══════════════════════════════════════════════ -->
 <div class="page" id="page-market">
   <div class="mkt-wrap">
-    <button class="back-btn" onclick="showPage('listing',null)">← Voltar</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <button class="back-btn" onclick="showPage('listing',null)">← Voltar</button>
+      <button id="mkt-delete-btn" style="display:none;font-size:12px;padding:6px 14px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.06);border-radius:8px;cursor:pointer" onclick="deleteCurrentMarket()">🗑 Eliminar mercado</button>
+    </div>
     <div class="mkt-layout">
       <div>
         <div style="margin-bottom:12px"><span class="mcat c-econ">📈 Economia</span></div>
-        <div class="mkt-title">Selic será cortada na próxima reunião do COPOM em agosto 2025?</div>
+        <div class="mkt-title" id="mkt-title-el">—</div>
         <div class="mkt-meta">
-          <div class="mkt-mi"><b>Volume:</b> R$ 284.320</div>
-          <div class="mkt-mi"><b>Traders:</b> 643</div>
-          <div class="mkt-mi"><b>Encerra:</b> 06 ago 2025</div>
+          <div class="mkt-mi"><b>Volume:</b> <span id="mkt-vol-el">—</span></div>
+          <div class="mkt-mi"><b>Traders:</b> <span id="mkt-traders-el">—</span></div>
+          <div class="mkt-mi"><b>Encerra:</b> <span id="mkt-closes-el">—</span></div>
           <div class="mkt-mi"><b>Resolução:</b> BCB Auto</div>
         </div>
         <div class="mkt-stats">
@@ -2376,6 +2379,72 @@ function applyTranslations() {
   try { localStorage.setItem('predict_lang', lang); } catch(e) {}
 }
 
+
+async function showAdminMarketDetail(marketId) {
+  const modal = document.getElementById('admin-mkt-modal');
+  if (!modal) return;
+
+  // Fill with loading state
+  ['amm-title','amm-status','amm-vol','amm-traders','amm-yes','amm-no',
+   'amm-trades','amm-cat','amm-creator','amm-created','amm-closes','amm-res-model','amm-vis']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '…'; });
+  modal.style.display = 'block';
+
+  try {
+    // Fetch full market details
+    const m = await api('GET', '/markets/' + marketId);
+    if (!m || !m.id) { alert('Mercado não encontrado'); modal.style.display='none'; return; }
+
+    const yes = m.outcomes ? (m.outcomes[0]?.quantity || 0) : 0;
+    const no  = m.outcomes ? (m.outcomes[1]?.quantity || 0) : 0;
+    const total = yes + no;
+    const yesPct = total > 0 ? Math.round(yes / total * 100) : 50;
+    const vol = parseFloat(m.totalVolume || 0);
+    const created = m.createdAt ? new Date(m.createdAt).toLocaleString('pt-BR') : '—';
+    const closes  = m.resolutionDate ? new Date(m.resolutionDate).toLocaleDateString('pt-BR') : '—';
+
+    document.getElementById('amm-title').textContent     = m.title;
+    document.getElementById('amm-status').textContent    = m.status || '—';
+    document.getElementById('amm-status').style.color    = m.status === 'open' ? 'var(--teal)' : 'var(--amber)';
+    document.getElementById('amm-vol').textContent       = 'R$ ' + vol.toFixed(2);
+    document.getElementById('amm-traders').textContent   = m.traderCount || m.participants || '—';
+    document.getElementById('amm-yes').textContent       = yesPct + '%';
+    document.getElementById('amm-no').textContent        = (100 - yesPct) + '%';
+    document.getElementById('amm-trades').textContent    = m.tradeCount || total || '—';
+    document.getElementById('amm-cat').textContent       = m.category || '—';
+    document.getElementById('amm-creator').textContent   = m.creatorName || m.creator?.displayName || m.creatorId || '—';
+    document.getElementById('amm-created').textContent   = created;
+    document.getElementById('amm-closes').textContent    = closes;
+    document.getElementById('amm-vis').textContent       = m.visibility === 'closed' ? '🔒 Fechado' : '🌐 Aberto';
+    document.getElementById('amm-res-model').textContent = m.resolutionModel || 'manual';
+    document.getElementById('amm-yes-pct').textContent   = 'SIM ' + yesPct + '%';
+    document.getElementById('amm-no-pct').textContent    = 'NÃO ' + (100 - yesPct) + '%';
+    document.getElementById('amm-bar').style.width       = yesPct + '%';
+
+    // Action buttons
+    document.getElementById('amm-btn-yes').onclick    = () => { adminResolveMarket(marketId, 'yes'); modal.style.display='none'; };
+    document.getElementById('amm-btn-no').onclick     = () => { adminResolveMarket(marketId, 'no');  modal.style.display='none'; };
+    document.getElementById('amm-btn-cancel').onclick = () => { adminCancelMarket(marketId); modal.style.display='none'; };
+  } catch(e) {
+    document.getElementById('amm-title').textContent = 'Erro: ' + e.message;
+  }
+}
+
+
+async function deleteCurrentMarket() {
+  const mkt = MARKETS.find(m => m.id === CURRENT_MARKET_ID);
+  if (!mkt || !mkt.apiId) return;
+  if (!confirm('Eliminar este mercado? Esta acção é irreversível.')) return;
+  const result = await api('DELETE', '/markets/' + mkt.apiId);
+  if (result !== null) {
+    alert('✅ Mercado eliminado.');
+    await loadRealMarkets();
+    showPage('listing', null);
+  } else {
+    alert('❌ Erro ao eliminar mercado.');
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -2714,17 +2783,42 @@ function filterM(cat,btn){
 }
 function openMarket(marketId){
   CURRENT_MARKET_ID = marketId || (MARKETS[0]?.id || null);
-  const mkt = MARKETS.find(m => m.id === CURRENT_MARKET_ID);
-  if (mkt) {
-    // Update market page with real data
-    const titleEl = document.querySelector('.prob-box h2, .market-title');
-    if (titleEl) titleEl.textContent = mkt.q;
-    const probEl = document.getElementById('prob-pct');
-    if (probEl) probEl.textContent = mkt.yes + '%';
-    const barEl = document.querySelector('.prob-bar-fill');
-    if (barEl) barEl.style.width = mkt.yes + '%';
+  const mkt = MARKETS.find(m => m.id === CURRENT_MARKET_ID || m.apiId === CURRENT_MARKET_ID);
+  if (!mkt) return;
+
+  // Update page-market with real data
+  const titleEl = document.getElementById('mkt-title-el') || document.querySelector('.mkt-title');
+  if (titleEl) titleEl.textContent = mkt.q;
+  const volEl = document.getElementById('mkt-vol-el');
+  if (volEl) volEl.textContent = mkt.vol || '—';
+  const closesEl = document.getElementById('mkt-closes-el');
+  if (closesEl) closesEl.textContent = mkt.closes || '—';
+
+  // Category badge
+  const catEl = document.querySelector('#page-market .mcat');
+  if (catEl) {
+    catEl.className = 'mcat ' + (catCls[mkt.cat] || '');
+    catEl.textContent = catLbl[mkt.cat] || mkt.cat;
   }
-  showPage('market',null);
+
+  // Probability
+  const probEl = document.getElementById('prob-pct');
+  if (probEl) probEl.textContent = mkt.yes + '%';
+  const prob2El = document.querySelector('.prob-no');
+  if (prob2El) prob2El.textContent = (100 - mkt.yes) + '%';
+
+  // Show/hide delete button (creator or admin)
+  const deleteBtn = document.getElementById('mkt-delete-btn');
+  if (deleteBtn) {
+    const canDelete = currentUser && (currentUser.role === 'admin' || mkt.creatorId === currentUser.id);
+    deleteBtn.style.display = canDelete ? 'block' : 'none';
+  }
+  showPage('market', null);
+
+  // Refresh real-time data from API
+  if (mkt.apiId && typeof refreshMarketPrice === 'function') {
+    refreshMarketPrice(mkt.apiId);
+  }
 }
 
 function showPage(id,btn,closeMobile){
@@ -3303,12 +3397,84 @@ function ucUpdateReview(){
   document.getElementById('uc-review-liq').textContent=l||'R$100';
   document.getElementById('uc-review-prob').textContent='Prob. inicial: '+p+'%';
 }
-function ucSubmit(){
-  var btn=document.querySelector('#uc-form-3 .ob-btn');
-  btn.textContent='✓ Proposta enviada para votação!';
-  btn.style.background='rgba(29,158,117,0.3)';
-  btn.disabled=true;
-  setTimeout(function(){showPage('listing',null);},2000);
+async function ucSubmit() {
+  if (!currentUser) {
+    alert('Tens de fazer login para criar um mercado.');
+    showPage('onboard', null);
+    return;
+  }
+
+  const question  = document.getElementById('uc-question')?.value?.trim();
+  const dateEl    = document.getElementById('uc-date')?.value;
+  const liqEl     = document.getElementById('uc-liq')?.value || 'R$ 100 (recomendado)';
+  const visEl     = document.getElementById('uc-vis-type') || document.querySelector('[data-uc-vis].sel');
+  const vis       = ucVisType || 'open';
+  const code      = vis === 'closed' ? ucCode : null;
+  const resModel  = document.querySelector('[name="uc-res-model"]:checked')?.value || 'manual';
+
+  if (!question || question.length < 10) {
+    alert('Escreve uma pergunta com pelo menos 10 caracteres.');
+    return;
+  }
+  if (!dateEl) {
+    alert('Escolhe uma data de resolução.');
+    return;
+  }
+
+  const liqMap = {'R$ 50 (básico)': 50, 'R$ 100 (recomendado)': 100, 'R$ 500 (avançado)': 500};
+  const liquidityB = liqMap[liqEl] || 100;
+
+  const btn = document.querySelector('#uc-form-3 .ob-btn');
+  if (btn) { btn.textContent = 'A criar mercado...'; btn.disabled = true; }
+
+  try {
+    const payload = {
+      title:          question,
+      description:    question,
+      category:       ucSelectedCat === 'econ' ? 'economics'
+                    : ucSelectedCat === 'sport' ? 'sports'
+                    : ucSelectedCat === 'pol'   ? 'politics'
+                    : ucSelectedCat === 'crypto'? 'crypto'
+                    : 'economics',
+      marketType:     'binary',
+      visibility:     vis,
+      accessCode:     code,
+      resolutionDate: new Date(dateEl).toISOString(),
+      outcomes:       [{ id: 'yes', label: 'SIM' }, { id: 'no', label: 'NÃO' }],
+      liquidityB:     liquidityB,
+      resolutionModel: resModel,
+    };
+
+    const result = await api('POST', '/markets', payload);
+
+    if (result && result.id) {
+      // Reload markets
+      await loadRealMarkets();
+
+      // Show success confirmation
+      if (btn) { btn.textContent = '✅ Mercado criado!'; btn.style.background = 'rgba(29,158,117,0.3)'; }
+
+      // Find the new market in MARKETS array and open it
+      const newMkt = MARKETS.find(m => m.apiId === result.id);
+      setTimeout(() => {
+        if (newMkt) {
+          openMarket(newMkt.id);
+        } else {
+          showPage('listing', null);
+        }
+        // Reset form
+        ucCurrentStep = 0;
+        if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; btn.style.background = ''; }
+      }, 1200);
+    } else {
+      const msg = result?.error || 'Erro ao criar mercado. Tenta novamente.';
+      alert('❌ ' + msg);
+      if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
+    }
+  } catch(e) {
+    alert('❌ Erro: ' + e.message);
+    if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
+  }
 }
 function voteUp(btn){
   var countEl=btn.previousElementSibling;
@@ -3748,7 +3914,7 @@ async function adminRefresh() {
         const no  = mkt.outcomes ? (mkt.outcomes[1]?.quantity||0) : 0;
         const pct = Math.round(yes / Math.max(1, yes+no) * 100);
         const mid = mkt.id;
-        return '<div data-mid="'+mid+'" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
+        return '<div data-mid="'+mid+'" style="cursor:pointer;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px" onmouseover="this.style.borderColor=\'rgba(29,158,117,0.4)\'" onmouseout="this.style.borderColor=\'var(--dark-border)\'" onclick="if(!event.target.closest(\'.adm-mkt-btn\')){showAdminMarketDetail(\''+mid+'\')}">'
           + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">'
           + '<div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">' + mkt.title + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">' + mkt.category + ' · ' + mkt.status + ' · Vol: R$ ' + vol.toFixed(0) + '</div></div>'
@@ -4235,6 +4401,51 @@ function logout() {
       <button id="um-btn-warn" style="font-size:12px;padding:8px 16px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>
       <button id="um-btn-ban" style="font-size:12px;padding:8px 16px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>
       <button id="um-btn-balance" style="font-size:12px;padding:8px 16px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ ADMIN MARKET DETAIL MODAL ══════════════════════════ -->
+<div id="admin-mkt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;overflow-y:auto;padding:24px 16px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="max-width:640px;margin:0 auto;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px">
+      <div style="flex:1;margin-right:12px">
+        <div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Detalhe do Mercado</div>
+        <div style="font-size:16px;font-weight:700;line-height:1.4" id="amm-title">—</div>
+      </div>
+      <button onclick="document.getElementById('admin-mkt-modal').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;flex-shrink:0">✕</button>
+    </div>
+    <!-- Stats grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">Status</div><div style="font-size:13px;font-weight:700" id="amm-status">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">Volume</div><div style="font-size:13px;font-weight:700;color:var(--teal)" id="amm-vol">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">Apostadores</div><div style="font-size:13px;font-weight:700" id="amm-traders">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">SIM</div><div style="font-size:13px;font-weight:700;color:var(--teal)" id="amm-yes">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">NÃO</div><div style="font-size:13px;font-weight:700;color:#ff4455" id="amm-no">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">Apostas</div><div style="font-size:13px;font-weight:700" id="amm-trades">—</div></div>
+    </div>
+    <!-- Info rows -->
+    <div style="display:grid;gap:8px;margin-bottom:16px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Categoria</span><span id="amm-cat">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Criado por</span><span id="amm-creator">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Data criação</span><span id="amm-created">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Data resolução</span><span id="amm-closes">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Visibilidade</span><span id="amm-vis">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Modelo resolução</span><span id="amm-res-model">—</span></div>
+    </div>
+    <!-- Probability bar -->
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-bottom:6px"><span style="color:var(--teal)" id="amm-yes-pct">SIM 50%</span><span style="color:#ff4455" id="amm-no-pct">NÃO 50%</span></div>
+      <div style="height:8px;background:var(--dark-border);border-radius:100px;overflow:hidden">
+        <div id="amm-bar" style="height:100%;width:50%;background:var(--teal);border-radius:100px;transition:width 0.3s"></div>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button id="amm-btn-yes" style="font-size:12px;padding:8px 16px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">✅ Resolver SIM</button>
+      <button id="amm-btn-no" style="font-size:12px;padding:8px 16px;border:1px solid rgba(255,68,85,0.3);color:#ff4455;background:rgba(255,68,85,0.06);border-radius:8px;cursor:pointer">❌ Resolver NÃO</button>
+      <button id="amm-btn-cancel" style="font-size:12px;padding:8px 16px;border:1px solid var(--dark-border);color:rgba(255,255,255,0.5);background:none;border-radius:8px;cursor:pointer">🗑 Cancelar Mercado</button>
     </div>
   </div>
 </div>
