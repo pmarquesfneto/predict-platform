@@ -719,7 +719,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <button class="nav-tab" data-page="experience" onclick="showPage('experience',this)">Experiência</button>
     <button class="nav-tab" data-page="pitch" onclick="showPage('pitch',this)">Para Você</button>
     <button class="nav-tab" data-page="create" onclick="showPage('create',this)">Criar Mercado</button>
-    <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)" id="nav-entrar">Entrar</button>
+    <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)" id="nav-entrar" style="background:var(--teal);color:#fff;border-radius:8px;padding:6px 16px;margin-left:4px">Entrar</button>
     </div>
   <div class="nav-right">
     <div class="nav-bal" id="nav-bal-wrap" style="display:none">Saldo: <b id="nav-bal-amount">R$ 0,00</b></div>
@@ -1843,73 +1843,59 @@ id="uc-form-4" style="display:none">
 <!-- ══ ONBOARDING ══════════════════════════════════════════════════ -->
 <div class="page" id="page-onboard">
   <div class="onboard">
-    <div class="ob-step-dots">
-      <div class="ob-dot active" id="dot-0"></div>
-      <div class="ob-dot" id="dot-1"></div>
-      <div class="ob-dot" id="dot-2"></div>
+    <!-- Tab switcher -->
+    <div style="display:flex;gap:0;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:4px;margin-bottom:24px">
+      <button id="ob-tab-login" onclick="obTabSwitch('login')" style="flex:1;padding:10px;border:none;border-radius:9px;background:var(--teal);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Entrar</button>
+      <button id="ob-tab-register" onclick="obTabSwitch('register')" style="flex:1;padding:10px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:14px;font-weight:600;cursor:pointer">Criar conta</button>
     </div>
 
-    <!-- step 0: welcome -->
-    <div id="ob-0" class="ob-card">
+    <!-- LOGIN panel -->
+    <div id="ob-panel-login" class="ob-card">
       <div class="ob-icon">🎯</div>
-      <div class="ob-h">Bem-vindo à Predict</div>
-      <p class="ob-p">O primeiro mercado de probabilidades do Brasil. Aposte com conhecimento, não com sorte.</p>
-      <div class="ob-features">
-        <div class="ob-feat"><div class="ob-feat-ico">📊</div>Preços matemáticos via algoritmo LMSR</div>
-        <div class="ob-feat"><div class="ob-feat-ico">🏦</div>Resolução automática via Banco Central</div>
-        <div class="ob-feat"><div class="ob-feat-ico">🎮</div>Versão beta — 100% gratuito, sem dinheiro real</div>
-      </div>
-      <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
-      <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
-      <div id="ob-login-form" style="display:none;margin-top:20px">
-        <div style="height:1px;background:var(--dark-border);margin:0 0 20px"></div>
-        <div class="kyc-form">
-          <div>
-            <div class="kyc-label">E-mail</div>
-            <input class="kyc-input" id="ob-login-email" type="email" placeholder="pedro@email.com">
-          </div>
-          <div>
-            <div class="kyc-label">Senha</div>
-            <input class="kyc-input" id="ob-login-password" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')handleLogin()">
-          </div>
-        </div>
-        <div id="ob-error" style="color:#ff4455;font-size:12px;min-height:18px;margin:8px 0"></div>
-        <button class="ob-btn" onclick="handleLogin()" style="margin-top:4px">Entrar →</button>
-        <button class="ob-skip" onclick="obHideLogin()" style="margin-top:8px">← Voltar</button>
-      </div>
-    </div>
-
-    <!-- step 1: dados pessoais -->
-    <div id="ob-1" class="ob-card" style="display:none">
-      <div class="ob-icon">👤</div>
-      <div class="ob-h">Seus dados</div>
-      <p class="ob-p">Crie sua conta em menos de 1 minuto.</p>
+      <div class="ob-h">Bem-vindo de volta</div>
+      <p class="ob-p">Entra na tua conta para apostar.</p>
       <div class="kyc-form">
-        <div><div class="kyc-label">Nome completo</div><input class="kyc-input" id="ob-input-name" type="text" placeholder="Pedro Marques Neto"></div>
-        <div><div class="kyc-label">E-mail</div><input class="kyc-input" id="ob-input-email" type="email" placeholder="pedro@email.com"></div>
-        <div><div class="kyc-label">Senha</div><input class="kyc-input" id="ob-input-password" type="password" placeholder="Mínimo 8 caracteres"></div>
+        <div>
+          <div class="kyc-label">E-mail</div>
+          <input class="kyc-input" id="ob-login-email" type="email" placeholder="pedro@email.com" onkeydown="if(event.key==='Enter')handleLogin()">
+        </div>
+        <div>
+          <div class="kyc-label">Senha</div>
+          <input class="kyc-input" id="ob-login-password" type="password" placeholder="A tua senha" onkeydown="if(event.key==='Enter')handleLogin()">
+        </div>
       </div>
-      <button class="ob-btn" onclick="obRegister()">Criar conta →</button>
-      <button class="ob-skip" onclick="obStep(0)">← Voltar</button>
+      <div id="ob-error" style="color:#ff4455;font-size:12px;min-height:18px;margin:8px 0"></div>
+      <button class="ob-btn" onclick="handleLogin()">Entrar →</button>
+      <button class="ob-skip" onclick="obTabSwitch('register')">Não tens conta? Cria uma grátis</button>
     </div>
 
-    <!-- step 2: free credits -->
-    <div id="ob-2" class="ob-card" style="display:none">
-      <div class="credits-coin">🎮</div>
-      <div class="credits-amount">R$ 1.000</div>
-      <div class="credits-label">em créditos de simulação — grátis!</div>
-      <div class="credits-perks">
-        <div class="credits-perk"><div class="credits-perk-ico">🎯</div>Aposte em mercados reais com créditos virtuais</div>
-        <div class="credits-perk"><div class="credits-perk-ico">📊</div>P&amp;L e portfólio em tempo real</div>
-        <div class="credits-perk"><div class="credits-perk-ico">🏆</div>Compita no ranking com outros traders</div>
-        <div class="credits-perk"><div class="credits-perk-ico">⚖️</div>100% gratuito — sem dinheiro real</div>
+    <!-- REGISTER panel -->
+    <div id="ob-panel-register" class="ob-card" style="display:none">
+      <div class="ob-icon">🚀</div>
+      <div class="ob-h">Criar conta grátis</div>
+      <p class="ob-p">Junta-te ao primeiro mercado de probabilidades do Brasil.</p>
+      <div class="ob-features" style="margin-bottom:20px">
+        <div class="ob-feat"><div class="ob-feat-ico">📊</div>Preços via algoritmo LMSR</div>
+        <div class="ob-feat"><div class="ob-feat-ico">🎮</div>Beta — 100% gratuito</div>
+        <div class="ob-feat"><div class="ob-feat-ico">🏆</div>Compite no ranking</div>
       </div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.3);line-height:1.7;margin-bottom:16px;text-align:center">
-        Créditos não possuem valor monetário.<br>
-        Ao continuar você aceita os <span style="color:var(--teal);cursor:pointer" onclick="showPage('terms',null)">Termos de Uso</span>.
+      <div class="kyc-form">
+        <div>
+          <div class="kyc-label">Nome completo</div>
+          <input class="kyc-input" id="ob-input-name" type="text" placeholder="Pedro Marques Neto">
+        </div>
+        <div>
+          <div class="kyc-label">E-mail</div>
+          <input class="kyc-input" id="ob-input-email" type="email" placeholder="pedro@email.com">
+        </div>
+        <div>
+          <div class="kyc-label">Senha</div>
+          <input class="kyc-input" id="ob-input-password" type="password" placeholder="Mínimo 8 caracteres">
+        </div>
       </div>
-      <button class="ob-btn" onclick="obFinish()">🚀 Começar a apostar →</button>
-      <button class="ob-skip" onclick="obStep(1)">← Voltar</button>
+      <div id="ob-reg-error" style="color:#ff4455;font-size:12px;min-height:18px;margin:8px 0"></div>
+      <button class="ob-btn" onclick="obRegister()">Criar conta →</button>
+      <button class="ob-skip" onclick="obTabSwitch('login')">Já tens conta? Entra aqui</button>
     </div>
   </div>
 </div>
@@ -2478,6 +2464,49 @@ function updateSharePreview() {
   if (brYes) brYes.style.width   = mkt.yes + '%';
   if (brNo)  brNo.style.width    = (100 - mkt.yes) + '%';
 }
+
+function obResetToLogin() {
+  // Reset to step 0
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById('ob-' + i);
+    if (el) el.style.display = i === 0 ? 'block' : 'none';
+    const dot = document.getElementById('dot-' + i);
+    if (dot) { dot.classList.remove('active'); if (i===0) dot.classList.add('active'); }
+  }
+  ucCurrentStep = 0;
+  // Show login form immediately
+  const f = document.getElementById('ob-login-form');
+  if (f) f.style.display = 'block';
+  setTimeout(() => document.getElementById('ob-login-email')?.focus(), 100);
+  const errEl = document.getElementById('ob-error');
+  if (errEl) errEl.textContent = '';
+}
+
+
+function obTabSwitch(tab) {
+  const loginPanel    = document.getElementById('ob-panel-login');
+  const registerPanel = document.getElementById('ob-panel-register');
+  const loginTab      = document.getElementById('ob-tab-login');
+  const registerTab   = document.getElementById('ob-tab-register');
+  if (tab === 'login') {
+    if (loginPanel)    loginPanel.style.display    = 'block';
+    if (registerPanel) registerPanel.style.display = 'none';
+    if (loginTab)    { loginTab.style.background    = 'var(--teal)'; loginTab.style.color    = '#fff'; loginTab.style.fontWeight = '700'; }
+    if (registerTab) { registerTab.style.background = 'none';        registerTab.style.color = 'rgba(255,255,255,0.5)'; registerTab.style.fontWeight = '600'; }
+    setTimeout(() => document.getElementById('ob-login-email')?.focus(), 100);
+  } else {
+    if (loginPanel)    loginPanel.style.display    = 'none';
+    if (registerPanel) registerPanel.style.display = 'block';
+    if (loginTab)    { loginTab.style.background    = 'none';          loginTab.style.color    = 'rgba(255,255,255,0.5)'; loginTab.style.fontWeight = '600'; }
+    if (registerTab) { registerTab.style.background = 'var(--teal)';   registerTab.style.color = '#fff'; registerTab.style.fontWeight = '700'; }
+    setTimeout(() => document.getElementById('ob-input-name')?.focus(), 100);
+  }
+  const errEl = document.getElementById('ob-error');
+  if (errEl) errEl.textContent = '';
+  const regErrEl = document.getElementById('ob-reg-error');
+  if (regErrEl) regErrEl.textContent = '';
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -2611,42 +2640,35 @@ async function handleLogin() {
   const emailEl = document.getElementById('ob-login-email');
   const passEl  = document.getElementById('ob-login-password');
   const errEl   = document.getElementById('ob-error');
-
-  if (!emailEl || !passEl) { alert('Formulário não encontrado'); return; }
-  const email    = emailEl.value.trim();
-  const password = passEl.value.trim();
-  if (!email || !password) {
-    if (errEl) errEl.textContent = 'Preencha email e senha';
-    return;
-  }
-
-  const btn = document.querySelector('[onclick="handleLogin()"]');
-  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+  if (!emailEl || !passEl) return;
   if (errEl) errEl.textContent = '';
-
+  const email = emailEl.value.trim();
+  const pass  = passEl.value;
+  if (!email || !pass) { if (errEl) errEl.textContent = 'Preenche email e senha.'; return; }
+  const btn = document.querySelector('[onclick="handleLogin()"]');
+  if (btn) { btn.textContent = 'A entrar...'; btn.disabled = true; }
   try {
-    const data = await api('POST', '/auth/login', { email, password });
-    if (data && data.tokens && data.tokens.accessToken) {
-      authToken    = data.tokens.accessToken;
-      currentUser  = data.user;
+    const d = await api('POST', '/auth/login', { email, password: pass });
+    if (d && d.tokens) {
+      authToken   = d.tokens.accessToken;
+      currentUser = d.user;
       AUTH_TOKEN   = authToken;
       CURRENT_USER = currentUser;
       localStorage.setItem('predict_token', authToken);
-      localStorage.setItem('predict_user', JSON.stringify(currentUser));
+      localStorage.setItem('predict_user',  JSON.stringify(currentUser));
       updateNavUser();
-      if (typeof authTab === 'function') authTab('register');
       if (currentUser.role === 'admin') {
         await showAdmin();
       } else {
         showPage('dashboard', null);
-        setTimeout(() => { if (typeof updateDashboard === 'function') updateDashboard(); }, 200);
       }
     } else {
-      if (errEl) errEl.textContent = data?.error || 'Email ou senha incorretos';
+      const msg = d?.error || d?.message || 'Email ou senha incorretos.';
+      if (errEl) errEl.textContent = msg;
+      if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
     }
-  } catch (e) {
-    if (errEl) errEl.textContent = 'Erro: ' + e.message;
-  } finally {
+  } catch(e) {
+    if (errEl) errEl.textContent = 'Erro de ligação.';
     if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
 }
@@ -2904,10 +2926,10 @@ function openMarket(marketId) {
 function showPage(id,btn,closeMobile){
   if(id==="dashboard") setTimeout(updateDashboard, 100);
   if(id==="share")     setTimeout(populateShareSelect, 100);
+  if(id==="onboard")   setTimeout(obResetToLogin, 100);
   if(id==="experience") setTimeout(()=>expTab('explore'), 100);
   if(id==="listing")   setTimeout(()=>{ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
-  if(id==="market" && MARKETS.length > 0 && !CURRENT_MARKET_ID) openMarket(MARKETS[0].id);
-  if(id==="onboard")   setTimeout(obShowLogin, 150);
+  if(id==="market" && MARKETS.length > 0 && !CURRENT_MARKET_ID) setTimeout(() => openMarket(MARKETS[0].id), 50);
 
   // Hide ALL pages — both systems (classList + style.display)
   document.querySelectorAll('.page').forEach(p=>{
@@ -4254,6 +4276,8 @@ function obShowLogin() {
 function obHideLogin() {
   const f = document.getElementById('ob-login-form');
   if (f) f.style.display = 'none';
+  const errEl = document.getElementById('ob-error');
+  if (errEl) errEl.textContent = '';
 }
 
 
