@@ -1972,9 +1972,18 @@ function obHideLogin() {
   const f = document.getElementById('ob-login-form'); if(f) f.style.display='none';
 }
 function logout() {
-  authToken=null; currentUser=null;
-  localStorage.removeItem('predict_token'); localStorage.removeItem('predict_user');
-  showPage('onboard',null); updateNavUser(); obHideLogin();
+  authToken = null; currentUser = null;
+  localStorage.removeItem('predict_token');
+  localStorage.removeItem('predict_user');
+  const eb = document.querySelector('[data-page="onboard"]');
+  if (eb) eb.textContent = 'Entrar';
+  const bb = document.querySelector('.nav-balance');
+  if (bb) bb.textContent = '';
+  const ab = document.getElementById('admin-nav-btn');
+  if (ab) ab.style.display = 'none';
+  showPage('onboard', null);
+  if (typeof obHideLogin === 'function') obHideLogin();
+  setTimeout(() => { if (typeof obStep === 'function') obStep(0); }, 50);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
