@@ -774,20 +774,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
   <div class="ticker-wrap">
     <div class="tick-lbl"><div class="logo-dot" style="width:5px;height:5px"></div>AO VIVO</div>
-    <div class="ticker-scroll"><div class="ticker-track" id="ticker">
-      <div class="tick-item"><span class="tick-q">Selic abaixo 10,75%</span><span class="tick-y">SIM 67%</span><span class="tick-n">NÃO 33%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Flamengo Campeão Brasileiro</span><span class="tick-y">SIM 41%</span><span class="tick-n">NÃO 59%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">IPCA abaixo 4% em 2026</span><span class="tick-y">SIM 72%</span><span class="tick-n">NÃO 28%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Bitcoin acima 200k USD</span><span class="tick-y">SIM 38%</span><span class="tick-n">NÃO 62%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">PIB Brasil +2,5% 2026</span><span class="tick-y">SIM 54%</span><span class="tick-n">NÃO 46%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Palmeiras Libertadores 2026</span><span class="tick-y">SIM 29%</span><span class="tick-n">NÃO 71%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Dólar acima R$6,50</span><span class="tick-y">SIM 44%</span><span class="tick-n">NÃO 56%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Selic abaixo 10,75%</span><span class="tick-y">SIM 67%</span><span class="tick-n">NÃO 33%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Flamengo Campeão Brasileiro</span><span class="tick-y">SIM 41%</span><span class="tick-n">NÃO 59%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">IPCA abaixo 4% em 2026</span><span class="tick-y">SIM 72%</span><span class="tick-n">NÃO 28%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">Bitcoin acima 200k USD</span><span class="tick-y">SIM 38%</span><span class="tick-n">NÃO 62%</span></div>
-      <div class="tick-item"><span class="tick-sep">·</span><span class="tick-q">PIB Brasil +2,5% 2026</span><span class="tick-y">SIM 54%</span><span class="tick-n">NÃO 46%</span></div>
-    </div></div>
+    <div class="ticker-scroll"><div class="ticker-track" id="ticker"></div></div>    </div></div>
   </div>
 
   <div class="section">
@@ -838,37 +825,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     </div>
     <div class="mkt-layout">
       <div>
-        <div style="margin-bottom:12px"><span class="mcat c-econ">📈 Economia</span></div>
+        <div style="margin-bottom:12px"><span class="mcat" id="mkt-cat-el">—</span></div>
         <div class="mkt-title" id="mkt-title-el">—</div>
         <div class="mkt-meta">
           <div class="mkt-mi"><b>Volume:</b> <span id="mkt-vol-el">—</span></div>
           <div class="mkt-mi"><b>Traders:</b> <span id="mkt-traders-el">—</span></div>
           <div class="mkt-mi"><b>Encerra:</b> <span id="mkt-closes-el">—</span></div>
-          <div class="mkt-mi"><b>Resolução:</b> BCB Auto</div>
-        </div>
-        <div class="mkt-stats">
-          <div class="mst"><div class="mst-l">Prob. SIM</div><div class="mst-v g">67%</div></div>
-          <div class="mst"><div class="mst-l">Volume 24h</div><div class="mst-v a">R$ 18,4k</div></div>
-          <div class="mst"><div class="mst-l">Variação 7d</div><div class="mst-v g">+4,2%</div></div>
+          <div class="mkt-mi"><b>Criado por:</b> <span id="mkt-creator-el">—</span></div>
         </div>
         <div class="prob-box">
           <div class="prob-lbl">Probabilidade atual</div>
-          <div class="prob-big">67%</div>
-          <div class="prob-sub">chance de corte da Selic</div>
-          <div class="prob-bar"><div class="pb-y" style="width:67%"></div><div class="pb-n" style="width:33%"></div></div>
-          <div class="prob-lbls"><span class="pl-y">SIM 67%</span><span class="pl-n">NÃO 33%</span></div>
+          <div class="prob-big" id="prob-pct">—%</div>
+          <div class="prob-sub" id="mkt-prob-sub">—</div>
+          <div class="prob-bar"><div class="pb-y" id="mkt-pb-yes" style="width:50%"></div><div class="pb-n" id="mkt-pb-no" style="width:50%"></div></div>
+          <div class="prob-lbls"><span class="pl-y" id="mkt-lbl-yes">SIM —%</span><span class="pl-n" id="mkt-lbl-no">NÃO —%</span></div>
         </div>
-        <div class="chart-box">
-          <div class="chart-lbl">Histórico de probabilidade — 30 dias</div>
-          <canvas id="prob-chart" height="90"></canvas>
-        </div>
-        <div class="activity">
+        <div class="activity" id="mkt-activity">
           <div class="act-hd">Atividade recente</div>
-          <div class="act-item"><span class="act-u"><b>pedro_mv</b> apostou</span><span class="act-y">SIM</span><span class="act-amt">R$ 120</span><span class="act-t">2 min</span></div>
-          <div class="act-item"><span class="act-u"><b>ana.trader</b> apostou</span><span class="act-n">NÃO</span><span class="act-amt">R$ 80</span><span class="act-t">5 min</span></div>
-          <div class="act-item"><span class="act-u"><b>r.santos</b> apostou</span><span class="act-y">SIM</span><span class="act-amt">R$ 350</span><span class="act-t">11 min</span></div>
-          <div class="act-item"><span class="act-u"><b>carlos_fx</b> apostou</span><span class="act-y">SIM</span><span class="act-amt">R$ 50</span><span class="act-t">18 min</span></div>
-          <div class="act-item"><span class="act-u"><b>ju.invest</b> apostou</span><span class="act-n">NÃO</span><span class="act-amt">R$ 200</span><span class="act-t">24 min</span></div>
+          <div id="mkt-trades-list" style="color:rgba(255,255,255,0.3);font-size:12px;padding:12px 0">A carregar...</div>
         </div>
       </div>
       <div>
@@ -880,7 +854,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
           </div>
           <div class="bp-out yes-mode" id="bp-out">
             <div class="bp-out-l" id="bp-out-l">Apostando em SIM</div>
-            <div class="bp-out-v" id="bp-out-v" style="color:var(--teal)">67%</div>
+            <div class="bp-out-v" id="bp-out-v" style="color:var(--teal)">—%</div>
           </div>
           <div class="bp-il">Valor da aposta (R$)</div>
           <input class="bp-in" type="number" value="100" min="1" id="bet-amt" oninput="calcBet()">
@@ -891,13 +865,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
             <button class="bp-pre" onclick="setAmt(500)">R$500</button>
           </div>
           <div class="bp-calc">
-            <div class="bpc-row"><span>Preço / ação</span><span id="bc-p">R$ 0,67</span></div>
-            <div class="bpc-row"><span>Ações compradas</span><span id="bc-s">149,3</span></div>
-            <div class="bpc-row"><span>Retorno se ganhar</span><span id="bc-w">R$ 149,30</span></div>
-            <div class="bpc-row hl"><span>Lucro potencial</span><span id="bc-pr" style="color:var(--teal)">+R$ 49,30</span></div>
+            <div class="bpc-row"><span>Preço / ação</span><span id="bc-p">—</span></div>
+            <div class="bpc-row"><span>Ações compradas</span><span id="bc-s">—</span></div>
+            <div class="bpc-row"><span>Retorno se ganhar</span><span id="bc-w">—</span></div>
+            <div class="bpc-row hl"><span>Lucro potencial</span><span id="bc-pr" style="color:var(--teal)">—</span></div>
           </div>
           <button class="btn-bet" id="bet-btn" onclick="placeBet()">Apostar SIM →</button>
-          <div class="bp-disc">Plataforma de simulação. Leia os termos antes de operar com dinheiro real.</div>
+          <div class="bp-disc">Plataforma beta — créditos de simulação sem valor monetário.</div>
         </div>
       </div>
     </div>
@@ -2032,7 +2006,10 @@ async function loadRealMarkets() {
       vol:    'R$ ' + Math.round(parseFloat(m.totalVolume || 0) / 1000) + 'k',
       closes: new Date(m.resolutionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
       bg:     'rgba(29,158,117,0.1)',
-      apiId:  m.id,
+      apiId:       m.id,
+      creatorId:   m.creatorId || null,
+      creatorName: m.creatorName || m.creator?.displayName || null,
+      traderCount: m.traderCount || m.participants || 0,
     });
   });
 
@@ -2445,6 +2422,19 @@ async function deleteCurrentMarket() {
   }
 }
 
+function updateTicker() {
+  const el = document.getElementById('ticker');
+  if (!el) return;
+  if (MARKETS.length === 0) { el.innerHTML = ''; return; }
+  const items = MARKETS.slice(0, 8).map(m =>
+    '<div class="tick-item"><span class="tick-sep">·</span>'
+    + '<span class="tick-q">' + m.q.slice(0, 40) + '…</span>'
+    + '<span class="tick-y">SIM ' + m.yes + '%</span>'
+    + '<span class="tick-n">NÃO ' + (100 - m.yes) + '%</span></div>'
+  ).join('');
+  el.innerHTML = items + items;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -2781,43 +2771,90 @@ function filterM(cat,btn){
   btn.classList.add('active');
   renderRows(cat==='all'?MARKETS:MARKETS.filter(m=>m.cat===cat));
 }
-function openMarket(marketId){
-  CURRENT_MARKET_ID = marketId || (MARKETS[0]?.id || null);
-  const mkt = MARKETS.find(m => m.id === CURRENT_MARKET_ID || m.apiId === CURRENT_MARKET_ID);
+function openMarket(marketId) {
+  CURRENT_MARKET_ID = marketId;
+  const mkt = MARKETS.find(m => m.id === marketId || m.apiId === marketId);
   if (!mkt) return;
 
-  // Update page-market with real data
-  const titleEl = document.getElementById('mkt-title-el') || document.querySelector('.mkt-title');
-  if (titleEl) titleEl.textContent = mkt.q;
-  const volEl = document.getElementById('mkt-vol-el');
-  if (volEl) volEl.textContent = mkt.vol || '—';
-  const closesEl = document.getElementById('mkt-closes-el');
-  if (closesEl) closesEl.textContent = mkt.closes || '—';
+  const yes = mkt.yes || 50;
+  const no  = 100 - yes;
 
-  // Category badge
-  const catEl = document.querySelector('#page-market .mcat');
+  // Title & category
+  const titleEl = document.getElementById('mkt-title-el');
+  if (titleEl) titleEl.textContent = mkt.q;
+  const catEl = document.getElementById('mkt-cat-el');
   if (catEl) {
     catEl.className = 'mcat ' + (catCls[mkt.cat] || '');
     catEl.textContent = catLbl[mkt.cat] || mkt.cat;
   }
 
-  // Probability
-  const probEl = document.getElementById('prob-pct');
-  if (probEl) probEl.textContent = mkt.yes + '%';
-  const prob2El = document.querySelector('.prob-no');
-  if (prob2El) prob2El.textContent = (100 - mkt.yes) + '%';
+  // Meta
+  const volEl     = document.getElementById('mkt-vol-el');
+  const closesEl  = document.getElementById('mkt-closes-el');
+  const tradersEl = document.getElementById('mkt-traders-el');
+  const creatorEl = document.getElementById('mkt-creator-el');
+  if (volEl)     volEl.textContent     = mkt.vol || '—';
+  if (closesEl)  closesEl.textContent  = mkt.closes || '—';
+  if (tradersEl) tradersEl.textContent = mkt.traderCount || '—';
+  if (creatorEl) creatorEl.textContent = mkt.creatorName || '—';
 
-  // Show/hide delete button (creator or admin)
+  // Probability
+  const probEl    = document.getElementById('prob-pct');
+  const probSub   = document.getElementById('mkt-prob-sub');
+  const pbYes     = document.getElementById('mkt-pb-yes');
+  const pbNo      = document.getElementById('mkt-pb-no');
+  const lblYes    = document.getElementById('mkt-lbl-yes');
+  const lblNo     = document.getElementById('mkt-lbl-no');
+  const bpOutV    = document.getElementById('bp-out-v');
+  if (probEl)  probEl.textContent  = yes + '%';
+  if (probSub) probSub.textContent = mkt.q.slice(0, 50) + (mkt.q.length > 50 ? '...' : '');
+  if (pbYes)   pbYes.style.width   = yes + '%';
+  if (pbNo)    pbNo.style.width    = no + '%';
+  if (lblYes)  lblYes.textContent  = 'SIM ' + yes + '%';
+  if (lblNo)   lblNo.textContent   = 'NÃO ' + no + '%';
+  if (bpOutV)  bpOutV.textContent  = yes + '%';
+
+  // Activity — load real trades from API
+  const tradesEl = document.getElementById('mkt-trades-list');
+  if (tradesEl && mkt.apiId) {
+    tradesEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:12px">A carregar...</div>';
+    api('GET', '/markets/' + mkt.apiId + '/trades?limit=5').then(data => {
+      const trades = data?.trades || data?.data || [];
+      if (trades.length > 0) {
+        tradesEl.innerHTML = trades.map(t => {
+          const col   = t.outcome === 'yes' ? 'var(--teal)' : '#ff4455';
+          const label = t.outcome === 'yes' ? 'SIM' : 'NÃO';
+          const amt   = parseFloat(t.amount || t.cost || 0).toFixed(0);
+          const user  = t.userDisplayName || t.user?.displayName || 'Utilizador';
+          const time  = t.createdAt ? new Date(t.createdAt).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) : '—';
+          return '<div class="act-item"><span class="act-u"><b>' + user + '</b> apostou</span>'
+            + '<span style="color:' + col + ';font-weight:600;margin:0 6px">' + label + '</span>'
+            + '<span class="act-amt">R$ ' + amt + '</span>'
+            + '<span class="act-t">' + time + '</span></div>';
+        }).join('');
+      } else {
+        tradesEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0">Nenhuma aposta ainda.</div>';
+      }
+    }).catch(() => {
+      tradesEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0">—</div>';
+    });
+  } else if (tradesEl) {
+    tradesEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0">—</div>';
+  }
+
+  // Show/hide delete button (creator or admin only)
   const deleteBtn = document.getElementById('mkt-delete-btn');
   if (deleteBtn) {
-    const canDelete = currentUser && (currentUser.role === 'admin' || mkt.creatorId === currentUser.id);
-    deleteBtn.style.display = canDelete ? 'block' : 'none';
+    const isOwner = currentUser && (currentUser.role === 'admin' || mkt.creatorId === currentUser.id);
+    deleteBtn.style.display = isOwner ? 'block' : 'none';
   }
-  showPage('market', null);
 
-  // Refresh real-time data from API
+  showPage('market', null);
+  calcBet();
+
+  // Refresh real-time price from API
   if (mkt.apiId && typeof refreshMarketPrice === 'function') {
-    refreshMarketPrice(mkt.apiId);
+    setTimeout(() => refreshMarketPrice(mkt.apiId), 300);
   }
 }
 
