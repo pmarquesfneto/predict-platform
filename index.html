@@ -1634,32 +1634,30 @@ id="uc-form-4" style="display:none">
 
 <!-- ══ ADMIN PAGE ══════════════════════════════════════ -->
 <div class="page" id="page-admin">
-  <div class="terms-page">
-    <div class="eyebrow" style="margin-bottom:14px"><span style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block"></span> Admin</div>
-    <div class="terms-h" style="color:var(--amber)">Painel Administrativo</div>
-    <div class="terms-sub">Acessível apenas para administradores</div>
-
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px" id="admin-stats">
-      <div class="kpi"><div class="kpi-l">Total usuários</div><div class="kpi-v" id="admin-users">—</div></div>
-      <div class="kpi"><div class="kpi-l">Mercados activos</div><div class="kpi-v" id="admin-markets">—</div></div>
-      <div class="kpi"><div class="kpi-l">Total apostas</div><div class="kpi-v" id="admin-trades">—</div></div>
+  <div style="max-width:900px;margin:0 auto;padding:24px 16px">
+    <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:6px"></span>Admin</div>
+    <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--amber);margin-bottom:4px">Painel Administrativo</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:24px">Visivel apenas para administradores &middot; <span id="adm-timestamp" style="opacity:0.5"></span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+      <div class="kpi"><div class="kpi-l">Utilizadores</div><div class="kpi-v" id="adm-users">—</div></div>
+      <div class="kpi"><div class="kpi-l">Mercados</div><div class="kpi-v" id="adm-markets">—</div></div>
+      <div class="kpi"><div class="kpi-l">Apostas</div><div class="kpi-v" id="adm-trades">—</div></div>
+      <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="adm-volume">R$ 0</div></div>
     </div>
-
-    <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Utilizadores</div>
-      <div id="admin-users-list" style="display:flex;flex-direction:column;gap:8px">
-        <div style="color:rgba(255,255,255,0.3);font-size:13px">A carregar...</div>
-      </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+      <button onclick="adminRefresh()" style="background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--teal);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Actualizar</button>
+      <button onclick="adminResetAll()" style="background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.3);color:#ff4455;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Reset para live test</button>
+      <button onclick="adminSeedMarkets()" style="background:rgba(239,159,39,0.08);border:1px solid rgba(239,159,39,0.3);color:var(--amber);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Seed mercados</button>
     </div>
-
-    <div style="margin-bottom:24px">
-      <div style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Mercados</div>
-      <div id="admin-markets-list" style="display:flex;flex-direction:column;gap:8px">
-        <div style="color:rgba(255,255,255,0.3);font-size:13px">A carregar...</div>
-      </div>
+    <div id="adm-status" style="padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none"></div>
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin-bottom:20px">
+      <button onclick="adminTab('users')" id="adm-tab-users" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer">Utilizadores</button>
+      <button onclick="adminTab('markets')" id="adm-tab-markets" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">Mercados</button>
+      <button onclick="adminTab('trades')" id="adm-tab-trades" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">Apostas</button>
     </div>
-
-    <button class="ob-btn" style="width:auto;padding:12px 24px;background:rgba(239,159,39,0.15);color:var(--amber);border:1px solid rgba(239,159,39,0.3)" onclick="loadAdminData()">🔄 Actualizar dados</button>
+    <div id="adm-panel-users"><div id="adm-users-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar...</div></div></div>
+    <div id="adm-panel-markets" style="display:none"><div id="adm-markets-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar...</div></div></div>
+    <div id="adm-panel-trades" style="display:none"><div id="adm-trades-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar...</div></div></div>
   </div>
 </div>
 
@@ -3237,153 +3235,13 @@ async function handleLogin() {
 }
 
 
-// ── ADMIN PANEL ─────────────────────────────────────
-async function showAdmin() {
-  if (!currentUser || currentUser.role !== 'admin') {
-    alert('Acesso restrito a administradores');
-    return;
-  }
-  showPage('admin', null);
-  await loadAdminData();
-}
 
-async function loadAdminData() {
-  if (!authToken) return;
-  try {
-    // Load leaderboard (all users)
-    const lb = await api('GET', '/leaderboard');
-    if (lb && Array.isArray(lb)) {
-      document.getElementById('admin-users').textContent = lb.length;
-      document.getElementById('admin-users-list').innerHTML = lb.map(u => `
-        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-size:13px;font-weight:600">${u.displayName || u.email || '—'}</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.35)">${u.role || 'user'} · Score: ${u.calibScore || '—'}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:13px;color:var(--teal)">R$ ${parseFloat(u.balancePlay || 0).toFixed(2)}</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.35)">P&L: ${parseFloat(u.totalPnl || 0).toFixed(2)}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Load markets
-    const m = await api('GET', '/markets?limit=50');
-    if (m && m.markets) {
-      document.getElementById('admin-markets').textContent = m.total || m.markets.length;
-      document.getElementById('admin-markets-list').innerHTML = m.markets.map(mkt => `
-        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-size:13px;font-weight:600">${mkt.title.slice(0,50)}${mkt.title.length>50?'...':''}</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.35)">${mkt.category} · ${mkt.status} · Vol: R$ ${parseFloat(mkt.totalVolume||0).toFixed(0)}</div>
-          </div>
-          <div style="font-size:11px;color:${mkt.visibility==='closed'?'var(--amber)':'var(--teal)'}">
-            ${mkt.visibility === 'closed' ? '🔒 Fechado' : '🌐 Aberto'}
-          </div>
-        </div>
-      `).join('');
-    }
-  } catch(e) {
-    console.error('Admin load error:', e);
-  }
-}
-
-
-// ── LOGOUT ─────────────────────────────────────────
-function doLogout() {
-  if (!confirm('Tens a certeza que queres sair?')) return;
-  authToken = null; currentUser = null;
-  localStorage.removeItem('predict_token');
-  localStorage.removeItem('predict_user');
-  showPage('home', null);
-  updateNavUser();
-  const adminBtn = document.getElementById('admin-nav-btn');
-  if (adminBtn) adminBtn.style.display = 'none';
-}
-
-// ── ADMIN PANEL ─────────────────────────────────────
-async function showAdmin() {
-  if (!currentUser || currentUser.role !== 'admin') { alert('Acesso restrito'); return; }
-  showPage('admin', null);
-  await loadAdminData();
-}
-
-function adminTab(tab) {
-  ['users','markets','trades'].forEach(t => {
-    const p = document.getElementById('adm-panel-' + t);
-    const b = document.getElementById('adm-tab-' + t);
-    if (p) p.style.display = t === tab ? 'block' : 'none';
-    if (b) {
-      b.style.background = t === tab ? 'rgba(239,159,39,0.15)' : 'var(--dark-card)';
-      b.style.color = t === tab ? 'var(--amber)' : 'rgba(255,255,255,0.5)';
-      b.style.fontWeight = t === tab ? '600' : '400';
-    }
-  });
-}
-
-async function loadAdminData() {
-  if (!authToken) return;
-  const [lb, mkt] = await Promise.all([
-    api('GET', '/leaderboard'),
-    api('GET', '/markets?limit=100'),
-  ]);
-  const users = Array.isArray(lb) ? lb : [];
-  const markets = mkt?.markets || [];
-  const totalVol = markets.reduce((s,m) => s + parseFloat(m.totalVolume||0), 0);
-  document.getElementById('adm-users').textContent = users.length;
-  document.getElementById('adm-markets').textContent = markets.length;
-  document.getElementById('adm-trades').textContent = '—';
-  document.getElementById('adm-volume').textContent = 'R$ ' + totalVol.toFixed(0);
-
-  document.getElementById('adm-users-list').innerHTML = users.length ? users.map(u => `
-    <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div><div style="font-size:13px;font-weight:600">${u.displayName||'—'}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.35)">${u.email||''} · <span style="color:${u.role==='admin'?'var(--amber)':'var(--teal)'}">${u.role||'user'}</span></div></div>
-      <div style="text-align:right"><div style="font-size:13px;color:var(--teal);font-weight:600">R$ ${parseFloat(u.balancePlay||0).toFixed(2)}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.35)">P&L: ${parseFloat(u.totalPnl||0).toFixed(2)}</div></div>
-    </div>`).join('') : '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:20px">Nenhum utilizador</div>';
-
-  document.getElementById('adm-markets-list').innerHTML = markets.length ? markets.map(m => `
-    <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:600">${m.title.slice(0,55)}${m.title.length>55?'...':''}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.35)">${m.category} · ${m.status} · Vol: R$ ${parseFloat(m.totalVolume||0).toFixed(0)}</div></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span style="font-size:11px;color:${m.visibility==='closed'?'var(--amber)':'var(--teal)'}">${m.visibility==='closed'?'🔒':'🌐'}</span>
-        <button onclick="adminResolveMarket('${m.id}','yes')" style="background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.2);color:var(--teal);padding:3px 8px;border-radius:100px;font-size:10px;cursor:pointer">✓ SIM</button>
-        <button onclick="adminResolveMarket('${m.id}','no')" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.2);color:rgba(255,100,100,0.8);padding:3px 8px;border-radius:100px;font-size:10px;cursor:pointer">✗ NÃO</button>
-      </div>
-    </div>`).join('') : '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:20px">Nenhum mercado</div>';
-}
-
-async function adminCreateTestMarket() {
-  const title = prompt('Pergunta do mercado:'); if (!title) return;
-  const r = await api('POST', '/markets', { title, description: 'Mercado de teste', category: 'economics', marketType: 'binary', resolutionDate: new Date(Date.now()+30*24*60*60*1000).toISOString(), liquidityB: 100, outcomes: [{id:'yes',label:'SIM',quantity:0},{id:'no',label:'NÃO',quantity:0}] });
-  if (r.market||r.id) { alert('✅ Mercado criado!'); loadAdminData(); loadRealMarkets(); }
-  else alert('Erro: ' + (r.error||JSON.stringify(r)));
-}
-
-async function adminResolveMarket(id, outcome) {
-  if (!confirm('Resolver com ' + outcome.toUpperCase() + '?')) return;
-  const r = await api('POST', '/markets/' + id + '/resolve', { outcome });
-  alert(r.ok||r.success||r.market ? '✅ Resolvido!' : 'Erro: '+(r.error||JSON.stringify(r)));
-  loadAdminData();
-}
-
-async function adminClearTrades() {
-  if (!confirm('⚠️ Apagar TODAS as apostas?')) return;
-  alert('Funcionalidade disponível em breve via backend admin');
-}
-
-async function adminClearMarkets() {
-  if (!confirm('⚠️ Apagar TODOS os mercados?')) return;
-  alert('Funcionalidade disponível em breve via backend admin');
-}
-
-async function adminResetUsers() {
-  if (!confirm('⚠️ Reset saldos para R$1000?')) return;
-  alert('Funcionalidade disponível em breve via backend admin');
-}
+async function showAdmin(){if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito');return;}showPage('admin',null);await adminRefresh();}
+function adminStatus(msg,type){const el=document.getElementById('adm-status');if(!el)return;el.style.display='block';const c={ok:{bg:'rgba(29,158,117,0.12)',b:'rgba(29,158,117,0.3)',col:'var(--teal)'},err:{bg:'rgba(255,68,85,0.12)',b:'rgba(255,68,85,0.3)',col:'#ff4455'},info:{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'}}[type]||{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'};el.style.background=c.bg;el.style.border='1px solid '+c.b;el.style.color=c.col;el.textContent=msg;if(type!=='info')setTimeout(()=>el.style.display='none',5000);}
+function adminTab(tab){['users','markets','trades'].forEach(t=>{const p=document.getElementById('adm-panel-'+t),b=document.getElementById('adm-tab-'+t);if(p)p.style.display=t===tab?'block':'none';if(b){b.style.borderBottomColor=t===tab?'var(--teal)':'transparent';b.style.color=t===tab?'var(--teal)':'rgba(255,255,255,0.4)';}});}
+async function adminRefresh(){adminStatus('A carregar...','info');const ts=document.getElementById('adm-timestamp');if(ts)ts.textContent='Actualizado: '+new Date().toLocaleTimeString('pt-BR');try{const lb=await api('GET','/leaderboard');if(lb&&Array.isArray(lb)){document.getElementById('adm-users').textContent=lb.length;document.getElementById('adm-users-list').innerHTML=lb.map(u=>'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-size:14px;font-weight:600">'+(u.displayName||u.email||'—')+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+(u.email||'')+' · '+(u.role||'user')+'</div></div><div style="text-align:right"><div style="font-size:14px;color:var(--teal);font-weight:600">R$ '+parseFloat(u.balancePlay||0).toFixed(2)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35)">P&amp;L: R$ '+parseFloat(u.totalPnl||0).toFixed(2)+'</div></div></div>').join('');}const m=await api('GET','/markets?limit=100');if(m&&m.markets){document.getElementById('adm-markets').textContent=m.total||m.markets.length;let v=0;document.getElementById('adm-markets-list').innerHTML=m.markets.map(mkt=>{v+=parseFloat(mkt.totalVolume||0);return'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600">'+mkt.title.slice(0,65)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+mkt.category+' · '+mkt.status+'</div></div><div style="font-size:11px;color:'+(mkt.visibility==='closed'?'var(--amber)':'var(--teal)')+'">'+( mkt.visibility==='closed'?'Fechado':'Aberto')+'</div></div>';}).join('');document.getElementById('adm-volume').textContent='R$ '+v.toFixed(0);}adminStatus('OK','ok');}catch(e){adminStatus('Erro: '+e.message,'err');}}
+async function adminResetAll(){if(!confirm('Apagar TODOS os mercados e apostas para live test? Utilizadores mantidos.'))return;if(!confirm('Ultima confirmacao!'))return;adminStatus('A fazer reset...','info');try{const m=await api('GET','/markets?limit=100');let d=0;if(m&&m.markets){for(const mkt of m.markets){try{await api('DELETE','/markets/'+mkt.id);d++;}catch(e){}}}adminStatus(d+' mercados apagados. Pronto para live test!','ok');document.getElementById('adm-markets').textContent='0';document.getElementById('adm-trades').textContent='0';document.getElementById('adm-volume').textContent='R$ 0';document.getElementById('adm-markets-list').innerHTML='<div style="color:var(--teal);font-size:13px;padding:20px 0">BD limpa. Pronto para live test!</div>';await loadRealMarkets();}catch(e){adminStatus('Erro: '+e.message,'err');}}
+async function adminSeedMarkets(){adminStatus('A criar mercados...','info');const ms=[{title:'O Flamengo vai ser campiao do Brasileirao 2025?',category:'sports'},{title:'O Bitcoin vai superar R$ 600.000 ate dezembro 2025?',category:'crypto'},{title:'A inflacao IPCA ficara abaixo de 5% em 2025?',category:'economics'},{title:'Lula completara seu mandato ate 2026?',category:'politics'},{title:'O dolar vai ultrapassar R$ 6,50 ate junho 2025?',category:'economics'},{title:'O Brasil vai classificar para a Copa do Mundo 2026?',category:'sports'},{title:'A Petrobras vai pagar dividendos acima de R$ 3/acao em 2025?',category:'economics'},{title:'O Corinthians vai cair para a Serie B em 2025?',category:'sports'},{title:'A taxa de desemprego no Brasil cai abaixo de 6% em 2025?',category:'economics'},{title:'O Nubank vai superar o Itau em valor de mercado ate 2026?',category:'economics'},{title:'O Banco Central vai cortar a Selic para abaixo de 12% em 2025?',category:'economics'},{title:'O Sao Paulo vai ganhar a Copa do Brasil 2025?',category:'sports'}];let ok=0;for(const m of ms){try{const r=await api('POST','/markets',{title:m.title,description:m.title,category:m.category,marketType:'binary',visibility:'open',resolutionDate:new Date(Date.now()+180*24*60*60*1000).toISOString(),outcomes:[{id:'yes',label:'SIM'},{id:'no',label:'NAO'}],liquidityB:100});if(r&&r.id)ok++;}catch(e){}}adminStatus(ok+' mercados criados!','ok');await adminRefresh();await loadRealMarkets();}
 
 window.addEventListener('DOMContentLoaded', () => {
   // Restore session from localStorage
