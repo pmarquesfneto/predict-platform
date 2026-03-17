@@ -919,7 +919,53 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <div class="kpi"><div class="kpi-l">Saldo de créditos</div><div class="kpi-v" id="dash-balance">R$ —</div><div class="kpi-d">créditos de simulação</div></div>
       <div class="kpi"><div class="kpi-l">P&L total</div><div class="kpi-v g" id="dash-pnl">R$ 0</div><div class="kpi-d" id="dash-pnl-sub">total acumulado</div></div>
       <div class="kpi"><div class="kpi-l">Apostas vencidas</div><div class="kpi-v" id="dash-wins">0</div><div class="kpi-d" id="dash-losses">0 perdidas</div></div>
-      <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="dash-volume">R$ 0</div><div class="kpi-d">apostado</div></div>
+      <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="dash-volume">R$ 0</div>
+    <!-- Dashboard tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin:24px 0 20px">
+      <button onclick="dashTab('positions')" id="dt-positions" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer">📊 Posições</button>
+      <button onclick="dashTab('account')" id="dt-account" style="padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">👤 Minha Conta</button>
+    </div>
+
+    <!-- Positions tab -->
+    <div id="dash-panel-positions">
+      <div id="dash-positions-list" style="margin-bottom:20px">
+        <div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">As tuas posições aparecem aqui após apostares...</div>
+      </div>
+    </div>
+
+    <!-- Account tab -->
+    <div id="dash-panel-account" style="display:none">
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:24px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px">Dados da conta</div>
+        <div style="display:grid;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Nome</span>
+            <span style="font-size:13px;font-weight:600" id="acc-name">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">E-mail</span>
+            <span style="font-size:13px;font-weight:600" id="acc-email">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Tipo de conta</span>
+            <span style="font-size:13px;font-weight:600" id="acc-role">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Saldo de créditos</span>
+            <span style="font-size:14px;font-weight:700;color:var(--teal)" id="acc-balance">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--dark-border)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Código de referência</span>
+            <span style="font-size:13px;font-weight:600;color:var(--amber)" id="acc-referral">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Status KYC</span>
+            <span style="font-size:13px;font-weight:600" id="acc-kyc">—</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="logout()" style="width:100%;padding:12px;background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.25);color:#ff4455;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Terminar sessão</button>
+    </div><div class="kpi-d">apostado</div></div>
       <div class="kpi"><div class="kpi-l">Apostas ganhas</div><div class="kpi-v">19/26</div><div class="kpi-d">total resolvidas</div></div>
     </div>
     <div class="dash-grid">
@@ -3245,12 +3291,46 @@ async function handleLogin() {
 
 
 
-async function showAdmin(){if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito');return;}showPage('admin',null);await adminRefresh();}
+async function showAdmin(){
+  if(!currentUser||currentUser.role!=='admin'){alert('Acesso restrito a administradores');return;}
+  // Make admin page visible like other pages
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  const ap=document.getElementById('page-admin');
+  if(ap){ap.style.display='block';}
+  // Update nav
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  await adminRefresh();
+}showPage('admin',null);await adminRefresh();}
 function adminStatus(msg,type){const el=document.getElementById('adm-status');if(!el)return;el.style.display='block';const c={ok:{bg:'rgba(29,158,117,0.12)',b:'rgba(29,158,117,0.3)',col:'var(--teal)'},err:{bg:'rgba(255,68,85,0.12)',b:'rgba(255,68,85,0.3)',col:'#ff4455'},info:{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'}}[type]||{bg:'rgba(239,159,39,0.08)',b:'rgba(239,159,39,0.25)',col:'var(--amber)'};el.style.background=c.bg;el.style.border='1px solid '+c.b;el.style.color=c.col;el.textContent=msg;if(type!=='info')setTimeout(()=>el.style.display='none',5000);}
 function adminTab(tab){['users','markets','trades'].forEach(t=>{const p=document.getElementById('adm-panel-'+t),b=document.getElementById('adm-tab-'+t);if(p)p.style.display=t===tab?'block':'none';if(b){b.style.borderBottomColor=t===tab?'var(--teal)':'transparent';b.style.color=t===tab?'var(--teal)':'rgba(255,255,255,0.4)';}});}
 async function adminRefresh(){adminStatus('A carregar...','info');const ts=document.getElementById('adm-timestamp');if(ts)ts.textContent='Actualizado: '+new Date().toLocaleTimeString('pt-BR');try{const lb=await api('GET','/leaderboard');if(lb&&Array.isArray(lb)){document.getElementById('adm-users').textContent=lb.length;document.getElementById('adm-users-list').innerHTML=lb.map(u=>'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-size:14px;font-weight:600">'+(u.displayName||u.email||'—')+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+(u.email||'')+' · '+(u.role||'user')+'</div></div><div style="text-align:right"><div style="font-size:14px;color:var(--teal);font-weight:600">R$ '+parseFloat(u.balancePlay||0).toFixed(2)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35)">P&amp;L: R$ '+parseFloat(u.totalPnl||0).toFixed(2)+'</div></div></div>').join('');}const m=await api('GET','/markets?limit=100');if(m&&m.markets){document.getElementById('adm-markets').textContent=m.total||m.markets.length;let v=0;document.getElementById('adm-markets-list').innerHTML=m.markets.map(mkt=>{v+=parseFloat(mkt.totalVolume||0);return'<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600">'+mkt.title.slice(0,65)+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px">'+mkt.category+' · '+mkt.status+'</div></div><div style="font-size:11px;color:'+(mkt.visibility==='closed'?'var(--amber)':'var(--teal)')+'">'+( mkt.visibility==='closed'?'Fechado':'Aberto')+'</div></div>';}).join('');document.getElementById('adm-volume').textContent='R$ '+v.toFixed(0);}adminStatus('OK','ok');}catch(e){adminStatus('Erro: '+e.message,'err');}}
 async function adminResetAll(){if(!confirm('Apagar TODOS os mercados e apostas para live test? Utilizadores mantidos.'))return;if(!confirm('Ultima confirmacao!'))return;adminStatus('A fazer reset...','info');try{const m=await api('GET','/markets?limit=100');let d=0;if(m&&m.markets){for(const mkt of m.markets){try{await api('DELETE','/markets/'+mkt.id);d++;}catch(e){}}}adminStatus(d+' mercados apagados. Pronto para live test!','ok');document.getElementById('adm-markets').textContent='0';document.getElementById('adm-trades').textContent='0';document.getElementById('adm-volume').textContent='R$ 0';document.getElementById('adm-markets-list').innerHTML='<div style="color:var(--teal);font-size:13px;padding:20px 0">BD limpa. Pronto para live test!</div>';await loadRealMarkets();}catch(e){adminStatus('Erro: '+e.message,'err');}}
 async function adminSeedMarkets(){adminStatus('A criar mercados...','info');const ms=[{title:'O Flamengo vai ser campiao do Brasileirao 2025?',category:'sports'},{title:'O Bitcoin vai superar R$ 600.000 ate dezembro 2025?',category:'crypto'},{title:'A inflacao IPCA ficara abaixo de 5% em 2025?',category:'economics'},{title:'Lula completara seu mandato ate 2026?',category:'politics'},{title:'O dolar vai ultrapassar R$ 6,50 ate junho 2025?',category:'economics'},{title:'O Brasil vai classificar para a Copa do Mundo 2026?',category:'sports'},{title:'A Petrobras vai pagar dividendos acima de R$ 3/acao em 2025?',category:'economics'},{title:'O Corinthians vai cair para a Serie B em 2025?',category:'sports'},{title:'A taxa de desemprego no Brasil cai abaixo de 6% em 2025?',category:'economics'},{title:'O Nubank vai superar o Itau em valor de mercado ate 2026?',category:'economics'},{title:'O Banco Central vai cortar a Selic para abaixo de 12% em 2025?',category:'economics'},{title:'O Sao Paulo vai ganhar a Copa do Brasil 2025?',category:'sports'}];let ok=0;for(const m of ms){try{const r=await api('POST','/markets',{title:m.title,description:m.title,category:m.category,marketType:'binary',visibility:'open',resolutionDate:new Date(Date.now()+180*24*60*60*1000).toISOString(),outcomes:[{id:'yes',label:'SIM'},{id:'no',label:'NAO'}],liquidityB:100});if(r&&r.id)ok++;}catch(e){}}adminStatus(ok+' mercados criados!','ok');await adminRefresh();await loadRealMarkets();}
+
+
+function dashTab(tab) {
+  ['positions','account'].forEach(t => {
+    const p = document.getElementById('dash-panel-' + t);
+    const b = document.getElementById('dt-' + t);
+    if (p) p.style.display = t === tab ? 'block' : 'none';
+    if (b) {
+      b.style.borderBottomColor = t === tab ? 'var(--teal)' : 'transparent';
+      b.style.color = t === tab ? 'var(--teal)' : 'rgba(255,255,255,0.4)';
+    }
+  });
+  if (tab === 'account') updateAccountTab();
+}
+
+function updateAccountTab() {
+  if (!currentUser) return;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+  set('acc-name', currentUser.displayName);
+  set('acc-email', currentUser.email);
+  set('acc-role', currentUser.role === 'admin' ? 'Administrador' : 'Utilizador');
+  set('acc-balance', 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2));
+  set('acc-referral', currentUser.referralCode || '—');
+  set('acc-kyc', currentUser.kycStatus === 'approved' ? '✅ Aprovado' : currentUser.kycStatus === 'none' ? '⏳ Pendente' : currentUser.kycStatus);
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   // Restore session from localStorage
