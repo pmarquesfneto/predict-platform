@@ -2902,8 +2902,12 @@ function openMarket(marketId) {
 }
 
 function showPage(id,btn,closeMobile){
-  if(id==="dashboard") { setTimeout(updateDashboard,100); setTimeout(updateAccountTab,200); }
-  if(id==="share") setTimeout(populateShareSelect, 100);
+  if(id==="dashboard") setTimeout(updateDashboard, 100);
+  if(id==="share")     setTimeout(populateShareSelect, 100);
+  if(id==="experience") setTimeout(()=>expTab('explore'), 100);
+  if(id==="listing")   setTimeout(()=>{ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
+  if(id==="market" && MARKETS.length > 0 && !CURRENT_MARKET_ID) openMarket(MARKETS[0].id);
+  if(id==="onboard")   { obStep(0); setTimeout(obShowLogin, 100); }
   // hide all pages
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   // show target page
