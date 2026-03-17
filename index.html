@@ -1899,7 +1899,7 @@ id="uc-form-4" style="display:none">
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
       <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
-      <div id="ob-login-form" style="display:none;margin-top:20px">
+      <div id="ob-login-form" style="display:none;margin-top:16px">
         <div style="height:1px;background:var(--dark-border);margin:0 0 20px"></div>
         <div class="kyc-form">
           <div>
@@ -2186,6 +2186,29 @@ function updateNavUser() {
 }
 
 // ── Init: load markets on page load ───────────────────
+
+function authTab(tab) {
+  const regPanel = document.getElementById('ob-register-panel');
+  const loginPanel = document.getElementById('ob-login-form');
+  const regTab = document.getElementById('tab-register');
+  const loginTab = document.getElementById('tab-login');
+  if (tab === 'login') {
+    if (regPanel) regPanel.style.display = 'none';
+    if (loginPanel) loginPanel.style.display = 'block';
+    if (regTab) { regTab.style.borderBottomColor='transparent'; regTab.style.color='rgba(255,255,255,0.4)'; }
+    if (loginTab) { loginTab.style.borderBottomColor='var(--teal)'; loginTab.style.color='var(--teal)'; }
+    setTimeout(() => document.getElementById('ob-login-email')?.focus(), 100);
+  } else {
+    if (regPanel) regPanel.style.display = 'block';
+    if (loginPanel) loginPanel.style.display = 'none';
+    if (regTab) { regTab.style.borderBottomColor='var(--teal)'; regTab.style.color='var(--teal)'; }
+    if (loginTab) { loginTab.style.borderBottomColor='transparent'; loginTab.style.color='rgba(255,255,255,0.4)'; }
+  }
+}
+// Update obShowLogin to use new tab system
+function obShowLogin() { authTab('login'); }
+function obHideLogin() { authTab('register'); }
+
 window.addEventListener('DOMContentLoaded', () => {
   loadRealMarkets();
   updateNavUser();
