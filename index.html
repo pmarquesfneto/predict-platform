@@ -1988,6 +1988,20 @@ id="uc-form-4" style="display:none">
 
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══ SECURITY: Clear admin sessions on page load ══
+(function(){
+  try {
+    var su = localStorage.getItem('predict_user');
+    if (su) {
+      var u = JSON.parse(su);
+      if (u && u.role === 'admin') {
+        localStorage.removeItem('predict_token');
+        localStorage.removeItem('predict_user');
+      }
+    }
+  } catch(e) {}
+})();
+
 
 
 
@@ -2354,7 +2368,7 @@ async function handleLogin() {
       updateNavUser();
       if (typeof obHideLogin === 'function') obHideLogin();
       if (currentUser.role === 'admin') {
-        await showAdmin();
+        await showAdmin(); // admin goes to admin panel
       } else {
         showPage('dashboard', null);
         setTimeout(updateDashboard, 200);
