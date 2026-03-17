@@ -1686,6 +1686,16 @@ id="uc-form-4" style="display:none">
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
       <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
+      <div id="ob-login-form" style="display:none;margin-top:20px">
+        <div style="height:1px;background:var(--dark-border);margin-bottom:20px"></div>
+        <div class="kyc-form">
+          <div><div class="kyc-label">E-mail</div><input class="kyc-input" id="ob-login-email" type="email" placeholder="pedro@email.com"></div>
+          <div><div class="kyc-label">Senha</div><input class="kyc-input" id="ob-login-password" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+        </div>
+        <div id="ob-error" style="color:#ff4455;font-size:12px;min-height:16px;margin:8px 0"></div>
+        <button class="ob-btn" onclick="handleLogin()" style="margin-top:4px">Entrar →</button>
+        <button class="ob-skip" onclick="obHideLogin()">← Voltar</button>
+      </div>
     </div>
 
     <!-- step 1: dados pessoais -->
@@ -1949,6 +1959,21 @@ function updateNavUser() {
 }
 
 // ── Init: load markets on page load ───────────────────
+
+function obShowLogin() {
+  const f = document.getElementById('ob-login-form');
+  if (f) { f.style.display='block'; document.getElementById('ob-login-email')?.focus(); }
+  const e = document.getElementById('ob-error'); if(e) e.textContent='';
+}
+function obHideLogin() {
+  const f = document.getElementById('ob-login-form'); if(f) f.style.display='none';
+}
+function logout() {
+  authToken=null; currentUser=null;
+  localStorage.removeItem('predict_token'); localStorage.removeItem('predict_user');
+  showPage('onboard',null); updateNavUser(); obHideLogin();
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   loadRealMarkets();
   updateNavUser();
@@ -2064,8 +2089,8 @@ async function initMarketsData() {
   }
 }
 async function handleLogin() {
-  const emailEl = document.querySelector('#page-onboard input[type="email"]');
-  const passEl  = document.querySelector('#page-onboard input[type="password"]');
+  const emailEl = document.getElementById('ob-login-email') || document.querySelector('#page-onboard input[type="email"]');
+  const passEl  = document.getElementById('ob-login-password') || document.querySelector('#page-onboard input[type="password"]');
   if (!emailEl || !passEl) return;
   const result = await apiLogin(emailEl.value, passEl.value);
   if (result.success) {
