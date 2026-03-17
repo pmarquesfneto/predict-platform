@@ -3596,7 +3596,13 @@ function doLogout() {
   currentUser = null;
   localStorage.removeItem('predict_token');
   localStorage.removeItem('predict_user');
-  showPage('home', null);
+  // Show home page directly
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  const homePage = document.getElementById('page-home');
+  if (homePage) homePage.style.display = 'block';
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  const homeBtn = document.querySelector('[data-page="home"]');
+  if (homeBtn) homeBtn.classList.add('active');
   updateNavUser();
   // Update entrar button
   const adminBtn = document.getElementById('admin-nav-btn');
@@ -3873,7 +3879,11 @@ function logout() {
 
   // Show "Entrar" button again
   const entrarBtn = document.getElementById('nav-entrar');
-  if (entrarBtn) { entrarBtn.style.display = ''; entrarBtn.style.removeProperty('display'); }
+  if (entrarBtn) {
+    entrarBtn.style.cssText = entrarBtn.style.cssText.replace(/displays*:[^;]+;?/gi, '');
+    entrarBtn.removeAttribute('style');
+    entrarBtn.style.display = 'inline-block';
+  }
 
   // Reset balance
   const balEl = document.querySelector('.nav-balance');
