@@ -723,7 +723,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     </div>
   <div class="nav-right">
     <div class="nav-bal">Saldo: <b>R$ 847,50</b></div>
-    <button class="btn-dep" onclick="showPage('onboard',null)">+ Depositar</button>
+    <button class="btn-dep" onclick="showPage('onboard',null)" style="display:none">+ Depositar</button>
     <div class="hamburger" onclick="toggleMenu()" id="hamburger">
       <span></span><span></span><span></span>
     </div>
@@ -1895,7 +1895,7 @@ id="uc-form-4" style="display:none">
       <div class="ob-features">
         <div class="ob-feat"><div class="ob-feat-ico">📊</div>Preços matemáticos via algoritmo LMSR</div>
         <div class="ob-feat"><div class="ob-feat-ico">🏦</div>Resolução automática via Banco Central</div>
-        <div class="ob-feat"><div class="ob-feat-ico">⚡</div>Depósito e saque via PIX instantâneo</div>
+        <div class="ob-feat" style="display:none"><div class="ob-feat-ico">⚡</div>Depósito e saque via PIX instantâneo</div>
       </div>
       <button class="ob-btn" onclick="obStep(1)">Criar conta gratuita →</button>
       <button class="ob-skip" onclick="obShowLogin()">Já tenho conta — entrar</button>
@@ -1959,7 +1959,7 @@ id="uc-form-4" style="display:none">
       <div class="kyc-form">
         <div><div class="kyc-label">CPF</div><input class="kyc-input" type="text" placeholder="000.000.000-00" maxlength="14"></div>
         <div><div class="kyc-label">Data de nascimento</div><input class="kyc-input" type="date"></div>
-        <div><div class="kyc-label">Telefone (WhatsApp)</div><input class="kyc-input" type="tel" placeholder="+55 (11) 99999-9999"></div>
+        <div><div style="display:none" class="kyc-label">Telefone (WhatsApp)</div><input class="kyc-input" type="tel" placeholder="+55 (11) 99999-9999"></div>
       </div>
       <div class="kyc-note">🔒 Seus dados são protegidos pela LGPD (Lei 13.709/2018) e nunca compartilhados com terceiros.</div>
       <br>
@@ -1968,7 +1968,7 @@ id="uc-form-4" style="display:none">
     </div>
 
     <!-- step 3: PIX deposit -->
-    <div 
+    <div style="display:none"
       <div class="ob-h">Fazer primeiro depósito</div>
       <p class="ob-p">Escolha o valor e pague via PIX. O saldo aparece em segundos.</p>
       <div class="pix-amount-row">
@@ -2193,6 +2193,59 @@ function updateNavUser() {
 
 
 // ── Init: load markets on page load ───────────────────
+
+async function showUserDetail(userId, userName) {
+  // Find user data from the leaderboard list
+  const lb = await api('GET', '/leaderboard');
+  const u  = Array.isArray(lb) ? lb.find(x => x.id === userId) : null;
+  if (!u) { alert('Utilizador não encontrado'); return; }
+
+  const modal = document.getElementById('user-modal');
+  if (!modal) return;
+
+  const wins   = u.winCount  || 0;
+  const losses = u.lossCount || 0;
+  const total  = wins + losses;
+  const pct    = total > 0 ? Math.round(wins / total * 100) : 0;
+  const pnl    = parseFloat(u.totalPnl || 0);
+  const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '—';
+
+  document.getElementById('um-name').textContent    = u.displayName || '—';
+  document.getElementById('um-email').textContent   = u.email || '—';
+  document.getElementById('um-balance').textContent = 'R$ ' + parseFloat(u.balancePlay||0).toFixed(2);
+  document.getElementById('um-trades').textContent  = total;
+  document.getElementById('um-score').textContent   = u.calibScore ? parseFloat(u.calibScore).toFixed(1) : '—';
+  document.getElementById('um-wins').textContent    = wins + ' (' + pct + '%)';
+  document.getElementById('um-losses').textContent  = losses + ' (' + (100-pct) + '%)';
+  document.getElementById('um-role').textContent    = u.role || 'user';
+  document.getElementById('um-kyc').textContent     = u.kycStatus || '—';
+  document.getElementById('um-joined').textContent  = joined;
+  const pnlEl = document.getElementById('um-pnl');
+  pnlEl.textContent = (pnl>=0?'+':'') + 'R$ ' + pnl.toFixed(2);
+  pnlEl.style.color = pnl >= 0 ? 'var(--teal)' : '#ff4455';
+
+  document.getElementById('um-btn-warn').onclick    = () => { adminWarnUser(userId, u.displayName); };
+  document.getElementById('um-btn-ban').onclick     = () => { adminBanUser(userId, u.displayName); modal.style.display='none'; };
+  document.getElementById('um-btn-balance').onclick = () => adminAdjustBalance(userId, u.displayName);
+
+  modal.style.display = 'block';
+
+  // AI analysis
+  const aiEl = document.getElementById('um-ai-analysis');
+  aiEl.innerHTML = '<span style="color:rgba(255,255,255,0.4)">A analisar padrões com IA...</span>';
+  try {
+    const prompt = 'Analisa este utilizador de uma plataforma de previsões (play money):\nNome: '+u.displayName+'\nApostas: '+total+' ('+wins+' vitórias = '+pct+'% acertos)\nSaldo: R$ '+parseFloat(u.balancePlay||0).toFixed(2)+'\nP&L: R$ '+pnl.toFixed(2)+'\nCalibracao: '+(u.calibScore||'sem dados')+'\nInscrito: '+joined+'\n\nEscreve uma análise concisa de 3-4 frases em português do Brasil sobre: (1) perfil do apostador, (2) padrão de performance, (3) recomendação para o admin. Responde apenas com o texto.';
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 300, messages: [{ role: 'user', content: prompt }] })
+    }).then(r => r.json());
+    aiEl.textContent = resp.content?.[0]?.text || 'Dados insuficientes para análise.';
+  } catch(e) {
+    aiEl.textContent = 'Análise indisponível de momento.';
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -3524,7 +3577,7 @@ function adminTab(tab) {
     const btn   = document.getElementById('adm-tab-' + t);
     if (panel) panel.style.display = t === tab ? 'block' : 'none';
     if (btn) {
-      btn.style.borderBottomColor = t === tab ? 'var(--teal)' : 'transparent';
+      btn.style.borderBottom = t === tab ? '2px solid var(--teal)' : '2px solid transparent';
       btn.style.color = t === tab ? 'var(--teal)' : 'rgba(255,255,255,0.4)';
     }
   });
@@ -3542,7 +3595,7 @@ async function adminRefresh() {
       document.getElementById('adm-users-list').innerHTML = lb.map(u => {
         if (u.role === 'admin') return '<div style="background:var(--dark-card);border:1px solid rgba(239,159,39,0.2);border-radius:10px;padding:14px;margin-bottom:8px"><b>' + (u.displayName||u.email) + '</b> — Administrador</div>';
         const uid = u.id; const uname = (u.displayName||'').replace(/'/g,'');
-        return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
+        return '<div data-uid="'+uid+'" data-uname="'+uname+'" style="cursor:pointer;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px" onmouseover="this.style.borderColor=\'rgba(29,158,117,0.4)\'" onmouseout="this.style.borderColor=\'var(--dark-border)\'"'+'>'
           + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
           + '<div><div style="font-size:14px;font-weight:700">' + (u.displayName||'—') + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">' + (u.email||'') + '</div>'
@@ -3578,7 +3631,7 @@ async function adminRefresh() {
         const no  = mkt.outcomes ? (mkt.outcomes[1]?.quantity||0) : 0;
         const pct = Math.round(yes / Math.max(1, yes+no) * 100);
         const mid = mkt.id;
-        return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
+        return '<div data-uid="'+uid+'" data-uname="'+uname+'" style="cursor:pointer;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px" onmouseover="this.style.borderColor=\'rgba(29,158,117,0.4)\'" onmouseout="this.style.borderColor=\'var(--dark-border)\'"'+'>'
           + '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">'
           + '<div style="flex:1;margin-right:12px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">' + mkt.title + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4)">' + mkt.category + ' · ' + mkt.status + ' · Vol: R$ ' + vol.toFixed(0) + '</div></div>'
@@ -3603,6 +3656,30 @@ async function adminRefresh() {
       document.getElementById('adm-volume').textContent = 'R$ ' + totalVol.toFixed(0);
     }
 
+
+    // TRADES tab
+    const tr = await api('GET', '/admin/trades?limit=50').catch(() => null)
+             || await api('GET', '/trades?limit=50').catch(() => null);
+    const tradesList = tr?.trades || tr?.data || [];
+    const trEl = document.getElementById('adm-trades');
+    if (trEl) trEl.textContent = tradesList.length || '—';
+    const trListEl = document.getElementById('adm-trades-list');
+    if (trListEl) {
+      if (tradesList.length > 0) {
+        trListEl.innerHTML = tradesList.map(t => {
+          const col = t.outcome === 'yes' ? 'var(--teal)' : '#ff4455';
+          const dt  = t.createdAt ? new Date(t.createdAt).toLocaleString('pt-BR') : '—';
+          const amt = parseFloat(t.amount || t.cost || 0).toFixed(2);
+          return '<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'
+            + '<div><div style="font-size:13px;font-weight:600">'+(t.marketTitle||t.market?.title||'Mercado').slice(0,50)+'</div>'
+            + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px">'+(t.userEmail||t.user?.email||'—')+' · '+dt+'</div></div>'
+            + '<div style="text-align:right"><div style="font-size:13px;font-weight:700;color:'+col+'">'+(t.outcome==='yes'?'SIM':'NÃO')+'</div>'
+            + '<div style="font-size:12px;color:var(--teal)">R$ '+amt+'</div></div></div>';
+        }).join('');
+      } else {
+        trListEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0;text-align:center">Nenhuma aposta encontrada</div>';
+      }
+    }
     adminStatus('Dados actualizados ✅', 'ok');
   } catch(e) {
     adminStatus('Erro: ' + e.message, 'err');
@@ -3670,16 +3747,7 @@ async function adminSeedMarkets() {
 // ── LOGOUT ─────────────────────────────────────────
 function doLogout() {
   if (!confirm('Tens a certeza que queres sair?')) return;
-  authToken = null;
-  currentUser = null;
-  localStorage.removeItem('predict_token');
-  localStorage.removeItem('predict_user');
-  showPage('home', null);
-  updateNavUser();
-  // Update entrar button
-  const adminBtn = document.getElementById('admin-nav-btn');
-  if (adminBtn) adminBtn.style.display = 'none';
-  console.log('✅ Logged out');
+  logout();
 }
 
 // ── ADMIN PANEL ─────────────────────────────────────
@@ -3970,4 +4038,44 @@ function logout() {
       onkeydown="if(event.key==='Enter')submitAccessCode()">
     <div class="access-error" id="access-error"></div>
     <div class="access-btns">
-      <but
+      <button class="access-cancel" onclick="closeAccessModal()">Cancelar</button>
+      <button class="access-submit" onclick="submitAccessCode()">Entrar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ USER DETAIL MODAL ════════════════════════════════ -->
+<div id="user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;overflow-y:auto;padding:24px 16px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="max-width:600px;margin:0 auto;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:700" id="um-name">—</div>
+      <button onclick="document.getElementById('user-modal').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Saldo</div><div style="font-size:15px;font-weight:700;color:var(--teal)" id="um-balance">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Apostas</div><div style="font-size:15px;font-weight:700" id="um-trades">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Calibração</div><div style="font-size:15px;font-weight:700;color:var(--amber)" id="um-score">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Vitórias</div><div style="font-size:15px;font-weight:700;color:var(--teal)" id="um-wins">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Derrotas</div><div style="font-size:15px;font-weight:700;color:#ff4455" id="um-losses">—</div></div>
+      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">P&L</div><div style="font-size:15px;font-weight:700" id="um-pnl">—</div></div>
+    </div>
+    <div style="display:grid;gap:8px;margin-bottom:20px;font-size:13px">
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Email</span><span id="um-email">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Inscrito em</span><span id="um-joined">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Role</span><span id="um-role">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">KYC</span><span id="um-kyc">—</span></div>
+    </div>
+    <div style="background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">🤖 Análise AI de Padrões</div>
+      <div id="um-ai-analysis" style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.7">—</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button id="um-btn-warn" style="font-size:12px;padding:8px 16px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>
+      <button id="um-btn-ban" style="font-size:12px;padding:8px 16px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>
+      <button id="um-btn-balance" style="font-size:12px;padding:8px 16px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
