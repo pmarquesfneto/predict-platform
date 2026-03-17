@@ -1524,7 +1524,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
     <div class="terms-section">
       <h3>3. Dados Pessoais (LGPD)</h3>
-      <p>Coletamos apenas email e nome de exibição para criação de conta. Seus dados são tratados conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Não compartilhamos dados com terceiros sem consentimento explícito. Para exercer seus direitos, entre em contato: privacidade@predict.com.br</p>
+      <p>Coletamos apenas email e nome de exibição para criação de conta. Seus dados são tratados conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Não compartilhamos dados com terceiros sem consentimento explícito. Para exercer seus direitos, entre em contato: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9b9bba0bfa8aaa0ada8adac89b9bbacada0aabde7aaa6a4e7abbb">[email&#160;protected]</a></p>
     </div>
 
     <div class="terms-section">
@@ -1544,7 +1544,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
     <div class="terms-section">
       <h3>7. Contato</h3>
-      <p>Dúvidas ou solicitações: contato@predict.com.br<br>Proteção de dados: privacidade@predict.com.br</p>
+      <p>Dúvidas ou solicitações: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="beddd1d0cadfcad1fececcdbdad7ddca90ddd1d390dccc">[email&#160;protected]</a><br>Proteção de dados: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="59292b302f383a303d383d3c19292b3c3d303a2d773a3634773b2b">[email&#160;protected]</a></p>
     </div>
 
     <button class="ob-btn" style="width:auto;padding:12px 28px;margin-top:8px" onclick="history.back()">← Voltar</button>
@@ -1643,12 +1643,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 /* ══════════════════════════════════════════════════════
    API INTEGRATION — connects to real backend via ngrok
    ══════════════════════════════════════════════════════ */
-const API_BASE = 'https://baculiform-pachydermatously-kylie.ngrok-free.dev/api';
+const API_BASE = 'https://predict-backend-44i1.onrender.com/api';
 let authToken = localStorage.getItem('predict_token') || null;
 let currentUser = JSON.parse(localStorage.getItem('predict_user') || 'null');
 
@@ -1659,8 +1659,7 @@ async function api(method, path, body) {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-        ...(authToken ? { Authorization: 'Bearer ' + authToken } : {})
+                ...(authToken ? { Authorization: 'Bearer ' + authToken } : {})
       },
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -1800,8 +1799,7 @@ async function apiReq(method, path, body) {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-        ...(AUTH_TOKEN ? { Authorization: 'Bearer ' + AUTH_TOKEN } : {}),
+                ...(AUTH_TOKEN ? { Authorization: 'Bearer ' + AUTH_TOKEN } : {}),
       },
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -2910,16 +2908,4 @@ tourStyle.textContent=`
 #tour-actions{display:flex;gap:8px;align-items:center}
 #tour-skip{background:none;border:none;color:rgba(255,255,255,0.25);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;pointer-events:all}
 #tour-skip:hover{color:rgba(255,255,255,0.5)}
-#tour-next{background:#1D9E75;border:none;color:#fff;font-size:12px;font-weight:500;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.15s;pointer-events:all}
-#tour-next:hover{background:#0F6E56}
-.tour-highlight{outline:2px solid #1D9E75 !important;outline-offset:4px;border-radius:12px;position:relative;z-index:500}
-@media(max-width:480px){
-  #tour-card{right:12px;left:12px;width:auto;bottom:80px}
-  #tour-fab{right:16px;bottom:20px;padding:10px 18px;font-size:13px}
-}
-`;
-document.head.appendChild(tourStyle);
-buildTourUI();
-</script>
-</body>
-</html>
+#tour-next{background:#1D9E75;border:none;color:#fff;font-size:12px;font-weight:500;padding:8px 14px;border-radius:8px;cursor:point
