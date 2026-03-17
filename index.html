@@ -3338,7 +3338,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (storedToken && storedUser) {
     authToken = storedToken;
     currentUser = JSON.parse(storedUser);
-    console.log('✅ Session restored:', currentUser.displayName);
+    console.log('✅ Session restored:', currentUser.displayName, '| role:', currentUser.role);
   }
   loadRealMarkets();
   updateNavUser();
