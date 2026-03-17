@@ -798,7 +798,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 <div class="page" id="page-listing">
   <div class="list-hero">
     <h2>Explorar Mercados</h2>
-    <p class="list-sub">138 mercados abertos · R$ 2,4M em volume total</p>
+    <p class="list-sub" id="list-sub-text">A carregar...</p>
     <div class="filter-row">
       <button class="fchip active" onclick="filterM('all',this)">Todos</button>
       <button class="fchip" onclick="filterM('econ',this)">📈 Economia</button>
@@ -887,41 +887,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
         <div class="dash-score">Score de calibração: <b id="dash-score">—</b></div>
       </div>
       <div style="display:flex;gap:8px">
-      <button onclick="doLogout()" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.25);color:rgba(255,100,100,0.8);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer">Sair →</button>
-    </div>
+        <button onclick="doLogout()" style="background:rgba(255,70,70,0.1);border:1px solid rgba(255,70,70,0.25);color:rgba(255,100,100,0.8);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer">Sair →</button>
+      </div>
     </div>
     <div class="kpis">
       <div class="kpi"><div class="kpi-l">Saldo de créditos</div><div class="kpi-v" id="dash-balance">R$ —</div><div class="kpi-d">créditos de simulação</div></div>
       <div class="kpi"><div class="kpi-l">P&L total</div><div class="kpi-v g" id="dash-pnl">R$ 0</div><div class="kpi-d" id="dash-pnl-sub">total acumulado</div></div>
       <div class="kpi"><div class="kpi-l">Apostas vencidas</div><div class="kpi-v" id="dash-wins">0</div><div class="kpi-d" id="dash-losses">0 perdidas</div></div>
       <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="dash-volume">R$ 0</div><div class="kpi-d">apostado</div></div>
-      <div class="kpi"><div class="kpi-l">Apostas ganhas</div><div class="kpi-v">19/26</div><div class="kpi-d">total resolvidas</div></div>
     </div>
     <div class="dash-grid">
       <div>
         <div class="pos-title">Posições abertas</div>
-        <div class="pos-item"><div class="pos-ico" style="background:rgba(186,117,23,0.1)">📈</div><div class="pos-body"><div class="pos-q">Selic será cortada no COPOM de ago 2025?</div><div class="pos-meta">R$ 200 apostado · <span class="pos-out out-y">SIM @ 58%</span></div></div><div class="pos-pnl"><div class="pos-pnl-v g">+R$ 31,40</div><div class="pos-pnl-p">+15,7%</div></div></div>
-        <div class="pos-item"><div class="pos-ico" style="background:rgba(29,158,117,0.1)">⚽</div><div class="pos-body"><div class="pos-q">Flamengo campeão Brasileiro 2025?</div><div class="pos-meta">R$ 150 apostado · <span class="pos-out out-y">SIM @ 35%</span></div></div><div class="pos-pnl"><div class="pos-pnl-v g">+R$ 27,00</div><div class="pos-pnl-p">+18,0%</div></div></div>
-        <div class="pos-item"><div class="pos-ico" style="background:rgba(24,95,165,0.1)">₿</div><div class="pos-body"><div class="pos-q">Bitcoin acima de USD 200k em 2026?</div><div class="pos-meta">R$ 80 apostado · <span class="pos-out out-n">NÃO @ 62%</span></div></div><div class="pos-pnl"><div class="pos-pnl-v r">-R$ 4,20</div><div class="pos-pnl-p">-5,3%</div></div></div>
-        <div class="pos-item"><div class="pos-ico" style="background:rgba(83,74,183,0.1)">🗳</div><div class="pos-body"><div class="pos-q">Eleição presidencial 2026: Lula reeleito?</div><div class="pos-meta">R$ 300 apostado · <span class="pos-out out-n">NÃO @ 44%</span></div></div><div class="pos-pnl"><div class="pos-pnl-v g">+R$ 14,50</div><div class="pos-pnl-p">+4,8%</div></div></div>
-        <div class="pos-item"><div class="pos-ico" style="background:rgba(186,117,23,0.1)">📊</div><div class="pos-body"><div class="pos-q">IPCA ficará abaixo de 4% em 2026?</div><div class="pos-meta">R$ 120 apostado · <span class="pos-out out-y">SIM @ 68%</span></div></div><div class="pos-pnl"><div class="pos-pnl-v g">+R$ 8,90</div><div class="pos-pnl-p">+7,4%</div></div></div>
-        <div style="margin-top:20px">
-          <div class="chart-lbl" style="margin-bottom:10px;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.3)">P&L acumulado — últimos 30 dias</div>
-          <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r);padding:16px">
-            <canvas id="pnl-chart" height="80"></canvas>
-          </div>
-        </div>
+        <div id="dash-positions"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">A carregar posições...</div></div>
       </div>
-      <div class="lb">
-        <div class="lb-hd">Ranking de traders <span class="lb-live"><div class="logo-dot" style="width:4px;height:4px"></div>ao vivo</span></div>
-        <div class="lb-item"><div class="lb-r gold">#1</div><div class="lb-av" style="background:rgba(239,159,39,0.15);color:#EF9F27">MM</div><div class="lb-n"><b>marcos_m</b><span style="font-size:10px;color:rgba(255,255,255,0.25)">São Paulo</span></div><div style="text-align:right"><div class="lb-s">R$ 12.840</div><div class="lb-a">91% acerto</div></div></div>
-        <div class="lb-item"><div class="lb-r silver">#2</div><div class="lb-av" style="background:rgba(92,168,245,0.15);color:#5CA8F5">JC</div><div class="lb-n"><b>julia_c</b><span style="font-size:10px;color:rgba(255,255,255,0.25)">Rio de Janeiro</span></div><div style="text-align:right"><div class="lb-s">R$ 9.210</div><div class="lb-a">88% acerto</div></div></div>
-        <div class="lb-item"><div class="lb-r bronze">#3</div><div class="lb-av" style="background:rgba(157,150,240,0.15);color:#9D96F0">RS</div><div class="lb-n"><b>r.souza</b><span style="font-size:10px;color:rgba(255,255,255,0.25)">BH</span></div><div style="text-align:right"><div class="lb-s">R$ 7.650</div><div class="lb-a">85% acerto</div></div></div>
-        <div class="lb-item lb-you"><div class="lb-r" style="color:var(--teal)">#12</div><div class="lb-av" style="background:rgba(29,158,117,0.2);color:var(--teal)">PM</div><div class="lb-n"><b>pedro_mv</b> <span style="font-size:10px;background:rgba(29,158,117,0.15);color:var(--teal);padding:2px 5px;border-radius:4px">Você</span></div><div style="text-align:right"><div class="lb-s">R$ 2.341</div><div class="lb-a">73% acerto</div></div></div>
-        <div class="lb-item"><div class="lb-r">#13</div><div class="lb-av" style="background:rgba(136,135,128,0.15);color:#B4B2A9">TF</div><div class="lb-n"><b>t.ferreira</b><span style="font-size:10px;color:rgba(255,255,255,0.25)">Curitiba</span></div><div style="text-align:right"><div class="lb-s">R$ 2.180</div><div class="lb-a">70% acerto</div></div></div>
+      <div>
+        <div class="pos-title">Ranking de traders</div>
+        <div id="dash-leaderboard"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">A carregar ranking...</div></div>
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- ══ MARKET TYPES ═══════════════════════════════════════════════ -->
@@ -1348,7 +1334,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
         </div>
         <div class="br-footer">
           <span>predict-platform-omega.vercel.app</span>
-          <span>Trader: <b id="br-trader">pedro_mv</b> · Score: <b style="color:var(--teal)">87,4</b></span>
+          <span>Trader: <b id="br-trader">—</b> · Score: <b style="color:var(--teal)">87,4</b></span>
         </div>
       </div>
     </div>
@@ -1363,13 +1349,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <div class="sc-title">Personalizar card</div>
       <div class="sc-fields">
         <div class="sc-field"><label>Mercado</label>
-          <select onchange="updateReceipt('market',this.value)">
-            <option>Selic COPOM agosto</option>
-            <option>Flamengo Brasileirão</option>
-            <option>IPCA abaixo 4%</option>
-            <option>Bitcoin USD 200k</option>
-            <option>Lula reeleito 2026</option>
-          </select>
+          <select class="share-sel" id="share-mkt-select" onchange="updateSharePreview()"><option value="">Selecione um mercado...</option></select>
         </div>
         <div class="sc-field"><label>Minha posição</label>
           <select onchange="updateReceipt('side',this.value)">
@@ -1430,14 +1410,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     </div>
 
     <div class="calib-history">
-      <div class="calib-hist-hd">Histórico de predições</div>
-      <div class="calib-hist-row"><div class="calib-result cr-win">✓</div><div class="calib-hist-q">Selic abaixo de 11,75% em jun/25</div><div class="calib-hist-pred" style="color:var(--teal)">Predito: 78%</div><div class="calib-hist-actual">Real: SIM</div><div class="calib-hist-score" style="color:var(--teal)">+0,048</div></div>
-      <div class="calib-hist-row"><div class="calib-result cr-win">✓</div><div class="calib-hist-q">Flamengo vence Fluminense</div><div class="calib-hist-pred" style="color:var(--teal)">Predito: 62%</div><div class="calib-hist-actual">Real: SIM</div><div class="calib-hist-score" style="color:var(--teal)">+0,069</div></div>
-      <div class="calib-hist-row"><div class="calib-result cr-loss">✗</div><div class="calib-hist-q">Bitcoin acima USD 150k em mar/25</div><div class="calib-hist-pred" style="color:var(--red)">Predito: 71%</div><div class="calib-hist-actual">Real: NÃO</div><div class="calib-hist-score" style="color:var(--red)">-0,504</div></div>
-      <div class="calib-hist-row"><div class="calib-result cr-win">✓</div><div class="calib-hist-q">IPCA abaixo de 5% em dez/24</div><div class="calib-hist-pred" style="color:var(--teal)">Predito: 85%</div><div class="calib-hist-actual">Real: SIM</div><div class="calib-hist-score" style="color:var(--teal)">+0,028</div></div>
-      <div class="calib-hist-row"><div class="calib-result cr-win">✓</div><div class="calib-hist-q">PIB cresceu acima de 2% em 2024</div><div class="calib-hist-pred" style="color:var(--teal)">Predito: 66%</div><div class="calib-hist-actual">Real: SIM</div><div class="calib-hist-score" style="color:var(--teal)">+0,092</div></div>
-      <div class="calib-hist-row"><div class="calib-result cr-loss">✗</div><div class="calib-hist-q">Palmeiras campeão Paulista 2025</div><div class="calib-hist-pred" style="color:var(--red)">Predito: 55%</div><div class="calib-hist-actual">Real: NÃO</div><div class="calib-hist-score" style="color:var(--red)">-0,302</div></div>
-    </div>
+      <div id="calib-hist-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem histórico de apostas ainda.</div></div>
+      
   </div>
 </div>
 
@@ -1946,6 +1920,10 @@ id="uc-form-4" style="display:none">
 
 
 
+/* ═══════
+
+
+
 /* ══════════════════════════════════════════════════════
    API INTEGRATION — connects to real backend via ngrok
    ══════════════════════════════════════════════════════ */
@@ -2074,51 +2052,97 @@ async function apiPlaceBet(marketApiId, outcomeId, amount) {
 // ── UPDATE DASHBOARD with real user data ─────────────
 async function updateDashboard() {
   if (!currentUser) {
-    // Try loading from localStorage
     const stored = localStorage.getItem('predict_user');
-    if (stored) {
-      currentUser = JSON.parse(stored);
-      authToken = localStorage.getItem('predict_token');
-    }
+    if (stored) { currentUser = JSON.parse(stored); authToken = localStorage.getItem('predict_token'); }
   }
   if (!currentUser) return;
 
-  // Update name and score
-  const nameEl = document.getElementById('dash-name');
-  if (nameEl) nameEl.textContent = currentUser.displayName || 'Usuário';
-
+  // Name & score
+  const nameEl  = document.getElementById('dash-name');
   const scoreEl = document.getElementById('dash-score');
-  if (scoreEl) scoreEl.textContent = currentUser.calibScore ? currentUser.calibScore.toFixed(1) : '—';
+  if (nameEl)  nameEl.textContent  = currentUser.displayName || 'Usuário';
+  if (scoreEl) scoreEl.textContent = currentUser.calibScore ? parseFloat(currentUser.calibScore).toFixed(1) : '—';
 
-  // Update KPIs
+  // KPIs from currentUser
   const balance = parseFloat(currentUser.balancePlay || 0);
-  const pnl = parseFloat(currentUser.totalPnl || 0);
-  const volume = parseFloat(currentUser.totalVolume || 0);
-
-  const balEl = document.getElementById('dash-balance');
-  if (balEl) balEl.textContent = 'R$ ' + balance.toFixed(2);
-  const pnlEl = document.getElementById('dash-pnl');
-  if (pnlEl) {
-    pnlEl.textContent = (pnl >= 0 ? '+' : '') + 'R$ ' + pnl.toFixed(2);
-    pnlEl.className = 'kpi-v ' + (pnl >= 0 ? 'g' : 'r');
-  }
-  const winsEl = document.getElementById('dash-wins');
+  const pnl     = parseFloat(currentUser.totalPnl    || 0);
+  const volume  = parseFloat(currentUser.totalVolume || 0);
+  const balEl   = document.getElementById('dash-balance');
+  const pnlEl   = document.getElementById('dash-pnl');
+  const winsEl  = document.getElementById('dash-wins');
+  const lossEl  = document.getElementById('dash-losses');
+  const volEl   = document.getElementById('dash-volume');
+  if (balEl)  balEl.textContent  = 'R$ ' + balance.toFixed(2);
+  if (pnlEl)  { pnlEl.textContent = (pnl >= 0 ? '+' : '') + 'R$ ' + pnl.toFixed(2); pnlEl.className = 'kpi-v ' + (pnl >= 0 ? 'g' : 'r'); }
   if (winsEl) winsEl.textContent = currentUser.winCount || 0;
-  const lossEl = document.getElementById('dash-losses');
   if (lossEl) lossEl.textContent = (currentUser.lossCount || 0) + ' perdidas';
-  const volEl = document.getElementById('dash-volume');
-  if (volEl) volEl.textContent = 'R$ ' + volume.toFixed(2);
+  if (volEl)  volEl.textContent  = 'R$ ' + volume.toFixed(2);
 
-  // Fetch fresh data from API
+  // Positions from API
+  const posEl = document.getElementById('dash-positions');
+  if (posEl && authToken) {
+    try {
+      const posData = await api('GET', '/positions');
+      const positions = posData?.positions || posData?.data || [];
+      if (positions.length > 0) {
+        posEl.innerHTML = positions.map(p => {
+          const outcome = p.outcome === 'yes' ? 'SIM' : 'NÃO';
+          const cls     = p.outcome === 'yes' ? 'out-y' : 'out-n';
+          const pnlVal  = parseFloat(p.unrealizedPnl || p.pnl || 0);
+          const pnlCls  = pnlVal >= 0 ? 'g' : 'r';
+          const pnlStr  = (pnlVal >= 0 ? '+' : '') + 'R$ ' + Math.abs(pnlVal).toFixed(2);
+          return '<div class="pos-item">'
+            + '<div class="pos-ico" style="background:rgba(29,158,117,0.1)">📊</div>'
+            + '<div class="pos-body">'
+            + '<div class="pos-q">' + (p.marketTitle || p.market?.title || 'Mercado') + '</div>'
+            + '<div class="pos-meta">R$ ' + parseFloat(p.cost||p.amount||0).toFixed(2) + ' apostado · <span class="pos-out ' + cls + '">' + outcome + ' @ ' + Math.round((p.price||0.5)*100) + '%</span></div>'
+            + '</div>'
+            + '<div class="pos-pnl"><div class="pos-pnl-v ' + pnlCls + '">' + pnlStr + '</div></div>'
+            + '</div>';
+        }).join('');
+      } else {
+        posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas. <span style="color:var(--teal);cursor:pointer" onclick="showPage('listing',null)">Explora os mercados →</span></div>';
+      }
+    } catch(e) {
+      posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas.</div>';
+    }
+  }
+
+  // Leaderboard from API
+  const lbEl = document.getElementById('dash-leaderboard');
+  if (lbEl) {
+    try {
+      const lb = await api('GET', '/leaderboard');
+      const users = Array.isArray(lb) ? lb.slice(0, 10) : [];
+      if (users.length > 0) {
+        lbEl.innerHTML = users.map((u, idx) => {
+          const isYou = currentUser && u.id === currentUser.id;
+          const initials = (u.displayName || '?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          return '<div class="lb-item' + (isYou ? ' lb-you' : '') + '">'
+            + '<div class="lb-r" style="color:' + (idx < 3 ? 'var(--amber)' : 'rgba(255,255,255,0.4)') + '">#' + (idx+1) + '</div>'
+            + '<div class="lb-av" style="background:rgba(29,158,117,0.15);color:var(--teal)">' + initials + '</div>'
+            + '<div class="lb-n"><b>' + (u.displayName||'—') + '</b>' + (isYou ? ' <span style="font-size:10px;background:rgba(29,158,117,0.15);color:var(--teal);padding:2px 5px;border-radius:4px">Você</span>' : '') + '</div>'
+            + '<div style="text-align:right"><div class="lb-s">R$ ' + parseFloat(u.balancePlay||0).toFixed(0) + '</div>'
+            + '<div class="lb-a">' + (u.calibScore ? parseFloat(u.calibScore).toFixed(0) + '% acerto' : '—') + '</div></div>'
+            + '</div>';
+        }).join('');
+      } else {
+        lbEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Ranking ainda sem dados.</div>';
+      }
+    } catch(e) {
+      lbEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">—</div>';
+    }
+  }
+
+  // Refresh user data from API
   if (authToken) {
     try {
       const data = await api('GET', '/users/me');
       if (data && !data.error) {
         currentUser = { ...currentUser, ...data };
         localStorage.setItem('predict_user', JSON.stringify(currentUser));
-        updateDashboard(); // re-render with fresh data
       }
-    } catch(e) { /* silent fail */ }
+    } catch(e) { /* silent */ }
   }
 }
 
@@ -2435,6 +2459,24 @@ function updateTicker() {
   el.innerHTML = items + items;
 }
 
+function populateShareSelect() {
+  const sel = document.getElementById('share-mkt-select');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Selecione um mercado...</option>'
+    + MARKETS.map(m => '<option value="' + m.id + '">' + m.q.slice(0,60) + '</option>').join('');
+}
+function updateSharePreview() {
+  const sel = document.getElementById('share-mkt-select');
+  if (!sel || !sel.value) return;
+  const mkt = MARKETS.find(m => m.id == sel.value);
+  if (!mkt) return;
+  const brQ   = document.getElementById('br-q');
+  const brYes = document.getElementById('br-bar-yes');
+  const brNo  = document.querySelector('.br-bar-n');
+  if (brQ)   brQ.textContent     = mkt.q;
+  if (brYes) brYes.style.width   = mkt.yes + '%';
+  if (brNo)  brNo.style.width    = (100 - mkt.yes) + '%';
+}
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -2859,7 +2901,8 @@ function openMarket(marketId) {
 }
 
 function showPage(id,btn,closeMobile){
-  if(id==="dashboard") setTimeout(updateDashboard,100);
+  if(id==="dashboard") { setTimeout(updateDashboard,100); setTimeout(updateAccountTab,200); }
+  if(id==="share") setTimeout(populateShareSelect, 100);
   // hide all pages
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   // show target page
@@ -3504,7 +3547,7 @@ async function ucSubmit() {
         if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; btn.style.background = ''; }
       }, 1200);
     } else {
-      const msg = result?.error || 'Erro ao criar mercado. Tenta novamente.';
+      const msg = result?.error || result?.message || 'Erro ao criar mercado. Verifica os campos e tenta novamente.';
       alert('❌ ' + msg);
       if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
     }
@@ -4390,9 +4433,7 @@ function logout() {
   if (typeof authTab === 'function') authTab('register');
 }
 
-</script>
-
-<!-- ══ ACCESS CODE MODAL ══════════════════════════════ -->
+- ══ ACCESS CODE MODAL ══════════════════════════════ -->
 <div class="access-modal" id="access-modal" style="display:none" onclick="if(event.target===this)closeAccessModal()">
   <div class="access-box">
     <div class="access-icon">🔓</div>
