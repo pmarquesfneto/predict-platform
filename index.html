@@ -2194,6 +2194,26 @@ function updateNavUser() {
 
 // ── Init: load markets on page load ───────────────────
 window.addEventListener('DOMContentLoaded', () => {
+  // AUTO-FIX: Always clear admin sessions on page load (admin must login each visit)
+  try {
+    var _su = localStorage.getItem('predict_user');
+    if (_su) {
+      var _u = JSON.parse(_su);
+      if (_u && _u.role === 'admin') {
+        localStorage.removeItem('predict_token');
+        localStorage.removeItem('predict_user');
+      }
+    }
+  } catch(_e) {
+    localStorage.removeItem('predict_token');
+    localStorage.removeItem('predict_user');
+  }
+  // Support ?reset=1 to clear any session
+  if (location.search.includes('reset=1')) {
+    localStorage.removeItem('predict_token');
+    localStorage.removeItem('predict_user');
+    history.replaceState({}, '', location.pathname);
+  }
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
   const storedUser  = localStorage.getItem('predict_user');
