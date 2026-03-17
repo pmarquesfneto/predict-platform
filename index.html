@@ -2184,7 +2184,10 @@ function updateNavUser() {
   }
   // Hide "Entrar" button when logged in
   const entrarBtn = document.getElementById('nav-entrar');
-  if (entrarBtn) entrarBtn.style.display = 'none';
+  if (entrarBtn) {
+    entrarBtn.style.display = 'none';
+    entrarBtn.style.setProperty('display', 'none', 'important');
+  }
 }
 
 // ── Init: load markets on page load ───────────────────
@@ -3858,21 +3861,30 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Logout helper
 function logout() {
+  // Clear session data
   authToken = null;
   currentUser = null;
   localStorage.removeItem('predict_token');
   localStorage.removeItem('predict_user');
-  // Reset nav immediately without reload
-  const entrarBtn = document.querySelector('[data-page="onboard"]');
-  if (entrarBtn) entrarBtn.textContent = 'Entrar';
+
+  // Reset nav-dashboard button text
+  const dashBtn = document.getElementById('nav-dashboard');
+  if (dashBtn) dashBtn.textContent = 'Minha Conta';
+
+  // Show "Entrar" button again
+  const entrarBtn = document.getElementById('nav-entrar');
+  if (entrarBtn) { entrarBtn.style.display = ''; entrarBtn.style.removeProperty('display'); }
+
+  // Reset balance
   const balEl = document.querySelector('.nav-balance');
   if (balEl) balEl.textContent = '';
-  const adminBtn = document.getElementById('admin-nav-btn');
-  if (adminBtn) adminBtn.style.display = 'none';
-  // Go to onboarding step 0
-  showPage('onboard', null);
-  obHideLogin();
-  if (typeof obStep === 'function') setTimeout(() => obStep(0), 50);
+
+  // Navigate to home
+  showPage('home', null);
+
+  // Reset onboard form
+  if (typeof obHideLogin === 'function') obHideLogin();
+  setTimeout(() => { if (typeof obStep === 'function') obStep(0); }, 50);
 }
 
 </script>
