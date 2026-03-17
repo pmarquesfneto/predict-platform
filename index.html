@@ -3949,26 +3949,23 @@ async function adminAdjustBalance(userId, name) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Restore session from localStorage
-  const _st = localStorage.getItem('predict_token');
-  const _su = localStorage.getItem('predict_user');
-  if (_st && _su) {
-    const _u = JSON.parse(_su);
-    if (_u.role === 'admin') {
-      localStorage.removeItem('predict_token');
-      localStorage.removeItem('predict_user');
-    } else {
-      authToken = _st;
-      currentUser = _u;
-      console.log('✅ Session restored:', currentUser.displayName);
+  // NEVER restore admin sessions — admin must always login manually
+  try {
+    const _st = localStorage.getItem('predict_token');
+    const _su = localStorage.getItem('predict_user');
+    if (_st && _su) {
+      const _u = JSON.parse(_su);
+      if (!_u || _u.role === 'admin') {
+        localStorage.clear();
+      } else {
+        authToken = _st;
+        currentUser = _u;
+      }
     }
-  }
+  } catch(e) { localStorage.clear(); }
   loadRealMarkets();
   updateNavUser();
-  setTimeout(startTour, 1000);
-});
-
-// Logout helper
+});// Logout helper
 function logout() {
   // Clear all session data
   authToken = null;
