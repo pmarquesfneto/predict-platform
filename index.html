@@ -1995,8 +1995,8 @@ id="uc-form-4" style="display:none">
    API INTEGRATION — connects to real backend via ngrok
    ══════════════════════════════════════════════════════ */
 const API_BASE = 'https://predict-backend-44i1.onrender.com/api';
-let authToken = null;  // Set by DOMContentLoaded — never read from localStorage directly
-let currentUser = null; // Set by DOMContentLoaded — never read from localStorage directly
+let authToken = localStorage.getItem('predict_token') || null;
+let currentUser = JSON.parse(localStorage.getItem('predict_user') || 'null');
 
 // ── API helper ────────────────────────────────────────
 async function api(method, path, body) {
@@ -2170,17 +2170,19 @@ async function updateDashboard() {
 }
 
 function updateNavUser() {
-  const dashBtn   = document.getElementById('nav-dashboard');
+  const dashBtn  = document.getElementById('nav-dashboard');
   const entrarBtn = document.getElementById('nav-entrar');
-  const balEl     = document.querySelector('.nav-balance');
+  const balEl    = document.querySelector('.nav-balance');
 
   if (!currentUser) {
+    // LOGGED OUT — reset to clean state
     if (dashBtn)   dashBtn.textContent = 'Minha Conta';
-    if (entrarBtn) { entrarBtn.style.cssText = ''; }
+    if (entrarBtn) { entrarBtn.style.display = ''; entrarBtn.removeAttribute('style'); }
     if (balEl)     balEl.textContent = '';
     return;
   }
 
+  // LOGGED IN
   if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
   if (dashBtn) {
     const parts = (currentUser.displayName || '').split(' ');
@@ -2189,8 +2191,6 @@ function updateNavUser() {
   }
   if (entrarBtn) entrarBtn.style.display = 'none';
 }
-
-
 
 // ── Init: load markets on page load ───────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -2334,6 +2334,7 @@ async function handleLogin() {
   const errEl   = document.getElementById('ob-error');
 
   if (!emailEl || !passEl) { alert('Formulário não encontrado'); return; }
+
   const email    = emailEl.value.trim();
   const password = passEl.value.trim();
   if (!email || !password) {
@@ -2347,15 +2348,24 @@ async function handleLogin() {
 
   try {
     const data = await api('POST', '/auth/login', { email, password });
+
     if (data && data.tokens && data.tokens.accessToken) {
+      // Set session
       authToken    = data.tokens.accessToken;
       currentUser  = data.user;
       AUTH_TOKEN   = authToken;
       CURRENT_USER = currentUser;
       localStorage.setItem('predict_token', authToken);
       localStorage.setItem('predict_user', JSON.stringify(currentUser));
+
+      // Update nav
       updateNavUser();
+
+      // Close login form
+      if (typeof obHideLogin === 'function') obHideLogin();
       if (typeof authTab === 'function') authTab('register');
+
+      // Redirect based on role
       if (currentUser.role === 'admin') {
         await showAdmin();
       } else {
@@ -2363,7 +2373,8 @@ async function handleLogin() {
         setTimeout(() => { if (typeof updateDashboard === 'function') updateDashboard(); }, 200);
       }
     } else {
-      if (errEl) errEl.textContent = data?.error || 'Email ou senha incorretos';
+      const msg = data?.error || 'Email ou senha incorretos';
+      if (errEl) errEl.textContent = msg;
     }
   } catch (e) {
     if (errEl) errEl.textContent = 'Erro: ' + e.message;
@@ -2371,8 +2382,6 @@ async function handleLogin() {
     if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; }
   }
 }
-
-
 
 function showToast(msg) {
   let t = document.getElementById('api-toast');
@@ -3482,7 +3491,25 @@ async function obRegister() {
   finally { if (btn) { btn.textContent = 'Criar conta →'; btn.disabled = false; } }
 }
 
-async 
+async function handleLogin() {
+  const emailEl = document.querySelector('#page-onboard input[type="email"]');
+  const passEl  = document.querySelector('#page-onboard input[type="password"]');
+  if (!emailEl || !passEl) return;
+  const btn = document.querySelector('[onclick="handleLogin()"]');
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+  try {
+    const result = await apiLogin(emailEl.value, passEl.value);
+    if (result.ok || result.success) {
+      showPage('dashboard', null);
+      updateNavUser();
+    } else {
+      const errEl = document.getElementById('ob-error');
+      if (errEl) errEl.textContent = result.error || 'Email ou senha incorretos';
+      else alert(result.error || 'Login falhou');
+    }
+  } catch(e) { alert('Erro: ' + e.message); }
+  finally { if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; } }
+}
 
 
 // ══════════════════════════════════════════════════
@@ -3492,14 +3519,14 @@ async function showAdmin() {
   if (!currentUser || currentUser.role !== 'admin') {
     alert('Acesso restrito a administradores'); return;
   }
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  // Show admin page
+  document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
   const ap = document.getElementById('page-admin');
   if (ap) ap.style.display = 'block';
+  // Load data
   await adminRefresh();
 }
-
-
 
 function adminStatus(msg, type) {
   const el = document.getElementById('adm-status');
@@ -3685,7 +3712,14 @@ function doLogout() {
 // ── ADMIN PANEL ─────────────────────────────────────
 let currentAdminTab = 'users';
 
-async 
+async function showAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('Acesso restrito a administradores');
+    return;
+  }
+  showPage('admin', null);
+  await loadAdminData();
+}
 
 function adminTab(tab) {
   currentAdminTab = tab;
@@ -3929,7 +3963,19 @@ async function adminAdjustBalance(userId, name) {
   } catch(e) { adminStatus('Erro: ' + e.message, 'err'); }
 }
 
-// Old DOMContentLoaded removed — session managed above
+window.addEventListener('DOMContentLoaded', () => {
+  // Restore session from localStorage
+  const storedToken = localStorage.getItem('predict_token');
+  const storedUser = localStorage.getItem('predict_user');
+  if (storedToken && storedUser) {
+    authToken = storedToken;
+    currentUser = JSON.parse(storedUser);
+    console.log('✅ Session restored:', currentUser.displayName);
+  }
+  loadRealMarkets();
+  updateNavUser();
+  setTimeout(startTour, 1000);
+});
 
 // Logout helper
 function logout() {
