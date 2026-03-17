@@ -724,6 +724,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <button class="nav-tab" data-page="create" onclick="showPage('create',this)">Criar Mercado</button>
     <button class="nav-tab" data-page="whatsapp" onclick="showPage('whatsapp',this)">WhatsApp Bot</button>
     <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)">Entrar</button>
+    <button class="nav-tab" id="admin-nav-btn" onclick="showAdmin()" style="display:none;color:var(--amber)">⚙ Admin</button>
   </div>
   <div class="nav-right">
     <div class="nav-bal">Saldo: <b>R$ 847,50</b></div>
@@ -915,10 +916,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <button class="btn-dep" onclick="showPage('onboard',null);obStep(3)">+ Depositar via PIX</button>
     </div>
     <div class="kpis">
-      <div class="kpi"><div class="kpi-l">Portfólio total</div><div class="kpi-v">R$ 2.341</div><div class="kpi-d pos">+R$ 187 este mês</div></div>
-      <div class="kpi"><div class="kpi-l">P&L realizado</div><div class="kpi-v g">+R$ 623</div><div class="kpi-d pos">+36% retorno</div></div>
-      <div class="kpi"><div class="kpi-l">Posições abertas</div><div class="kpi-v">7</div><div class="kpi-d">em 5 mercados</div></div>
-      <div class="kpi"><div class="kpi-l">Taxa de acerto</div><div class="kpi-v g">73%</div><div class="kpi-d pos">+3% este mês</div></div>
+      <div class="kpi"><div class="kpi-l">Saldo de créditos</div><div class="kpi-v" id="dash-balance">R$ —</div><div class="kpi-d">créditos de simulação</div></div>
+      <div class="kpi"><div class="kpi-l">P&L total</div><div class="kpi-v g" id="dash-pnl">R$ 0</div><div class="kpi-d" id="dash-pnl-sub">total acumulado</div></div>
+      <div class="kpi"><div class="kpi-l">Apostas vencidas</div><div class="kpi-v" id="dash-wins">0</div><div class="kpi-d" id="dash-losses">0 perdidas</div></div>
+      <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="dash-volume">R$ 0</div><div class="kpi-d">apostado</div></div>
       <div class="kpi"><div class="kpi-l">Apostas ganhas</div><div class="kpi-v">19/26</div><div class="kpi-d">total resolvidas</div></div>
     </div>
     <div class="dash-grid">
@@ -1630,6 +1631,39 @@ id="uc-form-4" style="display:none">
 </div>
 
 
+
+<!-- ══ ADMIN PAGE ══════════════════════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="terms-page">
+    <div class="eyebrow" style="margin-bottom:14px"><span style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block"></span> Admin</div>
+    <div class="terms-h" style="color:var(--amber)">Painel Administrativo</div>
+    <div class="terms-sub">Acessível apenas para administradores</div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px" id="admin-stats">
+      <div class="kpi"><div class="kpi-l">Total usuários</div><div class="kpi-v" id="admin-users">—</div></div>
+      <div class="kpi"><div class="kpi-l">Mercados activos</div><div class="kpi-v" id="admin-markets">—</div></div>
+      <div class="kpi"><div class="kpi-l">Total apostas</div><div class="kpi-v" id="admin-trades">—</div></div>
+    </div>
+
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Utilizadores</div>
+      <div id="admin-users-list" style="display:flex;flex-direction:column;gap:8px">
+        <div style="color:rgba(255,255,255,0.3);font-size:13px">A carregar...</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Mercados</div>
+      <div id="admin-markets-list" style="display:flex;flex-direction:column;gap:8px">
+        <div style="color:rgba(255,255,255,0.3);font-size:13px">A carregar...</div>
+      </div>
+    </div>
+
+    <button class="ob-btn" style="width:auto;padding:12px 24px;background:rgba(239,159,39,0.15);color:var(--amber);border:1px solid rgba(239,159,39,0.3)" onclick="loadAdminData()">🔄 Actualizar dados</button>
+  </div>
+</div>
+
+
 <!-- ══ ONBOARDING ══════════════════════════════════════════════════ -->
 <div class="page" id="page-onboard">
   <div class="onboard">
@@ -1853,10 +1887,65 @@ async function apiPlaceBet(marketApiId, outcomeId, amount) {
 }
 
 // ── Update nav with real user balance ─────────────────
+
+// ── UPDATE DASHBOARD with real user data ─────────────
+async function updateDashboard() {
+  if (!currentUser) {
+    // Try loading from localStorage
+    const stored = localStorage.getItem('predict_user');
+    if (stored) {
+      currentUser = JSON.parse(stored);
+      authToken = localStorage.getItem('predict_token');
+    }
+  }
+  if (!currentUser) return;
+
+  // Update name and score
+  const nameEl = document.getElementById('dash-name');
+  if (nameEl) nameEl.textContent = currentUser.displayName || 'Usuário';
+
+  const scoreEl = document.getElementById('dash-score');
+  if (scoreEl) scoreEl.textContent = currentUser.calibScore ? currentUser.calibScore.toFixed(1) : '—';
+
+  // Update KPIs
+  const balance = parseFloat(currentUser.balancePlay || 0);
+  const pnl = parseFloat(currentUser.totalPnl || 0);
+  const volume = parseFloat(currentUser.totalVolume || 0);
+
+  const balEl = document.getElementById('dash-balance');
+  if (balEl) balEl.textContent = 'R$ ' + balance.toFixed(2);
+  const pnlEl = document.getElementById('dash-pnl');
+  if (pnlEl) {
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + 'R$ ' + pnl.toFixed(2);
+    pnlEl.className = 'kpi-v ' + (pnl >= 0 ? 'g' : 'r');
+  }
+  const winsEl = document.getElementById('dash-wins');
+  if (winsEl) winsEl.textContent = currentUser.winCount || 0;
+  const lossEl = document.getElementById('dash-losses');
+  if (lossEl) lossEl.textContent = (currentUser.lossCount || 0) + ' perdidas';
+  const volEl = document.getElementById('dash-volume');
+  if (volEl) volEl.textContent = 'R$ ' + volume.toFixed(2);
+
+  // Fetch fresh data from API
+  if (authToken) {
+    try {
+      const data = await api('GET', '/users/me');
+      if (data && !data.error) {
+        currentUser = { ...currentUser, ...data };
+        localStorage.setItem('predict_user', JSON.stringify(currentUser));
+        updateDashboard(); // re-render with fresh data
+      }
+    } catch(e) { /* silent fail */ }
+  }
+}
+
 function updateNavUser() {
   if (!currentUser) return;
   const balEl = document.querySelector('.nav-balance');
-  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay).toFixed(2);
+  if (balEl) balEl.textContent = 'R$ ' + parseFloat(currentUser.balancePlay || 0).toFixed(2);
+  // Show admin button only for admins
+  const adminBtn = document.getElementById('admin-nav-btn');
+  if (adminBtn) adminBtn.style.display = currentUser.role === 'admin' ? 'block' : 'none';
 }
 
 // ── Init: load markets on page load ───────────────────
@@ -2172,6 +2261,7 @@ function openMarket(marketId){
 }
 
 function showPage(id,btn,closeMobile){
+  if(id==="dashboard") setTimeout(updateDashboard,100);
   // hide all pages
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   // show target page
@@ -3114,7 +3204,68 @@ async function handleLogin() {
   finally { if (btn) { btn.textContent = 'Entrar →'; btn.disabled = false; } }
 }
 
+
+// ── ADMIN PANEL ─────────────────────────────────────
+async function showAdmin() {
+  if (!currentUser || currentUser.role !== 'admin') {
+    alert('Acesso restrito a administradores');
+    return;
+  }
+  showPage('admin', null);
+  await loadAdminData();
+}
+
+async function loadAdminData() {
+  if (!authToken) return;
+  try {
+    // Load leaderboard (all users)
+    const lb = await api('GET', '/leaderboard');
+    if (lb && Array.isArray(lb)) {
+      document.getElementById('admin-users').textContent = lb.length;
+      document.getElementById('admin-users-list').innerHTML = lb.map(u => `
+        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:600">${u.displayName || u.email || '—'}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.35)">${u.role || 'user'} · Score: ${u.calibScore || '—'}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;color:var(--teal)">R$ ${parseFloat(u.balancePlay || 0).toFixed(2)}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.35)">P&L: ${parseFloat(u.totalPnl || 0).toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load markets
+    const m = await api('GET', '/markets?limit=50');
+    if (m && m.markets) {
+      document.getElementById('admin-markets').textContent = m.total || m.markets.length;
+      document.getElementById('admin-markets-list').innerHTML = m.markets.map(mkt => `
+        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:600">${mkt.title.slice(0,50)}${mkt.title.length>50?'...':''}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.35)">${mkt.category} · ${mkt.status} · Vol: R$ ${parseFloat(mkt.totalVolume||0).toFixed(0)}</div>
+          </div>
+          <div style="font-size:11px;color:${mkt.visibility==='closed'?'var(--amber)':'var(--teal)'}">
+            ${mkt.visibility === 'closed' ? '🔒 Fechado' : '🌐 Aberto'}
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch(e) {
+    console.error('Admin load error:', e);
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  // Restore session from localStorage
+  const storedToken = localStorage.getItem('predict_token');
+  const storedUser = localStorage.getItem('predict_user');
+  if (storedToken && storedUser) {
+    authToken = storedToken;
+    currentUser = JSON.parse(storedUser);
+    console.log('✅ Session restored:', currentUser.displayName);
+  }
   loadRealMarkets();
   updateNavUser();
   setTimeout(startTour, 1000);
