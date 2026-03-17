@@ -3577,7 +3577,7 @@ async function adminRefresh() {
       document.getElementById('adm-users-list').innerHTML = lb.map(u => {
         if (u.role === 'admin') return '<div style="background:var(--dark-card);border:1px solid rgba(239,159,39,0.2);border-radius:10px;padding:14px;margin-bottom:8px"><b>' + (u.displayName||u.email) + '</b> — Administrador</div>';
         const uid = u.id; const uname = (u.displayName||'').replace(/'/g,'');
-        return '<div data-mid="'+mid+'" style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px">'
+        return '<div data-uid="'+uid+'" data-uname="'+uname+'" style="cursor:pointer;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:16px;margin-bottom:10px" onmouseover="this.style.borderColor=\'rgba(29,158,117,0.4)\'" onmouseout="this.style.borderColor=\'var(--dark-border)\'">'
           + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
           + '<div><div style="font-size:14px;font-weight:700">' + (u.displayName||'—') + '</div>'
           + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">' + (u.email||'') + '</div>'
