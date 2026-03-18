@@ -2778,7 +2778,15 @@ async function adminDeleteSelected() {
   if (selAll) selAll.checked = false;
   
   await adminRefresh();
+  // Force clear and rebuild the public listing
+  const rowsEl = document.getElementById('market-rows');
+  if (rowsEl) rowsEl.innerHTML = '';
   await loadRealMarkets();
+  // Also clear featured grid
+  const featEl = document.getElementById('featured-grid');
+  if (featEl) featEl.innerHTML = '';
+  await loadRealMarkets();
+  console.log('✅ Admin delete complete. Markets remaining:', MARKETS.length);
 }
 
 
@@ -3555,7 +3563,57 @@ async function loadMarketDetail(apiId) {
       }
     }
 
-    // Activity feed
+    
+    // ── Update probability bars after trade ─────────────────────────
+    const mktForProb = MARKETS.find(m => String(m.id)===String(apiId) || String(m.apiId)===String(apiId));
+    if (mktForProb) {
+      const mktType = mktForProb.marketType || 'binary';
+      
+      if (mktType === 'binary') {
+        // Recalculate yes% from fresh trade data
+        const freshYes = total > 0 ? Math.round(yesCount / total * 100) : (mktForProb.yes || 50);
+        const freshNo  = 100 - freshYes;
+        const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+        setEl('prob-pct',    freshYes + '%');
+        setEl('mkt-lbl-yes','SIM ' + freshYes + '%');
+        setEl('mkt-lbl-no', 'NÃO ' + freshNo  + '%');
+        const pbY = document.getElementById('mkt-pb-yes'); if(pbY) pbY.style.width = freshYes + '%';
+        const pbN = document.getElementById('mkt-pb-no');  if(pbN) pbN.style.width = freshNo  + '%';
+        // Also update local MARKETS cache
+        mktForProb.yes = freshYes;
+      } else {
+        // Recalculate per-outcome probabilities from market API
+        try {
+          const freshMkt = await fetch('https://predict-backend-44i1.onrender.com/api/markets/' + apiId)
+            .then(r=>r.json()).catch(()=>null);
+          if (freshMkt?.outcomes) {
+            const freshOutcomes = freshMkt.outcomes;
+            const total2 = freshOutcomes.reduce((s,o)=>s+(o.quantity||0),0)||1;
+            const colors = ['var(--teal)','#ff9500','#8888ff','#ff4455','#ff69b4','#00bcd4','#ffd700'];
+            const barsEl = document.getElementById('mkt-outcomes-bars');
+            if (barsEl) {
+              barsEl.innerHTML = freshOutcomes.map((o,i)=>{
+                const pct = Math.round((o.quantity||0)/total2*100) || Math.round(100/freshOutcomes.length);
+                const col = colors[i%colors.length];
+                return `<div style="margin-bottom:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <span style="font-size:13px;font-weight:600">${o.label}</span>
+                    <span style="font-size:15px;font-weight:800;color:${col}">${pct}%</span>
+                  </div>
+                  <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:100px;overflow:hidden">
+                    <div style="height:100%;width:${pct}%;background:${col};border-radius:100px;transition:width 0.5s ease"></div>
+                  </div>
+                </div>`;
+              }).join('');
+            }
+            // Update MARKETS cache
+            mktForProb.outcomes = freshOutcomes;
+          }
+        } catch(probErr) { console.warn('prob update:', probErr.message); }
+      }
+    }
+    
+// Activity feed
     const feedEl = document.getElementById('mkt-trades-list');
     if (feedEl) {
       if (trades.length > 0) {
@@ -4453,7 +4511,10 @@ async function ucSubmit() {
       }, 1200);
     } else {
       const msg = result?.error || result?.message || 'Erro ao criar mercado.';
-      alert('❌ ' + msg);
+      const friendlyMsg = msg.includes('check constraint') 
+        ? '❌ Tipo de mercado não suportado. Tenta novamente ou contacta o admin.'
+        : '❌ ' + msg;
+      alert(friendlyMsg);
       if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
     }
   } catch(e) {
