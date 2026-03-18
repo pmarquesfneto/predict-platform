@@ -1994,17 +1994,47 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
         <div class="ob-feat"><div class="ob-feat-ico">🏆</div>Compite no ranking</div>
       </div>
       <div class="kyc-form">
-        <div>
-          <div class="kyc-label">Nome completo</div>
-          <input class="kyc-input" id="ob-input-name" type="text" placeholder="Pedro Marques Neto">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div class="kyc-label">Nome *</div>
+            <input class="kyc-input" id="ob-input-name" type="text" placeholder="Pedro">
+          </div>
+          <div>
+            <div class="kyc-label">Apelido *</div>
+            <input class="kyc-input" id="ob-input-apelido" type="text" placeholder="Marques Neto">
+          </div>
         </div>
         <div>
-          <div class="kyc-label">E-mail</div>
+          <div class="kyc-label">E-mail *</div>
           <input class="kyc-input" id="ob-input-email" type="email" placeholder="pedro@email.com">
         </div>
         <div>
-          <div class="kyc-label">Senha</div>
+          <div class="kyc-label">Senha *</div>
           <input class="kyc-input" id="ob-input-password" type="password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div class="kyc-label">Estado *</div>
+            <select class="kyc-input" id="ob-input-estado" style="background:var(--dark-bg);color:#fff">
+              <option value="">Selecciona...</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option>SP</option><option>SE</option><option>TO</option><option>Outro</option>
+            </select>
+          </div>
+          <div>
+            <div class="kyc-label">País *</div>
+            <select class="kyc-input" id="ob-input-pais" style="background:var(--dark-bg);color:#fff">
+              <option value="">Selecciona...</option>
+              <option selected>Brasil</option>
+              <option>Portugal</option><option>Angola</option><option>Moçambique</option>
+              <option>Cabo Verde</option><option>Outro</option>
+            </select>
+          </div>
         </div>
       </div>
       <div id="ob-reg-error" style="color:#ff4455;font-size:12px;min-height:18px;margin:8px 0"></div>
@@ -2090,6 +2120,7 @@ async function loadRealMarkets() {
       visibility:  m.visibility || 'open',
       creatorId:   m.creatorId || null,
       creatorName: m.creatorName || m.creator?.displayName || null,
+      createdAt:   m.createdAt || null,
       traderCount: m.traderCount || m.participants || 0,
     });
   });
@@ -2309,10 +2340,27 @@ function updateNavUser() {
 // ── Init: load markets on page load ───────────────────
 
 async function showUserDetail(userId) {
-  const users  = window._adminUsers  || [];
-  const trades = window._adminTrades || [];
-  const u = users.find(x=>x.id===userId);
-  if (!u) { console.warn('User not found:', userId); return; }
+  // Show loading modal immediately
+  const loadingEl = document.body;
+  let users  = window._adminUsers  || [];
+  let trades = window._adminTrades || [];
+  let u = users.find(x=>x.id===userId);
+
+  // If user not in cache, fetch from API
+  if (!u && authToken) {
+    try {
+      const [freshUsers, freshTrades] = await Promise.all([
+        api('GET', '/admin/users').catch(()=>null),
+        api('GET', '/admin/trades').catch(()=>null)
+      ]);
+      users  = Array.isArray(freshUsers)  ? freshUsers  : (freshUsers?.users||freshUsers?.data||[]);
+      trades = Array.isArray(freshTrades) ? freshTrades : (freshTrades?.trades||freshTrades?.data||[]);
+      window._adminUsers  = users;
+      window._adminTrades = trades;
+      u = users.find(x=>x.id===userId);
+    } catch(e) { console.warn('showUserDetail fetch error:', e.message); }
+  }
+  if (!u) { alert('Utilizador não encontrado.'); return; }
 
   const uTrades = trades.filter(t=>t.userId===userId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
   const uMkts   = new Set(uTrades.map(t=>t.marketId)).size;
@@ -3220,7 +3268,19 @@ function openMarket(marketId) {
   set('mkt-vol-el',     mkt.vol||'—');
   set('mkt-closes-el',  mkt.closes||'—');
   set('mkt-traders-el', mkt.traderCount||'—');
-  set('mkt-creator-el', mkt.creatorName||'—');
+  // Format: "Admin, em 18/03/2026 às 19h42min"
+  if (mkt.creatorName || mkt.createdAt) {
+    let creatorText = mkt.creatorName || '—';
+    if (mkt.createdAt) {
+      const d = new Date(mkt.createdAt);
+      const datePart = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
+      const timePart = d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}).replace(':','h')+'min';
+      creatorText += ', em ' + datePart + ' às ' + timePart;
+    }
+    set('mkt-creator-el', creatorText);
+  } else {
+    set('mkt-creator-el', '—');
+  }
 
   const catEl = document.getElementById('mkt-cat-el');
   if (catEl) catEl.className = 'mcat '+(catCls[mkt.cat]||'');
@@ -4753,15 +4813,29 @@ document.addEventListener('keydown', e => {
 let obCurrent2 = 0; // backup in case obCurrent not defined
 
 async function obRegister() {
-  const email = document.getElementById('ob-input-email')?.value?.trim();
+  const email    = document.getElementById('ob-input-email')?.value?.trim();
   const password = document.getElementById('ob-input-password')?.value?.trim();
-  const name = document.getElementById('ob-input-name')?.value?.trim();
-  if (!email || !password || !name) { alert('Preencha todos os campos'); return; }
+  const nome     = document.getElementById('ob-input-name')?.value?.trim();
+  const apelido  = document.getElementById('ob-input-apelido')?.value?.trim();
+  const estado   = document.getElementById('ob-input-estado')?.value;
+  const pais     = document.getElementById('ob-input-pais')?.value;
+  if (!nome)     { document.getElementById('ob-reg-error').textContent = 'Por favor indica o teu nome.'; return; }
+  if (!apelido)  { document.getElementById('ob-reg-error').textContent = 'Por favor indica o teu apelido.'; return; }
+  if (!email)    { document.getElementById('ob-reg-error').textContent = 'Por favor indica o teu e-mail.'; return; }
+  if (!password) { document.getElementById('ob-reg-error').textContent = 'Por favor define uma senha.'; return; }
+  if (!estado)   { document.getElementById('ob-reg-error').textContent = 'Por favor selecciona o teu estado.'; return; }
+  if (!pais)     { document.getElementById('ob-reg-error').textContent = 'Por favor selecciona o teu país.'; return; }
+  const name = nome + ' ' + apelido;
   if (password.length < 6) { alert('Senha mínima de 6 caracteres'); return; }
   const btn = document.querySelector('[onclick="obRegister()"]');
   if (btn) { btn.textContent = 'Criando...'; btn.disabled = true; }
   try {
     const result = await apiRegister(email, password, name);
+  if (result?.ok) {
+    // Save extra profile data locally (backend doesn't have these fields yet)
+    if (estado) localStorage.setItem('predict_estado', estado);
+    if (pais)   localStorage.setItem('predict_pais', pais);
+  }
     if (result.ok || result.success) {
       obStep(2);
       updateNavUser();
