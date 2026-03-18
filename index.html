@@ -1998,7 +1998,7 @@ async function loadRealMarkets() {
     const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
     const yesPct   = Math.round((yesPrice?.probability || 0.5) * 100);
     MARKETS.push({
-      id:     i + 1,
+      id:     m.id,
       q:      m.title,
       cat:    catMap[m.category] || 'other',
       icon:   iconMap[m.category] || '💡',
@@ -3008,7 +3008,7 @@ function filterM(cat,btn){
 }
 function openMarket(marketId) {
   CURRENT_MARKET_ID = marketId;
-  const mkt = MARKETS.find(m => m.id === marketId || m.apiId === marketId);
+  const mkt = MARKETS.find(m => String(m.id) === String(marketId) || String(m.apiId) === String(marketId));
   if (!mkt) return;
 
   const yes = mkt.yes || 50;
@@ -4270,7 +4270,9 @@ async function adminRefresh() {
   if (ts) ts.textContent = "Actualizado: " + new Date().toLocaleTimeString("pt-BR");
   try {
     // USERS
-    const lb = await api("GET", "/leaderboard");
+    // Try admin users endpoint first (has emails), fall back to leaderboard
+    const adminUsers = await api("GET", "/admin/users").catch(()=>null);
+    const lb = adminUsers || await api("GET", "/leaderboard");
     const users = Array.isArray(lb) ? lb : [];
     const nonAdmins = users.filter(u => u.role !== "admin");
     const admEl = document.getElementById("adm-users");
@@ -4294,7 +4296,7 @@ async function adminRefresh() {
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
             <div>
               <div style="font-size:14px;font-weight:700">${u.displayName}</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px">${u.email} &middot; ${total} apostas (${pct}% acerto)</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px">${u.email || u.id?.slice(0,8) || "—"} &middot; ${total} apostas (${pct}% acerto)</div>
             </div>
             <div style="text-align:right">
               <div style="font-size:15px;font-weight:700;color:var(--teal)">R$ ${parseFloat(u.balancePlay||0).toFixed(2)}</div>
@@ -4416,9 +4418,11 @@ async function adminRefresh() {
     if (volEl) volEl.textContent = "R$ " + totalVol.toFixed(0);
 
     // TRADES
-    const tr = await api("GET", "/admin/trades?limit=50").catch(()=>null)
-           || await api("GET", "/trades?limit=50").catch(()=>null);
-    const trades = tr?.trades || tr?.data || [];
+    // Try multiple trade endpoints
+    const tr = await api("GET", "/admin/trades?limit=100").catch(()=>null)
+            || await api("GET", "/trades?limit=100").catch(()=>null)
+            || await api("GET", "/trades/my?limit=100").catch(()=>null);
+    const trades = tr?.trades || tr?.data || (Array.isArray(tr) ? tr : []);
     const trKpi = document.getElementById("adm-trades");
     if (trKpi) trKpi.textContent = trades.length || "—";
     const trEl = document.getElementById("adm-trades-list");
@@ -5476,3 +5480,44 @@ id="uc-form-4" style="display:none">
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
