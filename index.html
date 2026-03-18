@@ -817,7 +817,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     </div>
     <div class="mkt-layout">
       <div>
-        <div style="margin-bottom:10px"><span class="mcat" id="mkt-cat-el">—</span></div>
+        <div style="margin-bottom:10px"><span class="mcat" id="mkt-cat-el">—</span><span id="mkt-type-badge" style="display:none;margin-left:8px;font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);color:var(--amber)"></span></div>
         <h1 class="mkt-title" id="mkt-title-el" style="font-size:22px;line-height:1.3;margin-bottom:14px">—</h1>
         <div class="mkt-meta" style="margin-bottom:18px">
           <div class="mkt-mi">📦 <b>Vol:</b> <span id="mkt-vol-el">—</span></div>
@@ -825,6 +825,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
           <div class="mkt-mi">📅 <b>Encerra:</b> <span id="mkt-closes-el">—</span></div>
           <div class="mkt-mi">✍️ <b>Criado por:</b> <span id="mkt-creator-el">—</span></div>
           <div class="mkt-mi" id="mkt-visibility-row" style="display:none">🔒 <b>Mercado privado</b></div>
+        </div>
+        <!-- Non-binary outcomes probability display -->
+        <div id="mkt-outcomes-probs" style="display:none;margin-bottom:18px">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:12px">Probabilidades actuais</div>
+          <div id="mkt-outcomes-bars"></div>
         </div>
         <div class="prob-box" style="margin-bottom:18px">
           <div class="prob-lbl">Probabilidade actual</div>
@@ -1455,101 +1460,169 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 </div>
 
 <div class="page" id="page-create" style="display:none">
-  <div class="ucreate-page">
-    <div class="eyebrow" style="margin-bottom:14px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block"></span> Criar Mercado</div>
-    <div class="ucreate-h">Crie seu próprio mercado.</div>
-    <div class="ucreate-sub">Qualquer usuário pode propor um mercado. A comunidade vota para aprovar. Mercados aprovados entram na plataforma em 24h.</div>
+  <div style="max-width:720px;margin:0 auto;padding:24px 16px">
+    <div class="eyebrow" style="margin-bottom:8px"><span style="width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;margin-right:6px"></span>Criar Mercado</div>
+    <div style="font-family:var(--font-display);font-size:28px;font-weight:800;margin-bottom:6px">Crie o seu mercado</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px">Qualquer utilizador pode criar mercados. Escolhe o tipo e define os resultados possíveis.</div>
 
-    <div class="ucreate-stepper">
-      <div class="uc-step active" id="ucs-0"><span class="uc-step-num">1</span>Pergunta</div>
-      <div class="uc-step" id="ucs-1"><span class="uc-step-num">2</span>Detalhes</div>
-      <div class="uc-step" id="ucs-2"><span class="uc-step-num">3</span>Resolução</div>
-      <div class="uc-step" id="ucs-3"><span class="uc-step-num">4</span>Visibilidade</div>
-      <div class="uc-step" id="ucs-4"><span class="uc-step-num">5</span>Revisão</div>
+    <!-- Step indicator -->
+    <div style="display:flex;gap:0;margin-bottom:28px">
+      <div class="uc-step active" id="ucs-0"><span class="uc-step-num">1</span>Tipo & Pergunta</div>
+      <div class="uc-step" id="ucs-1"><span class="uc-step-num">2</span>Resultados</div>
+      <div class="uc-step" id="ucs-2"><span class="uc-step-num">3</span>Detalhes</div>
+      <div class="uc-step" id="ucs-3"><span class="uc-step-num">4</span>Publicar</div>
     </div>
 
-    <div class="ucreate-form" id="uc-form-0">
-      <div class="uf-group"><div class="uf-label">Pergunta do mercado <span>Deve ter resposta objetiva SIM/NÃO</span></div><textarea class="uf-input" rows="3" placeholder="Ex: O Banco Central cortará a Selic em mais de 0,5pp na reunião de setembro 2025?" id="uc-question" oninput="updateUCPreview()"></textarea></div>
-      <div class="uf-group"><div class="uf-label">Categoria</div><div class="uf-chips"><button class="uf-chip sel" onclick="ucSelCat(this,'econ')">📈 Economia</button><button class="uf-chip" onclick="ucSelCat(this,'sport')">⚽ Esportes</button><button class="uf-chip" onclick="ucSelCat(this,'pol')">🗳 Política</button><button class="uf-chip" onclick="ucSelCat(this,'crypto')">₿ Cripto</button><button class="uf-chip" onclick="ucSelCat(this,'other')">💡 Outro</button></div></div>
-      <div class="uf-preview"><div class="uf-preview-lbl">Prévia do mercado</div><div id="uc-preview-q" style="font-size:14px;color:rgba(255,255,255,0.65);line-height:1.5">Digite a pergunta acima para ver a prévia...</div></div>
-      <div class="ucreate-nav"><button class="ob-skip" onclick="showPage('listing',null)">Cancelar</button><button class="ob-btn" style="width:auto;padding:11px 24px;margin:0" onclick="ucGoStep(1)">Próximo →</button></div>
-    </div>
-
-    <div class="ucreate-form" id="uc-form-1" style="display:none">
-      <div class="uf-row">
-        <div class="uf-group"><div class="uf-label">Data de encerramento</div><input type="date" class="uf-input" id="uc-date"></div>
-        <div class="uf-group"><div class="uf-label">Liquidez inicial (R$)</div><select class="uf-input" id="uc-liq"><option>R$ 50 (básico)</option><option selected>R$ 100 (recomendado)</option><option>R$ 500 (destaque)</option><option>R$ 1.000 (premium)</option></select></div>
-      </div>
-      <div class="uf-group"><div class="uf-label">Probabilidade inicial estimada (%)</div><input type="range" min="5" max="95" value="50" class="uf-input" style="padding:8px 0;border:none;background:transparent" id="uc-prob" oninput="document.getElementById('uc-prob-val').textContent=this.value+'%'"><div style="text-align:center;font-size:14px;font-family:var(--font-display);color:var(--teal)" id="uc-prob-val">50%</div></div>
-      <div class="uf-group"><div class="uf-label">Descrição adicional (opcional)</div><textarea class="uf-input" rows="2" placeholder="Contexto, fontes de resolução, regras de edge cases..."></textarea></div>
-      <div class="ucreate-nav"><button class="ob-skip" onclick="ucGoStep(0)">← Voltar</button><button class="ob-btn" style="width:auto;padding:11px 24px;margin:0" onclick="ucGoStep(2)">Próximo →</button></div>
-    </div>
-
-    <div class="ucreate-form" id="uc-form-2" style="display:none">
-      <div class="uf-group"><div class="uf-label">Método de resolução</div>
-        <div class="uf-resolution">
-          <div class="uf-res-opt sel" onclick="ucSelRes(this)"><div class="uf-res-opt-ico">🏦</div><div class="uf-res-opt-body"><b>BCB Automático</b><span>API oficial do Banco Central — Selic, IPCA, PIB, câmbio</span></div></div>
-          <div class="uf-res-opt" onclick="ucSelRes(this)"><div class="uf-res-opt-ico">⚽</div><div class="uf-res-opt-body"><b>Sportradar</b><span>Resultados de partidas, campeonatos, estatísticas</span></div></div>
-          <div class="uf-res-opt" onclick="ucSelRes(this)"><div class="uf-res-opt-ico">👥</div><div class="uf-res-opt-body"><b>Moderação humana</b><span>Admin confirma o resultado com fonte citada</span></div></div>
-          <div class="uf-res-opt" onclick="ucSelRes(this)"><div class="uf-res-opt-ico">🗳</div><div class="uf-res-opt-body"><b>Votação da comunidade</b><span>Traders com score &gt; 80 votam no resultado</span></div></div>
-        </div>
-      </div>
-      <div class="ucreate-nav"><button class="ob-skip" onclick="ucGoStep(1)">← Voltar</button><button class="ob-btn" style="width:auto;padding:11px 24px;margin:0" onclick="ucGoStep(3)">Próximo →</button></div>
-    </div>
-
-    <div class="ucreate-form" 
-    <!-- Step 3: Visibilidade -->
-    <div class="ucreate-form" id="uc-form-3" style="display:none">
-      <div class="uf-group">
-        <div class="uf-label">Visibilidade do mercado</div>
-        <div class="vis-options">
-          <div class="vis-opt sel" id="vis-open" onclick="selectVis('open')">
-            <div class="vis-opt-ico">🌐</div>
-            <div class="vis-opt-title">Aberto</div>
-            <div class="vis-opt-desc">Qualquer pessoa pode ver e apostar neste mercado.</div>
+    <!-- ── STEP 0: Type + Question ──────────────────────────── -->
+    <div id="uc-form-0">
+      <!-- Market type selector -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">Tipo de mercado</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" id="uc-type-grid">
+          <div class="uc-type-card sel" data-type="binary" onclick="ucSelType(this,'binary')"
+            style="border:2px solid var(--teal);background:rgba(29,158,117,0.08);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.15s">
+            <div style="font-size:22px;margin-bottom:6px">⚖️</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">Binário</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.45)">SIM ou NÃO numa pergunta simples</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px">Ex: "O Brasil vai ganhar a Copa?"</div>
           </div>
-          <div class="vis-opt" id="vis-closed" onclick="selectVis('closed')">
-            <div class="vis-opt-ico">🔒</div>
-            <div class="vis-opt-title">Fechado</div>
-            <div class="vis-opt-desc">Só convidados com código podem apostar.</div>
+          <div class="uc-type-card" data-type="range" onclick="ucSelType(this,'range')"
+            style="border:1px solid var(--dark-border);background:var(--dark-card);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.15s">
+            <div style="font-size:22px;margin-bottom:6px">📊</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">Intervalos</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.45)">Múltiplas faixas para uma métrica</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px">Ex: "Onde ficará o IPCA?"</div>
           </div>
-        </div>
-        <div class="code-box" id="code-box" style="display:none">
-          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Código de acesso gerado:</div>
-          <div class="code-display" id="code-display">PRED42</div>
-          <div class="code-actions">
-            <button class="code-action-btn" onclick="regenCode()">🔄 Novo código</button>
-            <button class="code-action-btn" id="copy-btn" onclick="copyAccessCode()">📋 Copiar</button>
-          </div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:10px;line-height:1.7">
-            Partilhe via WhatsApp, Telegram ou e-mail.<br>
-            Visível no seu painel a qualquer momento.
+          <div class="uc-type-card" data-type="categorical" onclick="ucSelType(this,'categorical')"
+            style="border:1px solid var(--dark-border);background:var(--dark-card);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.15s">
+            <div style="font-size:22px;margin-bottom:6px">🗳️</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">Categórico</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.45)">Escolher uma entre várias opções</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px">Ex: "Quem vai ganhar o Brasileirão?"</div>
           </div>
         </div>
       </div>
-      <div class="ucreate-nav">
-        <button class="ob-skip" onclick="ucGoStep(2)">← Voltar</button>
-        <button class="ob-btn" style="width:auto;padding:12px 28px" onclick="ucGoStep(4)">Continuar →</button>
+
+      <!-- Question -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Pergunta do mercado</div>
+        <textarea id="uc-question" rows="3" placeholder="Ex: O Banco Central vai cortar a Selic antes de julho 2026?" oninput="ucUpdatePreview()"
+          style="width:100%;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:10px;padding:12px;color:#fff;font-size:14px;resize:vertical;box-sizing:border-box;font-family:inherit"></textarea>
+      </div>
+
+      <!-- Category -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Categoria</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="uf-chip sel" onclick="ucSelCat(this,'econ')" style="padding:7px 14px;border-radius:20px;border:1px solid var(--teal);background:rgba(29,158,117,0.12);color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">📈 Economia</button>
+          <button class="uf-chip" onclick="ucSelCat(this,'sport')" style="padding:7px 14px;border-radius:20px;border:1px solid var(--dark-border);background:none;color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer">⚽ Esportes</button>
+          <button class="uf-chip" onclick="ucSelCat(this,'pol')" style="padding:7px 14px;border-radius:20px;border:1px solid var(--dark-border);background:none;color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer">🗳 Política</button>
+          <button class="uf-chip" onclick="ucSelCat(this,'crypto')" style="padding:7px 14px;border-radius:20px;border:1px solid var(--dark-border);background:none;color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer">₿ Cripto</button>
+          <button class="uf-chip" onclick="ucSelCat(this,'other')" style="padding:7px 14px;border-radius:20px;border:1px solid var(--dark-border);background:none;color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer">💡 Outro</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end">
+        <button onclick="ucGoStep(1)" style="background:var(--teal);border:none;border-radius:10px;padding:11px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer">Próximo →</button>
       </div>
     </div>
 
-id="uc-form-4" style="display:none">
-      <div class="ai-summary" style="margin-bottom:20px"><div class="ai-icon">🤖</div><div class="ai-text"><div class="ai-label">Análise IA</div>Pergunta bem formulada com resposta objetiva verificável. Similaridade com mercados existentes: 23%. Probabilidade de aprovação pela comunidade: <b>alta</b>. Estimativa de volume esperado: <b>R$ 12–45k</b>.</div></div>
-      <div class="uf-preview" style="margin-bottom:20px">
-        <div class="uf-preview-lbl">Resumo do mercado proposto</div>
-        <div style="font-size:14px;font-weight:500;color:#fff;margin-bottom:8px" id="uc-review-q">Sua pergunta aparece aqui</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;gap:16px;flex-wrap:wrap"><span id="uc-review-cat">📈 Economia</span><span id="uc-review-date">Encerra: —</span><span id="uc-review-liq">Liquidez: R$100</span><span id="uc-review-prob">Prob. inicial: 50%</span></div>
+    <!-- ── STEP 1: Outcomes / Ranges ────────────────────────── -->
+    <div id="uc-form-1" style="display:none">
+      <!-- Binary: just show preview -->
+      <div id="uc-outcomes-binary">
+        <div style="font-size:13px;font-weight:600;margin-bottom:12px">Resultados (fixo para mercado binário)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+          <div style="background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.3);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:24px;margin-bottom:4px">✅</div>
+            <div style="font-size:15px;font-weight:700;color:var(--teal)">SIM</div>
+          </div>
+          <div style="background:rgba(255,68,85,0.06);border:1px solid rgba(255,68,85,0.25);border-radius:10px;padding:16px;text-align:center">
+            <div style="font-size:24px;margin-bottom:4px">❌</div>
+            <div style="font-size:15px;font-weight:700;color:#ff4455">NÃO</div>
+          </div>
+        </div>
       </div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);line-height:1.7;margin-bottom:20px">Ao enviar, você aceita os <span style="color:var(--teal);cursor:pointer">Termos de Criação de Mercados</span>. Sua proposta será avaliada pela comunidade por 48h. Se aprovada, você ganha <b style="color:var(--teal)">50 pontos</b> de reputação.</div>
-      <div class="ucreate-nav"><button class="ob-skip" onclick="ucGoStep(3)">← Voltar</button><button class="ob-btn" style="width:auto;padding:11px 28px;margin:0" onclick="ucSubmit()">🚀 Publicar Mercado</button></div>
+
+      <!-- Range: band builder -->
+      <div id="uc-outcomes-range" style="display:none">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">Define as faixas de resultado</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:12px">Mínimo 2, máximo 6 faixas. Cobrem o espectro completo.</div>
+        <div id="uc-range-list" style="margin-bottom:12px"></div>
+        <button onclick="ucAddRange()" style="background:rgba(29,158,117,0.1);border:1px dashed rgba(29,158,117,0.4);border-radius:8px;padding:9px 16px;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer;width:100%">+ Adicionar faixa</button>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:8px">Exemplos: "Abaixo de 4%", "Entre 4% e 6%", "Acima de 6%"</div>
+      </div>
+
+      <!-- Categorical: option builder -->
+      <div id="uc-outcomes-categorical" style="display:none">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">Define as opções</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:12px">Mínimo 2, máximo 8 opções. Apenas uma será a correcta.</div>
+        <div id="uc-cat-list" style="margin-bottom:12px"></div>
+        <button onclick="ucAddOption()" style="background:rgba(29,158,117,0.1);border:1px dashed rgba(29,158,117,0.4);border-radius:8px;padding:9px 16px;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer;width:100%">+ Adicionar opção</button>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:8px">Exemplos: "Flamengo", "Palmeiras", "Corinthians", "Outro"</div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:20px">
+        <button onclick="ucGoStep(0)" style="background:none;border:1px solid var(--dark-border);border-radius:10px;padding:11px 20px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer">← Voltar</button>
+        <button onclick="ucGoStep(2)" style="background:var(--teal);border:none;border-radius:10px;padding:11px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer">Próximo →</button>
+      </div>
     </div>
 
-    <div class="ucommunity">
-      <div class="ucommunity-h">Propostas em votação pela comunidade</div>
-      <div class="uprop-item"><div class="uprop-body"><div class="uprop-q">Nubank será avaliado acima de USD 30B em dez/25?</div><div class="uprop-meta">por r.santos · 📈 Economia · proposto há 3h</div></div><div class="uprop-votes"><span class="vote-count">47</span><button class="vote-btn vote-up" onclick="voteUp(this)">▲ Votar</button></div></div>
-      <div class="uprop-item"><div class="uprop-body"><div class="uprop-q">Vini Jr ganhará a Bola de Ouro 2025?</div><div class="uprop-meta">por ju.invest · ⚽ Esportes · proposto há 6h</div></div><div class="uprop-votes"><span class="vote-count">89</span><button class="vote-btn vote-up" onclick="voteUp(this)">▲ Votar</button></div></div>
-      <div class="uprop-item"><div class="uprop-body"><div class="uprop-q">Brasil aprovará regulação de criptomoedas até mar/26?</div><div class="uprop-meta">por marcos_m · 🗳 Política · proposto há 12h</div></div><div class="uprop-votes"><span class="vote-count">134</span><button class="vote-btn vote-up" onclick="voteUp(this)">▲ Votar</button></div></div>
+    <!-- ── STEP 2: Details ──────────────────────────────────── -->
+    <div id="uc-form-2" style="display:none">
+      <div style="display:grid;gap:16px;margin-bottom:20px">
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">Data de resolução</div>
+          <input type="date" id="uc-date" style="background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;width:100%;box-sizing:border-box">
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">Liquidez inicial</div>
+          <select id="uc-liq" style="background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;width:100%;box-sizing:border-box">
+            <option>R$ 50 (básico)</option>
+            <option selected>R$ 100 (recomendado)</option>
+            <option>R$ 500 (avançado)</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">Visibilidade</div>
+          <div style="display:flex;gap:10px">
+            <label style="display:flex;align-items:center;gap:8px;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:10px 14px;cursor:pointer;flex:1">
+              <input type="radio" name="uc-vis" value="open" checked onchange="ucVisType='open'" style="accent-color:var(--teal)">
+              <span style="font-size:13px">🌐 Público</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:10px 14px;cursor:pointer;flex:1">
+              <input type="radio" name="uc-vis" value="closed" onchange="ucVisType='closed'" style="accent-color:var(--amber)">
+              <span style="font-size:13px">🔒 Privado (código)</span>
+            </label>
+          </div>
+        </div>
+        <div id="uc-code-wrap" style="display:none">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">Código de acesso</div>
+          <input type="text" id="uc-access-code" placeholder="Ex: PRED42" maxlength="10"
+            style="background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;width:100%;box-sizing:border-box;font-family:monospace;text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase(); ucCode=this.value">
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <button onclick="ucGoStep(1)" style="background:none;border:1px solid var(--dark-border);border-radius:10px;padding:11px 20px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer">← Voltar</button>
+        <button onclick="ucGoStep(3)" style="background:var(--teal);border:none;border-radius:10px;padding:11px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer">Próximo →</button>
+      </div>
     </div>
+
+    <!-- ── STEP 3: Review + Submit ──────────────────────────── -->
+    <div id="uc-form-3" style="display:none">
+      <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:12px">Prévia do mercado</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:12px" id="uc-preview-title">—</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="uc-preview-outcomes"></div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:12px" id="uc-preview-meta"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <button onclick="ucGoStep(2)" style="background:none;border:1px solid var(--dark-border);border-radius:10px;padding:11px 20px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer">← Voltar</button>
+        <button class="ob-btn" onclick="ucSubmit()" style="background:var(--teal);border:none;border-radius:10px;padding:11px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer">Publicar mercado →</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2007,6 +2080,9 @@ async function loadRealMarkets() {
       closes: new Date(m.resolutionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
       bg:     'rgba(29,158,117,0.1)',
       apiId:       m.id,
+      marketType:  m.marketType || 'binary',
+      outcomes:    m.outcomes || [],
+      visibility:  m.visibility || 'open',
       creatorId:   m.creatorId || null,
       creatorName: m.creatorName || m.creator?.displayName || null,
       traderCount: m.traderCount || m.participants || 0,
@@ -2705,6 +2781,96 @@ async function adminDeleteSelected() {
   await loadRealMarkets();
 }
 
+
+function ucAddRange() {
+  const list = document.getElementById('uc-range-list');
+  if (!list) return;
+  const count = list.children.length;
+  if (count >= 6) { alert('Máximo 6 faixas'); return; }
+  const id = 'range_' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+  div.innerHTML = `<input type="text" placeholder="Ex: Abaixo de 4%" 
+    style="flex:1;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;box-sizing:border-box"
+    oninput="ucUpdatePreview()">
+    <button onclick="document.getElementById('${id}').remove();ucUpdatePreview()" 
+      style="background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.3);color:#ff4455;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:12px">✕</button>`;
+  list.appendChild(div);
+  ucUpdatePreview();
+}
+
+function ucAddOption() {
+  const list = document.getElementById('uc-cat-list');
+  if (!list) return;
+  const count = list.children.length;
+  if (count >= 8) { alert('Máximo 8 opções'); return; }
+  const id = 'opt_' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px';
+  div.innerHTML = `<input type="text" placeholder="Ex: Flamengo" 
+    style="flex:1;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;box-sizing:border-box"
+    oninput="ucUpdatePreview()">
+    <button onclick="document.getElementById('${id}').remove();ucUpdatePreview()" 
+      style="background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.3);color:#ff4455;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:12px">✕</button>`;
+  list.appendChild(div);
+  ucUpdatePreview();
+}
+
+function ucGetOutcomes() {
+  const type = ucSelectedType || 'binary';
+  if (type === 'binary') {
+    return [{ id: 'yes', label: 'SIM' }, { id: 'no', label: 'NÃO' }];
+  } else if (type === 'range') {
+    const inputs = document.querySelectorAll('#uc-range-list input');
+    return [...inputs].map((inp, i) => ({
+      id: 'range_' + i,
+      label: inp.value.trim() || ('Faixa ' + (i+1))
+    })).filter(o => o.label.length > 0);
+  } else if (type === 'categorical') {
+    const inputs = document.querySelectorAll('#uc-cat-list input');
+    return [...inputs].map((inp, i) => ({
+      id: 'opt_' + i,
+      label: inp.value.trim() || ('Opção ' + (i+1))
+    })).filter(o => o.label.length > 0);
+  }
+  return [{ id: 'yes', label: 'SIM' }, { id: 'no', label: 'NÃO' }];
+}
+
+function ucUpdatePreview() {
+  const q = document.getElementById('uc-question')?.value || '';
+  const titleEl = document.getElementById('uc-preview-title');
+  const outEl   = document.getElementById('uc-preview-outcomes');
+  const metaEl  = document.getElementById('uc-preview-meta');
+  if (titleEl) titleEl.textContent = q || 'Escreve uma pergunta...';
+  if (outEl) {
+    const outcomes = ucGetOutcomes();
+    outEl.innerHTML = outcomes.map(o =>
+      `<span style="background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.3);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--teal)">${o.label}</span>`
+    ).join('');
+  }
+  if (metaEl) {
+    const type = ucSelectedType || 'binary';
+    const typeLabel = type==='binary'?'Binário':type==='range'?'Intervalos':'Categórico';
+    const cat = ucSelectedCat || 'econ';
+    const catLabel = {econ:'Economia',sport:'Esportes',pol:'Política',crypto:'Cripto',other:'Outro'}[cat]||'Economia';
+    const date = document.getElementById('uc-date')?.value;
+    metaEl.textContent = typeLabel + ' · ' + catLabel + (date?' · Encerra '+new Date(date).toLocaleDateString('pt-BR'):'');
+  }
+}
+
+
+function ucSelType(el, type) {
+  ucSelectedType = type;
+  document.querySelectorAll('.uc-type-card').forEach(c => {
+    c.style.border = '1px solid var(--dark-border)';
+    c.style.background = 'var(--dark-card)';
+  });
+  el.style.border = '2px solid var(--teal)';
+  el.style.background = 'rgba(29,158,117,0.08)';
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // Session restore — admin NEVER auto-restores (must login manually)
   const storedToken = localStorage.getItem('predict_token');
@@ -3010,25 +3176,112 @@ const MARKETS = []; // Populated from API only — no hardcoded data
 const catCls={econ:"c-econ",sport:"c-sport",pol:"c-pol",crypto:"c-crypto"};
 const catLbl={econ:"📈 Economia",sport:"⚽ Esportes",pol:"🗳 Política",crypto:"₿ Cripto"};
 
-function renderCards(markets,el,lim=6){
-  el.innerHTML='';
-  markets.slice(0,lim).forEach(m=>{
-    const no=100-m.yes;
-    el.innerHTML+=`<div class="mcard" onclick="openMarket('${m.id}')"><span class="mcat ${catCls[m.cat]}">${catLbl[m.cat]}</span><div class="mq">${m.q}</div><div class="mbar"><div class="mbar-y" style="width:${m.yes}%"></div><div class="mbar-n" style="width:${no}%"></div></div><div class="mprobs"><span class="mp-y">SIM ${m.yes}%</span><span class="mp-n">NÃO ${no}%</span></div><div class="mfoot"><div><div class="mvol">Vol: <b>${m.vol}</b></div></div><button class="btn-bet-xs">Apostar →</button></div></div>`;
+function renderCards(markets, el, lim=6) {
+  el.innerHTML = '';
+  const typeLabels = { binary: '⚖️ Binário', range: '📊 Intervalos', categorical: '🗳️ Categórico' };
+  const typeText   = { binary: 'var(--teal)', range: 'var(--amber)', categorical: '#aaaaff' };
+  markets.slice(0, lim).forEach(m => {
+    const type = m.marketType || 'binary';
+    const no = 100 - m.yes;
+    const typeTxt = typeText[type] || typeText.binary;
+    const typeLbl = typeLabels[type] || type;
+
+    let probHtml = '';
+    if (type === 'binary') {
+      probHtml = `<div class="mbar"><div class="mbar-y" style="width:${m.yes}%"></div><div class="mbar-n" style="width:${no}%"></div></div>
+        <div class="mprobs"><span class="mp-y">SIM ${m.yes}%</span><span class="mp-n">NÃO ${no}%</span></div>`;
+    } else {
+      const outcomes = m.outcomes || [];
+      const total = outcomes.reduce((s,o)=>s+(o.quantity||0),0)||1;
+      const top = [...outcomes].sort((a,b)=>(b.quantity||0)-(a.quantity||0)).slice(0,3);
+      probHtml = `<div style="margin:8px 0">
+        ${top.map((o,i)=>{
+          const pct = Math.round((o.quantity||0)/total*100)||Math.round(100/outcomes.length);
+          return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span style="font-size:10px;color:rgba(255,255,255,0.5);width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.label}</span>
+            <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px">
+              <div style="height:100%;width:${pct}%;background:${i===0?'var(--teal)':'rgba(255,255,255,0.25)'};border-radius:2px"></div>
+            </div>
+            <span style="font-size:10px;font-weight:700;color:${i===0?'var(--teal)':'rgba(255,255,255,0.4)'};width:26px;text-align:right">${pct}%</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+
+    el.innerHTML += `<div class="mcard" onclick="openMarket('${m.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="mcat ${catCls[m.cat]}">${catLbl[m.cat]||m.cat}</span>
+        <span style="font-size:10px;color:${typeTxt}">${typeLbl}</span>
+      </div>
+      <div class="mq">${m.q}</div>
+      ${probHtml}
+      <div class="mfoot">
+        <div><div class="mvol">Vol: <b>${m.vol}</b></div></div>
+        <button class="btn-bet-xs">Apostar →</button>
+      </div>
+    </div>`;
   });
 }
-function renderRows(markets){
-  const el=document.getElementById('market-rows');
-  document.getElementById('list-count').textContent=markets.length+' mercados';
-  el.innerHTML='';
-  document.getElementById('list-count').textContent = markets.length + ' mercados';
+function renderRows(markets) {
+  const el = document.getElementById('market-rows');
+  const countEl = document.getElementById('list-count');
+  if (countEl) countEl.textContent = markets.length + ' mercados';
+  if (!el) return;
+  el.innerHTML = '';
   if (markets.length === 0) {
-    el.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:40px;text-align:center">Nenhum mercado disponível de momento.<br><br><span style="font-size:11px">Os mercados aparecem aqui assim que forem criados.</span></div>';
+    el.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:40px;text-align:center">Nenhum mercado disponível de momento.<br><br><span style="font-size:11px">Sê o primeiro a criar um →</span></div>';
     return;
   }
-  markets.forEach(m=>{
-    const no=100-m.yes;
-    el.innerHTML+=`<div class="mrow" onclick="openMarket('${m.id}')"><div class="mrow-icon" style="background:${m.bg}">${m.icon}</div><div class="mrow-body"><div class="mrow-q">${m.q}</div><div class="mrow-meta">${catLbl[m.cat]} · Encerra ${m.closes}</div></div><div class="mrow-bar"><div class="mrow-track"><div class="mrow-fill" style="width:${m.yes}%"></div></div><div class="mrow-pcts"><span class="mry">SIM ${m.yes}%</span><span class="mrn">NÃO ${no}%</span></div></div><div class="mrow-vol"><b>${m.vol}</b>volume</div></div>`;
+  const typeLabels = { binary: '⚖️ Binário', range: '📊 Intervalos', categorical: '🗳️ Categórico' };
+  const typeColors = { binary: 'rgba(29,158,117,0.12)', range: 'rgba(239,159,39,0.1)', categorical: 'rgba(136,136,255,0.1)' };
+  const typeBorders = { binary: 'rgba(29,158,117,0.3)', range: 'rgba(239,159,39,0.3)', categorical: 'rgba(136,136,255,0.3)' };
+  const typeText = { binary: 'var(--teal)', range: 'var(--amber)', categorical: '#aaaaff' };
+
+  markets.forEach(m => {
+    const type = m.marketType || 'binary';
+    const typeLbl = typeLabels[type] || type;
+    const typeBg  = typeColors[type]  || typeColors.binary;
+    const typeBdr = typeBorders[type] || typeBorders.binary;
+    const typeTxt = typeText[type]    || typeText.binary;
+
+    let probHtml = '';
+    if (type === 'binary') {
+      const no = 100 - m.yes;
+      probHtml = `<div class="mrow-bar">
+        <div class="mrow-track"><div class="mrow-fill" style="width:${m.yes}%"></div></div>
+        <div class="mrow-pcts"><span class="mry">SIM ${m.yes}%</span><span class="mrn">NÃO ${no}%</span></div>
+      </div>`;
+    } else {
+      // Show top 2 outcomes for range/categorical
+      const outcomes = m.outcomes || [];
+      const total = outcomes.reduce((s, o) => s + (o.quantity || 0), 0) || 1;
+      const sorted = [...outcomes].sort((a,b) => (b.quantity||0)-(a.quantity||0));
+      const outBars = sorted.slice(0,2).map((o,i) => {
+        const pct = Math.round((o.quantity||0)/total*100) || Math.round(100/outcomes.length);
+        const c   = i===0 ? 'var(--teal)' : 'rgba(255,255,255,0.3)';
+        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.label}</div>
+          <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${c};border-radius:2px"></div>
+          </div>
+          <div style="font-size:10px;font-weight:700;color:${c};width:28px;text-align:right">${pct}%</div>
+        </div>`;
+      }).join('');
+      probHtml = `<div class="mrow-bar" style="min-width:160px">${outBars}</div>`;
+    }
+
+    el.innerHTML += `<div class="mrow" onclick="openMarket('${m.id}')">
+      <div class="mrow-icon" style="background:${m.bg}">${m.icon}</div>
+      <div class="mrow-body">
+        <div class="mrow-q">${m.q}</div>
+        <div class="mrow-meta" style="display:flex;align-items:center;gap:8px">
+          <span>${catLbl[m.cat] || m.cat} · Encerra ${m.closes}</span>
+          <span style="font-size:10px;padding:2px 6px;border-radius:5px;background:${typeBg};border:1px solid ${typeBdr};color:${typeTxt}">${typeLbl}</span>
+        </div>
+      </div>
+      ${probHtml}
+      <div class="mrow-vol"><b>${m.vol}</b>volume</div>
+    </div>`;
   });
 }
 function filterM(cat,btn){
@@ -3037,77 +3290,208 @@ function filterM(cat,btn){
   renderRows(cat==='all'?MARKETS:MARKETS.filter(m=>m.cat===cat));
 }
 function openMarket(marketId) {
-  CURRENT_MARKET_ID = marketId;
-  const mkt = MARKETS.find(m => String(m.id) === String(marketId) || String(m.apiId) === String(marketId));
+  const sid = String(marketId);
+  CURRENT_MARKET_ID = sid;
+  const mkt = MARKETS.find(m => String(m.id)===sid || String(m.apiId)===sid);
   if (!mkt) return;
 
-  const yes = mkt.yes || 50;
-  const no  = 100 - yes;
-
+  const type = mkt.marketType || mkt.type || 'binary';
   const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+
   set('mkt-title-el',   mkt.q);
-  set('mkt-vol-el',     mkt.vol || '—');
-  set('mkt-closes-el',  mkt.closes || '—');
-  set('mkt-traders-el', mkt.traderCount || '—');
-  set('mkt-creator-el', mkt.creatorName || '—');
-  set('prob-pct',       yes+'%');
-  set('mkt-prob-sub',   mkt.q.slice(0,60)+(mkt.q.length>60?'…':''));
-  set('mkt-lbl-yes',    'SIM '+yes+'%');
-  set('mkt-lbl-no',     'NÃO '+no+'%');
-  set('bp-out-v',       yes+'%');
+  set('mkt-cat-el',     catLbl[mkt.cat]||mkt.cat||'—');
+  set('mkt-vol-el',     mkt.vol||'—');
+  set('mkt-closes-el',  mkt.closes||'—');
+  set('mkt-traders-el', mkt.traderCount||'—');
+  set('mkt-creator-el', mkt.creatorName||'—');
 
   const catEl = document.getElementById('mkt-cat-el');
-  if (catEl) { catEl.className='mcat '+(catCls[mkt.cat]||''); catEl.textContent=catLbl[mkt.cat]||mkt.cat; }
+  if (catEl) catEl.className = 'mcat '+(catCls[mkt.cat]||'');
 
-  const pbY = document.getElementById('mkt-pb-yes');
-  const pbN = document.getElementById('mkt-pb-no');
-  if (pbY) pbY.style.width = yes+'%';
-  if (pbN) pbN.style.width = no+'%';
+  // Type badge
+  const typeBadge = document.getElementById('mkt-type-badge');
+  if (typeBadge) {
+    const labels = {binary:'⚖️ Binário', range:'📊 Intervalos', categorical:'🗳️ Categórico'};
+    typeBadge.textContent = labels[type]||type;
+    typeBadge.style.display = 'inline-block';
+  }
 
-  // Visibility badge
+  // Visibility
   const visRow = document.getElementById('mkt-visibility-row');
-  if (visRow) visRow.style.display = mkt.visibility==='closed' ? 'flex' : 'none';
+  if (visRow) visRow.style.display = mkt.visibility==='closed'?'flex':'none';
 
-  // Delete button (admin or owner)
+  // Delete button
   const deleteBtn = document.getElementById('mkt-delete-btn');
-  if (deleteBtn) deleteBtn.style.display = (currentUser && (currentUser.role==='admin' || mkt.creatorId===currentUser.id)) ? 'block' : 'none';
+  if (deleteBtn) deleteBtn.style.display = (currentUser&&(currentUser.role==='admin'||mkt.creatorId===currentUser.id))?'block':'none';
 
-  // Reset stats to loading state
-  ['mkt-stat-total','mkt-stat-yes','mkt-stat-no','mkt-stat-avg','mkt-stat-max','mkt-stat-median'].forEach(id => set(id,'—'));
-  const tradesEl = document.getElementById('mkt-trades-list');
-  if (tradesEl) tradesEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:12px">A carregar...</div>';
+  // ── Build bet panel based on type ─────────────────────────
+  const betPanelEl = document.getElementById('mkt-bet-panel');
+  if (betPanelEl) {
+    if (type === 'binary') {
+      // existing binary panel — reset to defaults
+      const yes = mkt.yes||50; const no = 100-yes;
+      set('prob-pct', yes+'%');
+      set('mkt-prob-sub', mkt.q?.slice(0,60)+(mkt.q?.length>60?'…':''));
+      set('mkt-lbl-yes','SIM '+yes+'%'); set('mkt-lbl-no','NÃO '+no+'%');
+      set('bp-out-v', yes+'%');
+      const pbY=document.getElementById('mkt-pb-yes'); if(pbY) pbY.style.width=yes+'%';
+      const pbN=document.getElementById('mkt-pb-no');  if(pbN) pbN.style.width=no+'%';
+      betPanelEl.innerHTML = `
+        <div class="bp-h">Fazer aposta</div>
+        <div class="bp-tabs">
+          <div class="bp-tab y active" onclick="setBet('sim',this)">SIM</div>
+          <div class="bp-tab n" onclick="setBet('nao',this)">NÃO</div>
+        </div>
+        <div class="bp-out yes-mode" id="bp-out">
+          <div class="bp-out-l" id="bp-out-l">Apostando em SIM</div>
+          <div class="bp-out-v" id="bp-out-v" style="color:var(--teal)">${yes}%</div>
+        </div>
+        <div class="bp-il">Valor da aposta (R$)</div>
+        <input class="bp-in" type="number" value="100" min="1" id="bet-amt" oninput="calcBet()">
+        <div class="bp-presets">
+          <button class="bp-pre" onclick="setAmt(50)">R$50</button>
+          <button class="bp-pre" onclick="setAmt(100)">R$100</button>
+          <button class="bp-pre" onclick="setAmt(250)">R$250</button>
+          <button class="bp-pre" onclick="setAmt(500)">R$500</button>
+        </div>
+        <div class="bp-calc">
+          <div class="bpc-row"><span>Preço / ação</span><span id="bc-p">—</span></div>
+          <div class="bpc-row"><span>Ações compradas</span><span id="bc-s">—</span></div>
+          <div class="bpc-row"><span>Retorno se ganhar</span><span id="bc-w">—</span></div>
+          <div class="bpc-row hl"><span>Lucro potencial</span><span id="bc-pr" style="color:var(--teal)">—</span></div>
+        </div>
+        <button class="btn-bet" id="bet-btn" onclick="placeBet()">Apostar SIM →</button>
+        <div class="bp-disc">Plataforma beta — créditos de simulação sem valor monetário.</div>`;
+      window._betOutcomeId = 'yes';
+
+    } else {
+      // Multi-outcome panel for range / categorical
+      const outcomes = mkt.outcomes || [];
+      const colors = ['var(--teal)','#ff9500','#8888ff','#ff4455','#ff69b4','#00bcd4','#ffd700','#90ee90'];
+      betPanelEl.innerHTML = `
+        <div class="bp-h">Fazer aposta</div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Escolhe o resultado</div>
+          ${outcomes.map((o,i) => {
+            const pct = o.probability ? Math.round(o.probability*100) : Math.round(100/outcomes.length);
+            return `<button class="mkt-outcome-btn" data-oid="${o.id}" onclick="ucSelectOutcome(this,'${o.id}')"
+              style="width:100%;background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:10px;
+                padding:12px 14px;margin-bottom:8px;cursor:pointer;text-align:left;transition:all 0.15s;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;font-weight:600;color:#fff">${o.label}</span>
+              <span style="font-size:13px;font-weight:700;color:${colors[i%colors.length]}">${pct}%</span>
+            </button>`;
+          }).join('')}
+        </div>
+        <div id="uc-selected-outcome" style="display:none;background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.3);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;font-weight:600;color:var(--teal)">
+          ✓ Seleccionado: <span id="uc-sel-label">—</span>
+        </div>
+        <div class="bp-il">Valor da aposta (R$)</div>
+        <input class="bp-in" type="number" value="100" min="1" id="bet-amt" oninput="calcBet()">
+        <div class="bp-presets">
+          <button class="bp-pre" onclick="setAmt(50)">R$50</button>
+          <button class="bp-pre" onclick="setAmt(100)">R$100</button>
+          <button class="bp-pre" onclick="setAmt(250)">R$250</button>
+          <button class="bp-pre" onclick="setAmt(500)">R$500</button>
+        </div>
+        <div class="bp-calc">
+          <div class="bpc-row"><span>Preço / ação</span><span id="bc-p">—</span></div>
+          <div class="bpc-row hl"><span>Lucro potencial</span><span id="bc-pr" style="color:var(--teal)">—</span></div>
+        </div>
+        <button class="btn-bet" id="bet-btn" onclick="placeBet()" disabled style="opacity:0.4">Selecciona um resultado →</button>
+        <div class="bp-disc">Plataforma beta — créditos de simulação sem valor monetário.</div>`;
+      window._betOutcomeId = null;
+    }
+  }
+
+  // Probability display — binary vs multi-outcome
+  const probBox = document.querySelector('.prob-box');
+  const outcomesProbs = document.getElementById('mkt-outcomes-probs');
+  const outcomesBars  = document.getElementById('mkt-outcomes-bars');
+
+  if (type === 'binary') {
+    // Show binary prob bar, hide multi-outcome section
+    if (probBox) probBox.style.display = 'block';
+    if (outcomesProbs) outcomesProbs.style.display = 'none';
+    const yes = mkt.yes || 50; const no = 100 - yes;
+    set('prob-pct', yes + '%');
+    set('mkt-prob-sub', mkt.q?.slice(0,60) + (mkt.q?.length>60?'…':''));
+    set('mkt-lbl-yes', 'SIM ' + yes + '%');
+    set('mkt-lbl-no',  'NÃO ' + no  + '%');
+    const pbY = document.getElementById('mkt-pb-yes'); if(pbY) pbY.style.width = yes + '%';
+    const pbN = document.getElementById('mkt-pb-no');  if(pbN) pbN.style.width = no  + '%';
+  } else {
+    // Hide binary prob bar, show multi-outcome bars
+    if (probBox) probBox.style.display = 'none';
+    if (outcomesProbs) outcomesProbs.style.display = 'block';
+    if (outcomesBars) {
+      const outcomes = mkt.outcomes || [];
+      const total = outcomes.reduce((s,o)=>s+(o.quantity||0),0) || 1;
+      const colors = ['var(--teal)','#ff9500','#8888ff','#ff4455','#ff69b4','#00bcd4','#ffd700'];
+      outcomesBars.innerHTML = outcomes.map((o,i) => {
+        const pct = Math.round((o.quantity||0)/total*100) || Math.round(100/outcomes.length);
+        const col = colors[i % colors.length];
+        return `<div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <span style="font-size:13px;font-weight:600">${o.label}</span>
+            <span style="font-size:15px;font-weight:800;color:${col}">${pct}%</span>
+          </div>
+          <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:100px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${col};border-radius:100px;transition:width 0.5s ease"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
 
   // Gates
-  const isPrivate  = mkt.visibility === 'closed';
-  const isUnlocked = window._unlockedMarkets && window._unlockedMarkets[mkt.apiId||mkt.id];
-  const loginGate  = document.getElementById('mkt-login-gate');
-  const accessGate = document.getElementById('mkt-access-gate');
-  const betPanel   = document.getElementById('mkt-bet-panel');
+  const isPrivate   = mkt.visibility==='closed';
+  const isUnlocked  = window._unlockedMarkets?.[mkt.apiId||mkt.id];
+  const loginGate   = document.getElementById('mkt-login-gate');
+  const accessGate  = document.getElementById('mkt-access-gate');
 
   if (!currentUser) {
     if (loginGate)  loginGate.style.display  = 'block';
     if (accessGate) accessGate.style.display = 'none';
-    if (betPanel)   betPanel.style.display   = 'none';
+    if (betPanelEl) betPanelEl.style.display = 'none';
   } else if (isPrivate && !isUnlocked) {
     if (loginGate)  loginGate.style.display  = 'none';
     if (accessGate) accessGate.style.display = 'block';
-    if (betPanel)   betPanel.style.display   = 'none';
-    const errEl = document.getElementById('mkt-access-error');
-    const inp   = document.getElementById('mkt-access-input');
-    if (errEl) errEl.textContent = '';
-    if (inp)   inp.value         = '';
+    if (betPanelEl) betPanelEl.style.display = 'none';
+    const errEl=document.getElementById('mkt-access-error'); if(errEl) errEl.textContent='';
+    const inp=document.getElementById('mkt-access-input'); if(inp) inp.value='';
   } else {
     if (loginGate)  loginGate.style.display  = 'none';
     if (accessGate) accessGate.style.display = 'none';
-    if (betPanel)   betPanel.style.display   = 'block';
+    if (betPanelEl) betPanelEl.style.display = 'block';
   }
 
   showPage('market', null);
-  calcBet();
+  if (typeof calcBet==='function') calcBet();
+  if (mkt.apiId||mkt.id) loadMarketDetail(mkt.apiId||mkt.id);
+}
 
-  // Load full detail async
-  if (mkt.apiId || mkt.id) {
-    loadMarketDetail(mkt.apiId || mkt.id);
+function ucSelectOutcome(btn, outcomeId) {
+  // Highlight selected outcome button
+  document.querySelectorAll('.mkt-outcome-btn').forEach(b => {
+    b.style.border = '1px solid var(--dark-border)';
+    b.style.background = 'var(--dark-bg)';
+  });
+  btn.style.border = '1px solid rgba(29,158,117,0.5)';
+  btn.style.background = 'rgba(29,158,117,0.08)';
+
+  window._betOutcomeId = outcomeId;
+  const label = btn.querySelector('span')?.textContent || outcomeId;
+  const selEl = document.getElementById('uc-selected-outcome');
+  const labEl = document.getElementById('uc-sel-label');
+  if (selEl) selEl.style.display = 'block';
+  if (labEl) labEl.textContent = label;
+
+  // Enable bet button
+  const betBtn = document.getElementById('bet-btn');
+  if (betBtn) {
+    betBtn.disabled = false;
+    betBtn.style.opacity = '1';
+    betBtn.textContent = 'Apostar em "' + label.slice(0,20) + '" →';
   }
 }
 
@@ -3131,11 +3515,45 @@ async function loadMarketDetail(apiId) {
 
     const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
     set('mkt-stat-total',  total);
-    set('mkt-stat-yes',    yesCount);
-    set('mkt-stat-no',     noCount);
     set('mkt-stat-avg',    'R$ '+avg.toFixed(2));
     set('mkt-stat-max',    'R$ '+maxAmt.toFixed(2));
     set('mkt-stat-median', 'R$ '+median.toFixed(2));
+
+    // Adapt SIM/NÃO labels based on market type
+    const mktForStats = MARKETS.find(m => String(m.id)===String(apiId)||String(m.apiId)===String(apiId));
+    const mktType = mktForStats?.marketType || 'binary';
+    const statYesEl = document.getElementById('mkt-stat-yes');
+    const statNoEl  = document.getElementById('mkt-stat-no');
+    const statGrid  = document.getElementById('mkt-stats-grid');
+
+    if (mktType === 'binary') {
+      set('mkt-stat-yes', yesCount);
+      set('mkt-stat-no',  noCount);
+      // Ensure labels say SIM/NÃO
+      const yLbl = statGrid?.querySelectorAll('.stat-lbl')[1];
+      const nLbl = statGrid?.querySelectorAll('.stat-lbl')[2];
+      if (yLbl) yLbl.textContent = 'Apostas SIM';
+      if (nLbl) nLbl.textContent = 'Apostas NÃO';
+    } else {
+      // Multi-outcome: count bets per outcome
+      const mktOutcomes = mktForStats?.outcomes || [];
+      const perOutcome  = {};
+      trades.forEach(t => { perOutcome[t.outcome||t.outcomeId] = (perOutcome[t.outcome||t.outcomeId]||0)+1; });
+
+      // Show top 2 outcomes in the SIM/NÃO slots
+      if (mktOutcomes.length >= 2) {
+        const top = [...mktOutcomes].sort((a,b)=>(perOutcome[b.id]||0)-(perOutcome[a.id]||0));
+        if (statYesEl) statYesEl.textContent = perOutcome[top[0]?.id]||0;
+        if (statNoEl)  statNoEl.textContent  = perOutcome[top[1]?.id]||0;
+        const yLbl = statGrid?.querySelectorAll('[style*="color:rgba(255,255,255,0.4)"]')[1];
+        const nLbl = statGrid?.querySelectorAll('[style*="color:rgba(255,255,255,0.4)"]')[2];
+        if (yLbl) yLbl.textContent = (top[0]?.label||'').slice(0,14);
+        if (nLbl) nLbl.textContent = (top[1]?.label||'').slice(0,14);
+      } else {
+        set('mkt-stat-yes', yesCount);
+        set('mkt-stat-no',  noCount);
+      }
+    }
 
     // Activity feed
     const feedEl = document.getElementById('mkt-trades-list');
@@ -3158,14 +3576,15 @@ async function loadMarketDetail(apiId) {
     }
 
     // Odds evolution chart
-    buildOddsChart(trades);
+    const mForChart = MARKETS.find(m=>String(m.id)===String(apiId)||String(m.apiId)===String(apiId));
+    buildOddsChart(trades, mForChart?.marketType, mForChart?.outcomes);
 
   } catch(e) {
     console.warn('loadMarketDetail:', e.message);
   }
 }
 
-function buildOddsChart(trades) {
+function buildOddsChart(trades, marketType, outcomes) {
   const canvas  = document.getElementById('prob-chart');
   const emptyEl = document.getElementById('mkt-chart-empty');
   if (!canvas) return;
@@ -3180,34 +3599,53 @@ function buildOddsChart(trades) {
   canvas.style.display = 'block';
   if (emptyEl) emptyEl.style.display = 'none';
 
-  let yesN=0, noN=0;
-  const sorted = trades.slice().sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
-  const labels=[], data=[];
-  sorted.forEach(t => {
-    if(t.outcome==='yes') yesN++; else noN++;
-    const tot = yesN+noN;
-    labels.push(new Date(t.createdAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}));
-    data.push(Math.round(yesN/tot*100));
-  });
+  const mType    = marketType || 'binary';
+  const outs     = outcomes || [];
+  const sorted   = trades.slice().sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
+  const labels   = sorted.map(t=>new Date(t.createdAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}));
+  const colors   = ['rgba(29,158,117,1)','rgba(255,149,0,1)','rgba(136,136,255,1)','rgba(255,68,85,1)','rgba(255,105,180,1)'];
+
+  let datasets = [];
+
+  if (mType === 'binary') {
+    let yesN=0, noN=0;
+    const data = sorted.map(t => {
+      if (t.outcome==='yes') yesN++; else noN++;
+      const tot = yesN+noN;
+      return Math.round(yesN/tot*100);
+    });
+    datasets = [{ label:'SIM %', data, borderColor:'rgba(29,158,117,1)', backgroundColor:'rgba(29,158,117,0.1)', fill:true, tension:0.4, pointRadius:3, pointBackgroundColor:'rgba(29,158,117,1)' }];
+  } else {
+    // One dataset per outcome
+    const counts = {};
+    outs.forEach(o => counts[o.id] = 0);
+    datasets = outs.map((o,i) => {
+      const data = sorted.map(t => {
+        if ((t.outcome||t.outcomeId) === o.id) counts[o.id]++;
+        const tot = Object.values(counts).reduce((a,b)=>a+b,0)||1;
+        return Math.round(counts[o.id]/tot*100);
+      });
+      return {
+        label: o.label,
+        data,
+        borderColor: colors[i%colors.length],
+        backgroundColor: colors[i%colors.length].replace('1)','0.08)'),
+        fill: false, tension: 0.4,
+        pointRadius: 3, pointBackgroundColor: colors[i%colors.length]
+      };
+    });
+  }
 
   if (typeof Chart === 'undefined') return;
   const ctx = canvas.getContext('2d');
   window._oddsChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'SIM %',
-        data,
-        borderColor: 'rgba(29,158,117,1)',
-        backgroundColor: 'rgba(29,158,117,0.1)',
-        fill: true, tension: 0.4,
-        pointRadius: 3, pointBackgroundColor: 'rgba(29,158,117,1)',
-      }]
-    },
+    data: { labels, datasets },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: mType !== 'binary', labels: { color:'rgba(255,255,255,0.5)', boxWidth:12, font:{size:11} } }
+      },
       scales: {
         y: { min:0, max:100, ticks:{ color:'rgba(255,255,255,0.4)', callback:v=>v+'%' }, grid:{ color:'rgba(255,255,255,0.05)' } },
         x: { ticks:{ color:'rgba(255,255,255,0.3)', maxTicksLimit:6 }, grid:{ display:false } }
@@ -3317,23 +3755,26 @@ function calcBet(){
   document.getElementById('bc-pr').style.color=profit>=0?'var(--teal)':'var(--red)';
 }
 async function placeBet() {
-  if (!authToken) {
-    showPage('onboard', null);
-    return;
-  }
-
-  // Get market — use CURRENT_MARKET_ID set by openMarket()
+  if (!authToken) { showPage('onboard', null); return; }
   const marketId = CURRENT_MARKET_ID;
   if (!marketId) { alert('Nenhum mercado seleccionado'); return; }
 
-  // Get amount from new UI
+  const mkt = MARKETS.find(m => String(m.id)===String(marketId)||String(m.apiId)===String(marketId));
+  const type = mkt?.marketType || mkt?.type || 'binary';
+
+  // Get outcomeId
+  let outcomeId;
+  if (type === 'binary') {
+    const activeTab = document.querySelector('.bp-tab.active');
+    outcomeId = activeTab?.classList.contains('y') ? 'yes' : 'no';
+  } else {
+    outcomeId = window._betOutcomeId;
+    if (!outcomeId) { alert('Selecciona um resultado antes de apostar'); return; }
+  }
+
   const amtEl = document.getElementById('bet-amt');
   const amount = parseFloat(amtEl?.value || 100);
   if (isNaN(amount) || amount <= 0) { alert('Valor inválido'); return; }
-
-  // Get side from new tab UI (.bp-tab y active = SIM, .bp-tab n active = NÃO)
-  const activeTab = document.querySelector('.bp-tab.active');
-  const side = activeTab?.classList.contains('y') ? 'yes' : 'no';
 
   const btn = document.getElementById('bet-btn');
   if (btn) { btn.textContent = 'A processar...'; btn.disabled = true; btn.style.opacity = '0.7'; }
@@ -3341,84 +3782,75 @@ async function placeBet() {
   try {
     const result = await api('POST', '/trades', {
       marketId,
-      outcomeId: side,
-      side,
+      outcomeId,
+      side: 'buy',
       amount,
       isPlayMoney: true
     });
 
     if (result?.error) throw new Error(result.error);
 
-    // ── Success ──────────────────────────────────────────────
-    const tradeId = result?.trade?.id || result?.id || '—';
-    const shares  = parseFloat(result?.trade?.shares || result?.shares || 0).toFixed(2);
-    const balAfter = parseFloat(result?.balanceAfter || result?.trade?.balanceAfter || 0).toFixed(2);
-    const outcome  = side === 'yes' ? 'SIM' : 'NÃO';
+    const tradeId  = result?.trade?.id || result?.id || '—';
+    const balAfter = parseFloat(result?.balanceAfter || result?.trade?.balanceAfter || currentUser?.balancePlay || 0).toFixed(2);
+    const outLabel = mkt?.outcomes?.find(o=>o.id===outcomeId)?.label || (outcomeId==='yes'?'SIM':'NÃO');
+    const outColor = outcomeId==='yes'?'var(--teal)':'#ff4455';
 
-    // Show confirmation on button
+    // Button confirmation
     if (btn) {
       btn.textContent = '✅ Aposta confirmada!';
       btn.style.background = 'rgba(29,158,117,0.5)';
       btn.style.opacity = '1';
       setTimeout(() => {
-        if (btn) {
-          btn.textContent = side === 'yes' ? 'Apostar SIM →' : 'Apostar NÃO →';
-          btn.style.background = '';
-          btn.disabled = false;
-        }
+        if (!btn) return;
+        btn.textContent = type==='binary'?(outcomeId==='yes'?'Apostar SIM →':'Apostar NÃO →'):'Apostar →';
+        btn.style.background = '';
+        btn.disabled = false;
+        btn.style.opacity = '1';
       }, 3000);
     }
 
-    // Show toast notification
-    const toastHtml = `
+    // Toast notification with full details
+    const existing = document.getElementById('bet-toast');
+    if (existing) existing.remove();
+    document.body.insertAdjacentHTML('beforeend', `
       <div id="bet-toast" style="position:fixed;top:80px;right:20px;z-index:9999;
-        background:var(--dark-card);border:1px solid rgba(29,158,117,0.4);
-        border-radius:12px;padding:16px 20px;min-width:280px;
-        box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:fadeIn 0.3s ease">
-        <div style="font-size:14px;font-weight:700;color:var(--teal);margin-bottom:6px">
-          ✅ Aposta confirmada!
+        background:var(--dark-card);border:1px solid rgba(29,158,117,0.5);
+        border-radius:14px;padding:18px 22px;min-width:300px;max-width:360px;
+        box-shadow:0 8px 40px rgba(0,0,0,0.5)">
+        <div style="font-size:15px;font-weight:800;color:var(--teal);margin-bottom:10px">✅ Aposta confirmada!</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.8">
+          <div>📌 <b>${(mkt?.q||'—').slice(0,50)}</b></div>
+          <div>🎯 Resultado: <b style="color:${outColor}">${outLabel}</b></div>
+          <div>💰 Valor apostado: <b>R$ ${amount.toFixed(2)}</b></div>
+          <div>🏦 Novo saldo: <b style="color:var(--teal)">R$ ${balAfter}</b></div>
+          <div style="margin-top:6px;font-size:10px;color:rgba(255,255,255,0.3);font-family:monospace">ID: ${tradeId}</div>
         </div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6">
-          Mercado: <b>${(MARKETS.find(m=>m.id===marketId)?.q||'—').slice(0,40)}</b><br>
-          Resultado: <b style="color:${side==='yes'?'var(--teal)':'#ff4455'}">${outcome}</b> · 
-          Valor: <b>R$ ${amount.toFixed(2)}</b><br>
-          ID da aposta: <span style="font-family:monospace;font-size:11px">${tradeId}</span><br>
-          Novo saldo: <b style="color:var(--teal)">R$ ${balAfter}</b>
-        </div>
-      </div>`;
-    document.body.insertAdjacentHTML('beforeend', toastHtml);
-    setTimeout(() => { document.getElementById('bet-toast')?.remove(); }, 5000);
+      </div>`);
+    setTimeout(() => document.getElementById('bet-toast')?.remove(), 6000);
 
     // Update balance in nav
     const navBal = document.getElementById('nav-balance');
-    if (navBal && balAfter) navBal.textContent = 'R$ ' + parseFloat(balAfter).toFixed(2);
-
-    // Update currentUser balance
+    if (navBal) navBal.textContent = 'R$ ' + parseFloat(balAfter).toFixed(2);
     if (currentUser) currentUser.balancePlay = balAfter;
 
-    // Refresh market detail to show new odds
-    if (marketId) setTimeout(() => loadMarketDetail(marketId), 500);
-
-    // Refresh dashboard positions in background
-    setTimeout(updateDashboard, 1000);
-
-    console.log('✅ Bet placed | id:'+tradeId+' | '+outcome+' | R$'+amount+' | bal:R$'+balAfter);
+    // Refresh
+    setTimeout(updateDashboard, 800);
+    setTimeout(() => loadMarketDetail(marketId), 600);
+    console.log('✅ Bet placed | id:'+tradeId+' outcome:'+outcomeId+' R$'+amount+' bal:R$'+balAfter);
 
   } catch(err) {
-    if (btn) { btn.textContent = side==='yes'?'Apostar SIM →':'Apostar NÃO →'; btn.disabled=false; btn.style.opacity='1'; btn.style.background=''; }
-    const errMsg = err.message || 'Erro ao processar aposta';
-    
-    // Show error toast
-    const errHtml = `
+    if (btn) { btn.textContent = 'Apostar →'; btn.disabled = false; btn.style.opacity = '1'; btn.style.background = ''; }
+    const existing = document.getElementById('bet-toast-err');
+    if (existing) existing.remove();
+    document.body.insertAdjacentHTML('beforeend', `
       <div id="bet-toast-err" style="position:fixed;top:80px;right:20px;z-index:9999;
-        background:var(--dark-card);border:1px solid rgba(255,68,85,0.4);
-        border-radius:12px;padding:16px 20px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+        background:var(--dark-card);border:1px solid rgba(255,68,85,0.5);
+        border-radius:14px;padding:16px 20px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
         <div style="font-size:14px;font-weight:700;color:#ff4455;margin-bottom:4px">❌ Erro na aposta</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.6)">${errMsg}</div>
-      </div>`;
-    document.body.insertAdjacentHTML('beforeend', errHtml);
-    setTimeout(() => { document.getElementById('bet-toast-err')?.remove(); }, 5000);
-    console.warn('Bet error:', errMsg);
+        <div style="font-size:12px;color:rgba(255,255,255,0.6)">${err.message}</div>
+      </div>`);
+    setTimeout(() => document.getElementById('bet-toast-err')?.remove(), 5000);
+    console.warn('Bet error:', err.message);
   }
 }
 
@@ -3854,20 +4286,60 @@ function initCalibCharts(){
 
 /* ══ USER CREATE MARKET ══ */
 let ucCurrentStep=0, ucSelectedCat='econ', ucSelectedRes=0;
-function ucGoStep(n){
-  document.getElementById('uc-form-'+ucCurrentStep).style.display='none';
-  document.getElementById('ucs-'+ucCurrentStep).classList.remove('active');
-  document.getElementById('ucs-'+ucCurrentStep).classList.add('done');
-  ucCurrentStep=n;
-  document.getElementById('uc-form-'+n).style.display='block';
-  document.getElementById('ucs-'+n).classList.add('active');
-  document.getElementById('ucs-'+n).classList.remove('done');
-  if(n===3) ucUpdateReview();
+function ucGoStep(n) {
+  const type = ucSelectedType || 'binary';
+  ucCurrentStep = n;
+
+  // Show/hide step panels
+  [0,1,2,3].forEach(i => {
+    const p = document.getElementById('uc-form-'+i);
+    if (p) p.style.display = i===n ? 'block' : 'none';
+  });
+
+  // Update stepper UI
+  document.querySelectorAll('.uc-step').forEach((s,i) => {
+    s.classList.toggle('active', i===n);
+    s.classList.toggle('done', i<n);
+  });
+
+  // On step 1: show the right outcome builder
+  if (n === 1) {
+    document.getElementById('uc-outcomes-binary').style.display   = type==='binary'    ? 'block' : 'none';
+    document.getElementById('uc-outcomes-range').style.display    = type==='range'     ? 'block' : 'none';
+    document.getElementById('uc-outcomes-categorical').style.display = type==='categorical' ? 'block' : 'none';
+    // Auto-add 3 options if empty
+    if (type === 'range' && !document.querySelector('#uc-range-list > div')) {
+      ucAddRange(); ucAddRange(); ucAddRange();
+    }
+    if (type === 'categorical' && !document.querySelector('#uc-cat-list > div')) {
+      ucAddOption(); ucAddOption(); ucAddOption();
+    }
+  }
+
+  // Show/hide visibility code input
+  if (n === 2) {
+    const radios = document.querySelectorAll('[name="uc-vis"]');
+    radios.forEach(r => r.onchange = () => {
+      ucVisType = r.value;
+      const wrap = document.getElementById('uc-code-wrap');
+      if (wrap) wrap.style.display = r.value==='closed' ? 'block' : 'none';
+    });
+  }
+
+  // On step 3: update preview
+  if (n === 3) ucUpdatePreview();
 }
-function ucSelCat(btn,cat){
-  document.querySelectorAll('.uf-chip').forEach(function(c){c.classList.remove('sel');});
-  btn.classList.add('sel');
-  ucSelectedCat=cat;
+function ucSelCat(el, cat) {
+  ucSelectedCat = cat;
+  document.querySelectorAll('.uf-chip').forEach(c => {
+    c.style.borderColor = 'var(--dark-border)';
+    c.style.background  = 'none';
+    c.style.color       = 'rgba(255,255,255,0.5)';
+  });
+  el.style.borderColor = 'var(--teal)';
+  el.style.background  = 'rgba(29,158,117,0.12)';
+  el.style.color       = 'var(--teal)';
+  ucUpdatePreview();
 }
 function ucSelRes(opt){
   document.querySelectorAll('.uf-res-opt').forEach(function(o){o.classList.remove('sel');});
@@ -3898,70 +4370,59 @@ async function ucSubmit() {
     return;
   }
 
-  const question  = document.getElementById('uc-question')?.value?.trim();
-  const dateEl    = document.getElementById('uc-date')?.value;
-  const liqEl     = document.getElementById('uc-liq')?.value || 'R$ 100 (recomendado)';
-  const visEl     = document.getElementById('uc-vis-type') || document.querySelector('[data-uc-vis].sel');
-  const vis       = ucVisType || 'open';
-  const code      = vis === 'closed' ? ucCode : null;
-  const resModel  = document.querySelector('[name="uc-res-model"]:checked')?.value || 'manual';
+  const question = document.getElementById('uc-question')?.value?.trim();
+  const dateEl   = document.getElementById('uc-date')?.value;
+  const liqEl    = document.getElementById('uc-liq')?.value || 'R$ 100 (recomendado)';
+  const type     = ucSelectedType || 'binary';
 
-  if (!question || question.length < 10) {
-    alert('Escreve uma pergunta com pelo menos 10 caracteres.');
-    return;
-  }
-  if (!dateEl) {
-    alert('Escolhe uma data de resolução.');
-    return;
-  }
+  if (!question || question.length < 10) { alert('Escreve uma pergunta com pelo menos 10 caracteres.'); return; }
+  if (!dateEl) { alert('Escolhe uma data de resolução.'); return; }
 
-  const liqMap = {'R$ 50 (básico)': 50, 'R$ 100 (recomendado)': 100, 'R$ 500 (avançado)': 500};
+  const outcomes = ucGetOutcomes();
+  if (outcomes.length < 2) { alert('Adiciona pelo menos 2 resultados.'); return; }
+
+  const liqMap   = {'R$ 50 (básico)': 50, 'R$ 100 (recomendado)': 100, 'R$ 500 (avançado)': 500};
   const liquidityB = liqMap[liqEl] || 100;
+  const vis      = ucVisType || 'open';
+  const code     = vis === 'closed' ? (document.getElementById('uc-access-code')?.value || null) : null;
+
+  const catMap   = {econ:'economics', sport:'sports', pol:'politics', crypto:'crypto', other:'other'};
 
   const btn = document.querySelector('#uc-form-3 .ob-btn');
-  if (btn) { btn.textContent = 'A criar mercado...'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'A criar...'; btn.disabled = true; }
 
   try {
     const payload = {
       title:          question,
       description:    question,
-      category:       ucSelectedCat === 'econ' ? 'economics'
-                    : ucSelectedCat === 'sport' ? 'sports'
-                    : ucSelectedCat === 'pol'   ? 'politics'
-                    : ucSelectedCat === 'crypto'? 'crypto'
-                    : 'economics',
-      marketType:     'binary',
+      category:       catMap[ucSelectedCat] || 'economics',
+      marketType:     type,
       visibility:     vis,
       accessCode:     code,
       resolutionDate: new Date(dateEl).toISOString(),
-      outcomes:       [{ id: 'yes', label: 'SIM' }, { id: 'no', label: 'NÃO' }],
-      liquidityB:     liquidityB,
-      resolutionModel: resModel,
+      outcomes,
+      liquidityB,
     };
 
     const result = await api('POST', '/markets', payload);
 
     if (result && result.id) {
-      // Reload markets
       await loadRealMarkets();
-
-      // Show success confirmation
       if (btn) { btn.textContent = '✅ Mercado criado!'; btn.style.background = 'rgba(29,158,117,0.3)'; }
-
-      // Find the new market in MARKETS array and open it
-      const newMkt = MARKETS.find(m => m.apiId === result.id);
+      const newMkt = MARKETS.find(m => m.id === result.id || m.apiId === result.id);
       setTimeout(() => {
-        if (newMkt) {
-          openMarket(newMkt.id);
-        } else {
-          showPage('listing', null);
-        }
-        // Reset form
+        if (newMkt) openMarket(newMkt.id || newMkt.apiId);
+        else showPage('listing', null);
         ucCurrentStep = 0;
         if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; btn.style.background = ''; }
+        // Reset builders
+        const rl = document.getElementById('uc-range-list');
+        const cl = document.getElementById('uc-cat-list');
+        if (rl) rl.innerHTML = '';
+        if (cl) cl.innerHTML = '';
       }, 1200);
     } else {
-      const msg = result?.error || result?.message || 'Erro ao criar mercado. Verifica os campos e tenta novamente.';
+      const msg = result?.error || result?.message || 'Erro ao criar mercado.';
       alert('❌ ' + msg);
       if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
     }
