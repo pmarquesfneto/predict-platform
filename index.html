@@ -2118,8 +2118,11 @@ async function loadRealMarkets() {
       marketType:  m.marketType || 'binary',
       outcomes:    m.outcomes || [],
       visibility:  m.visibility || 'open',
-      creatorId:   m.creatorId || null,
-      creatorName: m.creatorName || m.creator?.displayName || null,
+      creatorId:   m.createdBy || m.creatorId || null,
+      creatorName: m.creatorName || m.creator?.displayName
+        || (window._adminUsers && m.createdBy
+          ? (window._adminUsers.find(u=>u.id===m.createdBy)?.displayName || null)
+          : null),
       createdAt:   m.createdAt || null,
       traderCount: m.traderCount || m.participants || 0,
     });
@@ -3269,8 +3272,16 @@ function openMarket(marketId) {
   set('mkt-closes-el',  mkt.closes||'—');
   set('mkt-traders-el', mkt.traderCount||'—');
   // Format: "Admin, em 18/03/2026 às 19h42min"
-  if (mkt.creatorName || mkt.createdAt) {
-    let creatorText = mkt.creatorName || '—';
+  if (mkt.creatorName || mkt.creatorId || mkt.createdAt) {
+    // Resolve name from cache if not stored
+    let resolvedName = mkt.creatorName;
+    if (!resolvedName && mkt.creatorId && window._adminUsers) {
+      resolvedName = window._adminUsers.find(u=>u.id===mkt.creatorId)?.displayName || null;
+    }
+    if (!resolvedName && mkt.creatorId && currentUser?.id === mkt.creatorId) {
+      resolvedName = currentUser.displayName || currentUser.email;
+    }
+    let creatorText = resolvedName || '—';
     if (mkt.createdAt) {
       const d = new Date(mkt.createdAt);
       const datePart = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
