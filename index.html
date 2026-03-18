@@ -1972,7 +1972,7 @@ async function api(method, path, body) {
 
 // ── Load real markets from API ────────────────────────
 async function loadRealMarkets() {
-  const data = await api('GET', '/markets');
+  const data = await api('GET', '/markets?limit=500');
 
   // Clear MARKETS — API is the single source of truth, no hardcoded fallback
   MARKETS.length = 0;
@@ -2209,7 +2209,7 @@ async function showUserDetail(userId, userName) {
   try {
     const [lb, allMkts, allTrades] = await Promise.all([
       api('GET', '/leaderboard'),
-      api('GET', '/markets?limit=200'),
+      api('GET', '/markets?limit=500'),
       api('GET', '/admin/trades?limit=500').catch(()=>null) || api('GET', '/trades?limit=500').catch(()=>null)
     ]);
 
@@ -4338,7 +4338,7 @@ async function adminRefresh() {
     }
 
     // MARKETS — table with checkboxes
-    const m = await api("GET", "/markets?limit=200");
+    const m = await api("GET", "/markets?limit=500");
     const markets = m?.markets || [];
     const mktKpi = document.getElementById("adm-markets");
     if (mktKpi) mktKpi.textContent = m?.total || markets.length;
