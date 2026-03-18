@@ -4857,34 +4857,11 @@ function logout() {
 </div>
 
 <!-- ══ USER DETAIL MODAL ════════════════════════════════ -->
-<div id="user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;overflow-y:auto;padding:24px 16px" onclick="if(event.target===this)this.style.display='none'">
-  <div style="max-width:600px;margin:0 auto;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:24px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div style="font-size:18px;font-weight:700" id="um-name">—</div>
-      <button onclick="document.getElementById('user-modal').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;line-height:1">✕</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
-      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Saldo</div><div style="font-size:15px;font-weight:700;color:var(--teal)" id="um-balance">—</div></div>
-      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Apostas</div><div style="font-size:15px;font-weight:700" id="um-trades">—</div></div>
-      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Calibração</div><div style="font-size:15px;font-weight:700;color:var(--amber)" id="um-score">—</div></div>
-      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Vitórias</div><div style="font-size:15px;font-weight:700;color:var(--teal)" id="um-wins">—</div></div>
-      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">Derrotas</div><div style="font-size:15px;font-weight:700;color:#ff4455" id="um-losses">—</div></div>
-      <div style="background:var(--dark-bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">P&L</div><div style="font-size:15px;font-weight:700" id="um-pnl">—</div></div>
-    </div>
-    <div style="display:grid;gap:8px;margin-bottom:20px;font-size:13px">
-      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Email</span><span id="um-email">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Inscrito em</span><span id="um-joined">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">Role</span><span id="um-role">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--dark-bg);border-radius:8px"><span style="color:rgba(255,255,255,0.4)">KYC</span><span id="um-kyc">—</span></div>
-    </div>
-    <div style="background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">🤖 Análise AI de Padrões</div>
-      <div id="um-ai-analysis" style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.7">—</div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button id="um-btn-warn" style="font-size:12px;padding:8px 16px;border:1px solid rgba(239,159,39,0.4);color:var(--amber);background:rgba(239,159,39,0.08);border-radius:8px;cursor:pointer">⚠️ Advertir</button>
-      <button id="um-btn-ban" style="font-size:12px;padding:8px 16px;border:1px solid rgba(255,68,85,0.4);color:#ff4455;background:rgba(255,68,85,0.08);border-radius:8px;cursor:pointer">🚫 Banir</button>
-      <button id="um-btn-balance" style="font-size:12px;padding:8px 16px;border:1px solid rgba(29,158,117,0.4);color:var(--teal);background:rgba(29,158,117,0.08);border-radius:8px;cursor:pointer">💰 Ajustar Saldo</button>
+<div id="user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;overflow-y:auto;padding:24px 16px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="max-width:680px;margin:0 auto;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:16px;padding:24px;position:relative">
+    <button onclick="document.getElementById('user-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;line-height:1">✕</button>
+    <div id="user-modal-body">
+      <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.4)">A carregar...</div>
     </div>
   </div>
 </div>
