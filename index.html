@@ -3740,19 +3740,49 @@ function setBet(side,btn){
   calcBet();
 }
 function setAmt(v){document.getElementById('bet-amt').value=v;calcBet();}
-function calcBet(){
-  const amt=parseFloat(document.getElementById('bet-amt').value)||0;
-  // Use real price from API if available
-  const mkt=MARKETS.find(m=>m.id===CURRENT_MARKET_ID);
-  const yesProb = mkt ? mkt.yes/100 : 0.67;
-  const price=betSide==='sim'?yesProb:(1-yesProb);
-  const shares=amt/price;
-  const profit=shares-amt;
-  document.getElementById('bc-p').textContent='R$ '+price.toFixed(2);
-  document.getElementById('bc-s').textContent=shares.toFixed(1);
-  document.getElementById('bc-w').textContent='R$ '+shares.toFixed(2);
-  document.getElementById('bc-pr').textContent=(profit>=0?'+':'')+' R$ '+Math.abs(profit).toFixed(2);
-  document.getElementById('bc-pr').style.color=profit>=0?'var(--teal)':'var(--red)';
+function calcBet() {
+  const amtEl = document.getElementById('bet-amt');
+  if (!amtEl) return;
+  const amt = parseFloat(amtEl.value) || 0;
+
+  const mkt      = MARKETS.find(m => String(m.id) === String(CURRENT_MARKET_ID) || String(m.apiId) === String(CURRENT_MARKET_ID));
+  const mktType  = mkt?.marketType || 'binary';
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  if (mktType === 'binary') {
+    const yesProb = mkt ? mkt.yes / 100 : 0.5;
+    const price   = betSide === 'sim' ? yesProb : (1 - yesProb);
+    const shares  = price > 0 ? amt / price : 0;
+    const profit  = shares - amt;
+    setEl('bc-p',  'R$ ' + price.toFixed(2));
+    setEl('bc-s',  shares.toFixed(1));
+    setEl('bc-w',  'R$ ' + shares.toFixed(2));
+    const prEl = document.getElementById('bc-pr');
+    if (prEl) {
+      prEl.textContent = (profit >= 0 ? '+' : '') + ' R$ ' + Math.abs(profit).toFixed(2);
+      prEl.style.color = profit >= 0 ? 'var(--teal)' : '#ff4455';
+    }
+  } else {
+    // Non-binary: use selected outcome or equal probability
+    const outcomeId = window._betOutcomeId;
+    const outcomes  = mkt?.outcomes || [];
+    const total     = outcomes.reduce((s, o) => s + (o.quantity || 0), 0) || 1;
+    let price = 1 / Math.max(outcomes.length, 1);
+    if (outcomeId && outcomes.length > 0) {
+      const o = outcomes.find(o => o.id === outcomeId);
+      price = o ? (o.quantity || 0) / total || (1 / outcomes.length) : price;
+    }
+    price = Math.max(0.01, Math.min(0.99, price));
+    const shares = price > 0 ? amt / price : 0;
+    const profit = shares - amt;
+    setEl('bc-p',  'R$ ' + price.toFixed(2));
+    const prEl = document.getElementById('bc-pr');
+    if (prEl) {
+      prEl.textContent = outcomeId ? ((profit >= 0 ? '+' : '') + ' R$ ' + Math.abs(profit).toFixed(2)) : '—';
+      prEl.style.color = profit >= 0 ? 'var(--teal)' : '#ff4455';
+    }
+  }
 }
 async function placeBet() {
   if (!authToken) { showPage('onboard', null); return; }
