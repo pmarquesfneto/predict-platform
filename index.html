@@ -2104,29 +2104,59 @@ async function updateDashboard() {
   const posEl = document.getElementById('dash-positions');
   if (posEl && authToken) {
     try {
-      const posData = await api('GET', '/positions');
-      const positions = posData?.positions || posData?.data || [];
+      // Try positions first, fall back to trades
+      const posData   = await api('GET', '/positions');
+      let positions   = posData?.positions || posData?.data || (Array.isArray(posData) ? posData : []);
+
+      // If positions empty, use trades/my as fallback
+      if (positions.length === 0) {
+        const trData = await api('GET', '/trades/my?limit=50').catch(()=>null);
+        const trades = trData?.trades || trData?.data || (Array.isArray(trData) ? trData : []);
+        // Convert trades to position-like objects
+        positions = trades.map(t => ({
+          id:        t.id,
+          tradeId:   t.id,
+          outcome:   t.outcome || t.outcomeId,
+          amount:    t.amount || t.cost,
+          shares:    t.shares,
+          marketId:  t.marketId,
+          marketTitle: t.marketTitle || MARKETS.find(m=>m.id===t.marketId)?.q || '—',
+          createdAt:   t.createdAt,
+          unrealizedPnl: t.unrealizedPnl || 0,
+          status: 'open'
+        }));
+      }
+
       if (positions.length > 0) {
         posEl.innerHTML = positions.map(p => {
-          const outcome = p.outcome === 'yes' ? 'SIM' : 'NÃO';
-          const cls     = p.outcome === 'yes' ? 'out-y' : 'out-n';
-          const pnlVal  = parseFloat(p.unrealizedPnl || p.pnl || 0);
-          const pnlCls  = pnlVal >= 0 ? 'g' : 'r';
-          const pnlStr  = (pnlVal >= 0 ? '+' : '') + 'R$ ' + Math.abs(pnlVal).toFixed(2);
-          return '<div class="pos-item">'
-            + '<div class="pos-ico" style="background:rgba(29,158,117,0.1)">📊</div>'
-            + '<div class="pos-body">'
-            + '<div class="pos-q">' + (p.marketTitle || p.market?.title || 'Mercado') + '</div>'
-            + '<div class="pos-meta">R$ ' + parseFloat(p.cost||p.amount||0).toFixed(2) + ' apostado · <span class="pos-out ' + cls + '">' + outcome + ' @ ' + Math.round((p.price||0.5)*100) + '%</span></div>'
-            + '</div>'
-            + '<div class="pos-pnl"><div class="pos-pnl-v ' + pnlCls + '">' + pnlStr + '</div></div>'
-            + '</div>';
+          const outcome  = (p.outcome || p.outcomeId) === 'yes' ? 'SIM' : 'NÃO';
+          const outCls   = (p.outcome || p.outcomeId) === 'yes' ? 'var(--teal)' : '#ff4455';
+          const pnlVal   = parseFloat(p.unrealizedPnl || p.pnl || 0);
+          const pnlStr   = (pnlVal >= 0 ? '+' : '') + 'R$ ' + Math.abs(pnlVal).toFixed(2);
+          const pnlColor = pnlVal >= 0 ? 'var(--teal)' : '#ff4455';
+          const mktTitle = p.marketTitle || MARKETS.find(m=>m.id===p.marketId)?.q || '—';
+          const tradeId  = p.tradeId || p.id || '—';
+          const amt      = parseFloat(p.amount || p.cost || 0).toFixed(2);
+          const dt       = p.createdAt ? new Date(p.createdAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+          return `<div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:14px 16px;margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
+              <div style="font-size:13px;font-weight:600;line-height:1.3;max-width:70%">${mktTitle.slice(0,60)}</div>
+              <span style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:${(p.outcome||p.outcomeId)==='yes'?'rgba(29,158,117,0.15)':'rgba(255,68,85,0.12)'};color:${outCls}">${outcome}</span>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:rgba(255,255,255,0.45)">
+              <span>💰 R$ ${amt}</span>
+              <span style="color:${pnlColor}">P&amp;L: ${pnlStr}</span>
+              <span>🕐 ${dt}</span>
+            </div>
+            <div style="margin-top:6px;font-size:10px;color:rgba(255,255,255,0.25);font-family:monospace">ID: ${tradeId}</div>
+          </div>`;
         }).join('');
       } else {
-        posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas. <span style="color:var(--teal);cursor:pointer" onclick="showPage(\'listing\',null)">Explora os mercados →</span></div>';
+      posEl.innerHTML = "<div style='color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0'>Sem posições abertas.</div>";
       }
-    } catch(e) {
-      posEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0">Sem posições abertas.</div>';
+    } catch(posErr) {
+      console.warn('positions error:', posErr.message);
+      posEl.innerHTML = "<div style='color:rgba(255,255,255,0.3);font-size:13px;padding:16px 0'>Sem posições abertas.</div>";
     }
   }
 
@@ -3286,43 +3316,110 @@ function calcBet(){
   document.getElementById('bc-pr').textContent=(profit>=0?'+':'')+' R$ '+Math.abs(profit).toFixed(2);
   document.getElementById('bc-pr').style.color=profit>=0?'var(--teal)':'var(--red)';
 }
-function placeBet(){
-  // Get bet details
-  var amtEl = document.querySelector('.preset-btn.active') || document.querySelector('.bp-input input');
-  var amount = amtEl ? parseFloat(amtEl.dataset.amount || amtEl.value || 100) : 100;
-  var sideEl = document.querySelector('.side-btn.active');
-  var side   = sideEl ? (sideEl.textContent.includes('SIM') ? 'yes' : 'no') : 'yes';
-  var market = _apiMarketsCache ? _apiMarketsCache[0] : null;
-
-  // If no auth, go to login
+async function placeBet() {
   if (!authToken) {
-    alert('Faça login para apostar!');
     showPage('onboard', null);
     return;
   }
 
-  var btn = document.getElementById('bet-btn');
-  btn.textContent = 'Processando...';
-  btn.style.opacity = '0.7';
-  btn.disabled = true;
+  // Get market — use CURRENT_MARKET_ID set by openMarket()
+  const marketId = CURRENT_MARKET_ID;
+  if (!marketId) { alert('Nenhum mercado seleccionado'); return; }
 
-  var marketId = market?.raw?.id || null;
-  if (!marketId) {
-    // Use first market from cache
-    fetchMarketsFromAPI().then(function(markets) {
-      _apiMarketsCache = markets;
-      if (markets && markets[0]) {
-        _executeBet(markets[0].raw.id, side, amount, btn);
-      } else {
-        btn.textContent = 'Apostar SIM →';
-        btn.style.opacity = '1';
-        btn.disabled = false;
-        alert('Nenhum mercado disponível');
-      }
+  // Get amount from new UI
+  const amtEl = document.getElementById('bet-amt');
+  const amount = parseFloat(amtEl?.value || 100);
+  if (isNaN(amount) || amount <= 0) { alert('Valor inválido'); return; }
+
+  // Get side from new tab UI (.bp-tab y active = SIM, .bp-tab n active = NÃO)
+  const activeTab = document.querySelector('.bp-tab.active');
+  const side = activeTab?.classList.contains('y') ? 'yes' : 'no';
+
+  const btn = document.getElementById('bet-btn');
+  if (btn) { btn.textContent = 'A processar...'; btn.disabled = true; btn.style.opacity = '0.7'; }
+
+  try {
+    const result = await api('POST', '/trades', {
+      marketId,
+      outcomeId: side,
+      side,
+      amount,
+      isPlayMoney: true
     });
-    return;
+
+    if (result?.error) throw new Error(result.error);
+
+    // ── Success ──────────────────────────────────────────────
+    const tradeId = result?.trade?.id || result?.id || '—';
+    const shares  = parseFloat(result?.trade?.shares || result?.shares || 0).toFixed(2);
+    const balAfter = parseFloat(result?.balanceAfter || result?.trade?.balanceAfter || 0).toFixed(2);
+    const outcome  = side === 'yes' ? 'SIM' : 'NÃO';
+
+    // Show confirmation on button
+    if (btn) {
+      btn.textContent = '✅ Aposta confirmada!';
+      btn.style.background = 'rgba(29,158,117,0.5)';
+      btn.style.opacity = '1';
+      setTimeout(() => {
+        if (btn) {
+          btn.textContent = side === 'yes' ? 'Apostar SIM →' : 'Apostar NÃO →';
+          btn.style.background = '';
+          btn.disabled = false;
+        }
+      }, 3000);
+    }
+
+    // Show toast notification
+    const toastHtml = `
+      <div id="bet-toast" style="position:fixed;top:80px;right:20px;z-index:9999;
+        background:var(--dark-card);border:1px solid rgba(29,158,117,0.4);
+        border-radius:12px;padding:16px 20px;min-width:280px;
+        box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:fadeIn 0.3s ease">
+        <div style="font-size:14px;font-weight:700;color:var(--teal);margin-bottom:6px">
+          ✅ Aposta confirmada!
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6">
+          Mercado: <b>${(MARKETS.find(m=>m.id===marketId)?.q||'—').slice(0,40)}</b><br>
+          Resultado: <b style="color:${side==='yes'?'var(--teal)':'#ff4455'}">${outcome}</b> · 
+          Valor: <b>R$ ${amount.toFixed(2)}</b><br>
+          ID da aposta: <span style="font-family:monospace;font-size:11px">${tradeId}</span><br>
+          Novo saldo: <b style="color:var(--teal)">R$ ${balAfter}</b>
+        </div>
+      </div>`;
+    document.body.insertAdjacentHTML('beforeend', toastHtml);
+    setTimeout(() => { document.getElementById('bet-toast')?.remove(); }, 5000);
+
+    // Update balance in nav
+    const navBal = document.getElementById('nav-balance');
+    if (navBal && balAfter) navBal.textContent = 'R$ ' + parseFloat(balAfter).toFixed(2);
+
+    // Update currentUser balance
+    if (currentUser) currentUser.balancePlay = balAfter;
+
+    // Refresh market detail to show new odds
+    if (marketId) setTimeout(() => loadMarketDetail(marketId), 500);
+
+    // Refresh dashboard positions in background
+    setTimeout(updateDashboard, 1000);
+
+    console.log('✅ Bet placed | id:'+tradeId+' | '+outcome+' | R$'+amount+' | bal:R$'+balAfter);
+
+  } catch(err) {
+    if (btn) { btn.textContent = side==='yes'?'Apostar SIM →':'Apostar NÃO →'; btn.disabled=false; btn.style.opacity='1'; btn.style.background=''; }
+    const errMsg = err.message || 'Erro ao processar aposta';
+    
+    // Show error toast
+    const errHtml = `
+      <div id="bet-toast-err" style="position:fixed;top:80px;right:20px;z-index:9999;
+        background:var(--dark-card);border:1px solid rgba(255,68,85,0.4);
+        border-radius:12px;padding:16px 20px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+        <div style="font-size:14px;font-weight:700;color:#ff4455;margin-bottom:4px">❌ Erro na aposta</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.6)">${errMsg}</div>
+      </div>`;
+    document.body.insertAdjacentHTML('beforeend', errHtml);
+    setTimeout(() => { document.getElementById('bet-toast-err')?.remove(); }, 5000);
+    console.warn('Bet error:', errMsg);
   }
-  _executeBet(marketId, side, amount, btn);
 }
 
 function _executeBet(marketId, side, amount, btn) {
@@ -5480,44 +5577,3 @@ id="uc-form-4" style="display:none">
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
