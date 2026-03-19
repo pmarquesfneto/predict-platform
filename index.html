@@ -4998,7 +4998,7 @@ async function adminRefresh() {
     const [usersRaw, tradesRaw, mktsRaw] = await Promise.all([
       api('GET', '/admin/users').catch(()=>null),
       api('GET', '/admin/trades').catch(()=>null),
-      api('GET', '/admin/markets').catch(()=>null)
+      api('GET', '/admin/markets').catch(()=>null).then(r=>r||api('GET','/markets?limit=500').catch(()=>null))
     ]);
 
     const users  = Array.isArray(usersRaw) ? usersRaw : (usersRaw?.users||usersRaw?.data||[]);
@@ -5172,10 +5172,10 @@ async function adminRefresh() {
     const mktsEl = document.getElementById('adm-panel-markets');
     if (mktsEl) {
       // Preserve the existing toolbar (checkboxes/delete button) and rebuild only the rows area
-      let rowsContainer = document.getElementById('adm-mkt-rows');
+      let rowsContainer = document.getElementById('adm-markets-list');
       if (!rowsContainer) {
         rowsContainer = document.createElement('div');
-        rowsContainer.id = 'adm-mkt-rows';
+        rowsContainer.id = 'adm-markets-list';
         mktsEl.appendChild(rowsContainer);
       }
       const statusColors = {
