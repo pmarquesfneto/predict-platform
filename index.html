@@ -1572,6 +1572,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <div id="uc-form-2" style="display:none">
       <div style="display:grid;gap:16px;margin-bottom:20px">
         <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px;margin-top:4px">Modelo de resolução</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
+            <div data-oracle="none" onclick="ucSelOracle(this,'none')"
+              style="border:2px solid var(--teal);background:rgba(29,158,117,0.08);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
+              <div style="font-size:18px;margin-bottom:4px">📊</div>
+              <div style="font-size:12px;font-weight:700;margin-bottom:2px">Manual</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.4)">Admin valida resultado</div>
+            </div>
+            <div data-oracle="oracle" onclick="ucSelOracle(this,'oracle')"
+              style="border:1px solid var(--dark-border);background:transparent;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
+              <div style="font-size:18px;margin-bottom:4px">🤖</div>
+              <div style="font-size:12px;font-weight:700;margin-bottom:2px">Oracle</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.4)">Fonte oficial automática</div>
+            </div>
+            <div data-oracle="hybrid" onclick="ucSelOracle(this,'hybrid')"
+              style="border:1px solid var(--dark-border);background:transparent;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
+              <div style="font-size:18px;margin-bottom:4px">⚡</div>
+              <div style="font-size:12px;font-weight:700;margin-bottom:2px">Híbrida</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.4)">Oracle + validação admin</div>
+            </div>
+          </div>
           <div style="font-size:13px;font-weight:600;margin-bottom:8px">Data de resolução</div>
           <input type="date" id="uc-date" style="background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;width:100%;box-sizing:border-box">
         </div>
@@ -3619,9 +3640,17 @@ async function loadMarketDetail(apiId) {
       const mktType = mktForProb.marketType || 'binary';
       
       if (mktType === 'binary') {
-        // Recalculate yes% from fresh trade data
-        const yC = trades.filter(t=>getOutcome(t)==='yes').length;
-        const freshYes = total > 0 ? Math.round(yC / total * 100) : (mktForProb.yes || 50);
+        // Use LMSR priceAtTrade of last trade for real probability
+        const lastYesTrade = [...trades].reverse().find(t => getOutcome(t) === 'yes');
+        const lastNoTrade  = [...trades].reverse().find(t => getOutcome(t) === 'no');
+        const lastTrade    = [...trades].sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))[0];
+        let freshYes = mktForProb.yes || 50;
+        if (lastTrade) {
+          const price = parseFloat(lastTrade.priceAtTrade ?? lastTrade.price ?? 0.5);
+          freshYes = getOutcome(lastTrade) === 'yes'
+            ? Math.round(price * 100)
+            : Math.round((1 - price) * 100);
+        }
         const freshNo  = 100 - freshYes;
         const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
         setEl('prob-pct',    freshYes + '%');
@@ -3676,7 +3705,9 @@ async function loadMarketDetail(apiId) {
           const col = isYes ? 'var(--teal)' : oid==='no' ? '#ff4455' : '#ff9500';
           const lbl = outcomeObj.label || oid;
           const amt = parseFloat(t.amount||t.cost||0).toFixed(0);
-          const user = t.userDisplayName||t.user?.displayName||t.userName||'—';
+          const user = t.userDisplayName||t.user?.displayName||t.userName||t.userId
+            ? (t.userDisplayName||t.user?.displayName||t.userName||'Trader #'+(t.userId||t.id||'').toString().slice(0,6))
+            : '—';
           const time = t.createdAt ? new Date(t.createdAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
           return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
             <div><span style="font-weight:600">${user}</span> apostou em <span style="color:${col};font-weight:700">${lbl}</span></div>
@@ -3733,11 +3764,11 @@ function buildOddsChart(trades, marketType, outcomes) {
 
   const getOC = t => (t.outcomeId||t.outcome||'').toLowerCase();
   if (mType === 'binary') {
-    let yesN=0, noN=0;
+    // Use LMSR priceAtTrade for accurate probability history
     const data = sorted.map(t => {
-      if (getOC(t)==='yes') yesN++; else noN++;
-      const tot = yesN+noN;
-      return Math.round(yesN/tot*100);
+      const price = parseFloat(t.priceAtTrade ?? t.price ?? 0.5);
+      const probYes = getOC(t) === 'yes' ? price : (1 - price);
+      return Math.round(probYes * 100);
     });
     datasets = [{ label:'SIM %', data, borderColor:'rgba(29,158,117,1)', backgroundColor:'rgba(29,158,117,0.1)', fill:true, tension:0.4, pointRadius:3, pointBackgroundColor:'rgba(29,158,117,1)' }];
   } else {
@@ -5731,29 +5762,6 @@ function doLogout() { logout(); }
 
     <div class="ucreate-form" id="uc-form-1" style="display:none">
       <div class="uf-row">
-        <div class="uf-group">
-          <div class="uf-label" style="margin-bottom:8px">Modelo de resolução</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px">
-            <div data-oracle="none" onclick="ucSelOracle(this,'none')"
-              style="border:2px solid var(--teal);background:rgba(29,158,117,0.08);border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
-              <div style="font-size:16px;margin-bottom:2px">📊</div>
-              <div style="font-size:11px;font-weight:700">Manual</div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.4)">Admin valida</div>
-            </div>
-            <div data-oracle="oracle" onclick="ucSelOracle(this,'oracle')"
-              style="border:1px solid var(--dark-border);background:transparent;border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
-              <div style="font-size:16px;margin-bottom:2px">🤖</div>
-              <div style="font-size:11px;font-weight:700">Oracle</div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.4)">Automático</div>
-            </div>
-            <div data-oracle="hybrid" onclick="ucSelOracle(this,'hybrid')"
-              style="border:1px solid var(--dark-border);background:transparent;border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
-              <div style="font-size:16px;margin-bottom:2px">⚡</div>
-              <div style="font-size:11px;font-weight:700">Híbrida</div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.4)">Oracle + admin</div>
-            </div>
-          </div>
-        </div>
         <div class="uf-group"><div class="uf-label">Data de encerramento</div><input type="date" class="uf-input" id="uc-date"></div>
         <div class="uf-group"><div class="uf-label">Liquidez inicial (R$)</div><select class="uf-input" id="uc-liq"><option>R$ 50 (básico)</option><option selected>R$ 100 (recomendado)</option><option>R$ 500 (destaque)</option><option>R$ 1.000 (premium)</option></select></div>
       </div>
