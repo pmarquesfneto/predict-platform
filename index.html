@@ -2102,7 +2102,9 @@ async function loadRealMarkets() {
   const catMap  = { economics: 'econ', sports: 'sport', politics: 'pol', crypto: 'crypto' };
   const iconMap = { economics: '📈', sports: '⚽', politics: '🗳', crypto: '₿', other: '💡' };
 
+  // Filter: only show active/closed markets publicly (not draft/pending)
   data.markets.forEach((m, i) => {
+    if (m.status === 'draft' || m.status === 'suspended') return; // skip pending/suspended
     const yesPrice = m.prices?.find(p => p.outcomeId === 'yes');
     const yesPct   = Math.round((yesPrice?.probability || 0.5) * 100);
     MARKETS.push({
@@ -3297,7 +3299,7 @@ function renderRows(markets) {
         <div class="mrow-q">${m.q}</div>
         <div class="mrow-meta" style="display:flex;align-items:center;gap:8px">
           <span>${catLbl[m.cat] || m.cat} · Encerra ${m.closes}</span>
-          <span style="font-size:10px;padding:2px 6px;border-radius:5px;background:${typeBg};border:1px solid ${typeBdr};color:${typeTxt}">${typeLbl}</span>${m.status==="pending_approval"?"<span style=\"font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(100,140,255,0.12);color:#6496ff\">⏳ Pendente</span>":""}${(m.visibility==="closed"||m.status==="closed")?"<span style=\"font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(239,159,39,0.1);color:var(--amber)\">🔒 Fechado</span>":""}
+          <span style="font-size:10px;padding:2px 6px;border-radius:5px;background:${typeBg};border:1px solid ${typeBdr};color:${typeTxt}">${typeLbl}</span>${m.status==="draft"?"<span style=\"font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(100,140,255,0.12);color:#6496ff\">⏳ Pendente</span>":""}${(m.visibility==="closed"||m.status==="closed")?"<span style=\"font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(239,159,39,0.1);color:var(--amber)\">🔒 Fechado</span>":""}
         </div>
       </div>
       ${probHtml}
@@ -4532,7 +4534,7 @@ async function ucSubmit() {
     if (result && result.id) {
       await loadRealMarkets();
       // Non-admin market goes to pending_approval
-      const isPendingMkt = result.status === 'pending_approval' || (!currentUser || currentUser.role !== 'admin');
+      const isPendingMkt = result.status === 'draft' || (!currentUser || currentUser.role !== 'admin');
       if (isPendingMkt && currentUser?.role !== 'admin') {
         if (btn) { btn.textContent = '⏳ Aguarda aprovação'; btn.style.background = 'rgba(100,140,255,0.2)'; }
         // Show pending message
@@ -4563,8 +4565,13 @@ async function ucSubmit() {
       }, 1200);
     } else {
       const msg = result?.error || result?.message || 'Erro ao criar mercado.';
-      const friendlyMsg = (msg.includes('check constraint') || msg.includes('invalid input value') || msg.includes('enum'))
-        ? '❌ Erro temporário ao criar mercado. Tenta novamente em alguns segundos.'
+      // Map raw DB errors to friendly messages
+      const friendlyMsg = msg.includes('check constraint')
+        ? '❌ Erro de validação. Verifica os dados e tenta novamente.'
+        : msg.includes('not-null') || msg.includes('null value')
+        ? '❌ Faltam campos obrigatórios. Preenche todos os campos.'
+        : msg.includes('duplicate') || msg.includes('unique')
+        ? '❌ Já existe um mercado com este título.'
         : '❌ ' + msg;
       alert(friendlyMsg);
       if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
@@ -5179,12 +5186,12 @@ async function adminRefresh() {
         mktsEl.appendChild(rowsContainer);
       }
       const statusColors = {
-        active:           {bg:'rgba(29,158,117,0.12)',color:'var(--teal)',label:'✅ Activo'},
-        pending_approval: {bg:'rgba(100,140,255,0.12)',color:'#6496ff',label:'⏳ Pendente'},
-        closed:           {bg:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.4)',label:'🔒 Fechado'},
-        rejected:         {bg:'rgba(255,68,85,0.1)',color:'#ff4455',label:'❌ Rejeitado'},
-        resolved:         {bg:'rgba(239,159,39,0.1)',color:'var(--amber)',label:'🏁 Resolvido'},
-        cancelled:        {bg:'rgba(255,68,85,0.08)',color:'#ff6677',label:'⛔ Cancelado'},
+        active:    {bg:'rgba(29,158,117,0.12)',color:'var(--teal)',label:'✅ Activo'},
+        draft:     {bg:'rgba(100,140,255,0.12)',color:'#6496ff',label:'⏳ Pendente'},
+        closed:    {bg:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.4)',label:'🔒 Fechado'},
+        suspended: {bg:'rgba(255,68,85,0.1)',color:'#ff4455',label:'⛠ Suspenso'},
+        resolved:  {bg:'rgba(239,159,39,0.1)',color:'var(--amber)',label:'🏁 Resolvido'},
+        cancelled: {bg:'rgba(255,68,85,0.08)',color:'#ff6677',label:'❌ Rejeitado'},
       };
       if (!mkts.length) {
         rowsContainer.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Sem mercados.</div>';
@@ -5194,7 +5201,7 @@ async function adminRefresh() {
           const yesPrice = m.prices?.find(p=>p.outcomeId==='yes');
           const yesPct = Math.round((yesPrice?.probability||0.5)*100);
           const vol = 'R$ '+Math.round(parseFloat(m.totalVolume||0));
-          const isPending = m.status === 'pending_approval';
+          const isPending = m.status === 'draft';
           const creator = window._adminUsers?.find(u=>u.id===m.createdBy)?.displayName || '—';
           return `<div class="adm-mkt-row" data-id="${m.id}"
             style="display:grid;grid-template-columns:32px 1fr 120px 80px 80px auto;gap:10px;align-items:center;
