@@ -4542,6 +4542,7 @@ async function ucSubmit() {
       description:    question,
       category:       catMap[ucSelectedCat] || 'economics',
       marketType:     type,
+      oracleType:     window.ucSelectedOracle || 'none',
       visibility:     vis,
       accessCode:     code,
       resolutionDate: new Date(dateEl).toISOString(),
@@ -5720,6 +5721,29 @@ function doLogout() { logout(); }
 
     <div class="ucreate-form" id="uc-form-1" style="display:none">
       <div class="uf-row">
+        <div class="uf-group">
+          <div class="uf-label" style="margin-bottom:8px">Modelo de resolução</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px">
+            <div data-oracle="none" onclick="ucSelOracle(this,'none')"
+              style="border:2px solid var(--teal);background:rgba(29,158,117,0.08);border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
+              <div style="font-size:16px;margin-bottom:2px">📊</div>
+              <div style="font-size:11px;font-weight:700">Manual</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.4)">Admin valida</div>
+            </div>
+            <div data-oracle="oracle" onclick="ucSelOracle(this,'oracle')"
+              style="border:1px solid var(--dark-border);background:transparent;border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
+              <div style="font-size:16px;margin-bottom:2px">🤖</div>
+              <div style="font-size:11px;font-weight:700">Oracle</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.4)">Automático</div>
+            </div>
+            <div data-oracle="hybrid" onclick="ucSelOracle(this,'hybrid')"
+              style="border:1px solid var(--dark-border);background:transparent;border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s">
+              <div style="font-size:16px;margin-bottom:2px">⚡</div>
+              <div style="font-size:11px;font-weight:700">Híbrida</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.4)">Oracle + admin</div>
+            </div>
+          </div>
+        </div>
         <div class="uf-group"><div class="uf-label">Data de encerramento</div><input type="date" class="uf-input" id="uc-date"></div>
         <div class="uf-group"><div class="uf-label">Liquidez inicial (R$)</div><select class="uf-input" id="uc-liq"><option>R$ 50 (básico)</option><option selected>R$ 100 (recomendado)</option><option>R$ 500 (destaque)</option><option>R$ 1.000 (premium)</option></select></div>
       </div>
