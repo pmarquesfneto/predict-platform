@@ -850,9 +850,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
             <div style="text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Total apostas</div><div style="font-size:16px;font-weight:700" id="mkt-stat-total">—</div></div>
             <div style="text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Apostas SIM</div><div style="font-size:16px;font-weight:700;color:var(--teal)" id="mkt-stat-yes">—</div></div>
             <div style="text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Apostas NÃO</div><div style="font-size:16px;font-weight:700;color:#ff4455" id="mkt-stat-no">—</div></div>
-            <div style="text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Média</div><div style="font-size:16px;font-weight:700" id="mkt-stat-avg">—</div></div>
-            <div style="text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Máximo</div><div style="font-size:16px;font-weight:700;color:var(--amber)" id="mkt-stat-max">—</div></div>
-            <div style="text-align:center"><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Mediana</div><div style="font-size:16px;font-weight:700" id="mkt-stat-median">—</div></div>
+            <div style="text-align:center"><div class="stat-lbl" style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Modo</div><div style="font-size:16px;font-weight:700" id="mkt-stat-avg">—</div></div>
+            <div style="text-align:center"><div class="stat-lbl" style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Volume</div><div style="font-size:16px;font-weight:700;color:var(--amber)" id="mkt-stat-max">—</div></div>
+            <div style="text-align:center"><div class="stat-lbl" style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px">Média/aposta</div><div style="font-size:16px;font-weight:700" id="mkt-stat-median">—</div></div>
           </div>
         </div>
         <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:16px;margin-bottom:18px">
@@ -2900,6 +2900,17 @@ function ucUpdatePreview() {
 }
 
 
+
+function ucSelOracle(el, type) {
+  document.querySelectorAll('[data-oracle]').forEach(c => {
+    c.style.border = '1px solid var(--dark-border)';
+    c.style.background = 'transparent';
+  });
+  el.style.border = '2px solid var(--teal)';
+  el.style.background = 'rgba(29,158,117,0.08)';
+  window.ucSelectedOracle = type;
+}
+window.ucSelectedOracle = 'none'; // default
 function ucSelType(el, type) {
   ucSelectedType = type;
   document.querySelectorAll('.uc-type-card').forEach(c => {
@@ -3547,22 +3558,11 @@ async function loadMarketDetail(apiId) {
                 || await api('GET', '/markets/'+apiId+'/bets?limit=100').catch(()=>null);
     const trades = Array.isArray(trData) ? trData : (trData?.trades || trData?.bets || trData?.data || []);
 
-    // Compute stats
-    const amounts  = trades.map(t=>parseFloat(t.amount||t.cost||0)).filter(a=>a>0);
-    const yesCount = trades.filter(t=>t.outcome==='yes').length;
-    const noCount  = trades.filter(t=>t.outcome==='no').length;
+    // Compute stats — outcomeId field is canonical (API returns outcomeId)
+    const getOutcome = t => (t.outcomeId || t.outcome || '').toLowerCase();
     const total    = trades.length;
-    const sum      = amounts.reduce((a,b)=>a+b,0);
-    const avg      = total>0 ? sum/total : 0;
-    const maxAmt   = amounts.length>0 ? Math.max(...amounts) : 0;
-    const sorted   = [...amounts].sort((a,b)=>a-b);
-    const median   = sorted.length>0 ? sorted[Math.floor(sorted.length/2)] : 0;
-
     const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
-    set('mkt-stat-total',  total);
-    set('mkt-stat-avg',    'R$ '+avg.toFixed(2));
-    set('mkt-stat-max',    'R$ '+maxAmt.toFixed(2));
-    set('mkt-stat-median', 'R$ '+median.toFixed(2));
+    set('mkt-stat-total', total);
 
     // Adapt SIM/NÃO labels based on market type
     const mktForStats = MARKETS.find(m => String(m.id)===String(apiId)||String(m.apiId)===String(apiId));
@@ -3571,6 +3571,8 @@ async function loadMarketDetail(apiId) {
     const statNoEl  = document.getElementById('mkt-stat-no');
     const statGrid  = document.getElementById('mkt-stats-grid');
 
+    const yesCount = trades.filter(t=>getOutcome(t)==='yes').length;
+    const noCount  = trades.filter(t=>getOutcome(t)==='no').length;
     if (mktType === 'binary') {
       set('mkt-stat-yes', yesCount);
       set('mkt-stat-no',  noCount);
@@ -3583,7 +3585,7 @@ async function loadMarketDetail(apiId) {
       // Multi-outcome: count bets per outcome
       const mktOutcomes = mktForStats?.outcomes || [];
       const perOutcome  = {};
-      trades.forEach(t => { perOutcome[t.outcome||t.outcomeId] = (perOutcome[t.outcome||t.outcomeId]||0)+1; });
+      trades.forEach(t => { const ok=getOutcome(t); perOutcome[ok]=(perOutcome[ok]||0)+1; });
 
       // Show top 2 outcomes in the SIM/NÃO slots
       if (mktOutcomes.length >= 2) {
@@ -3608,7 +3610,8 @@ async function loadMarketDetail(apiId) {
       
       if (mktType === 'binary') {
         // Recalculate yes% from fresh trade data
-        const freshYes = total > 0 ? Math.round(yesCount / total * 100) : (mktForProb.yes || 50);
+        const yC = trades.filter(t=>getOutcome(t)==='yes').length;
+        const freshYes = total > 0 ? Math.round(yC / total * 100) : (mktForProb.yes || 50);
         const freshNo  = 100 - freshYes;
         const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
         setEl('prob-pct',    freshYes + '%');
@@ -3654,15 +3657,20 @@ async function loadMarketDetail(apiId) {
     const feedEl = document.getElementById('mkt-trades-list');
     if (feedEl) {
       if (trades.length > 0) {
-        feedEl.innerHTML = trades.slice(0,10).map(t => {
-          const col  = (t.outcome||t.outcomeId)==='yes' ? 'var(--teal)' : '#ff4455';
-          const lbl  = t.outcome==='yes' ? 'SIM' : 'NÃO';
-          const amt  = parseFloat(t.amount||t.cost||0).toFixed(2);
+        const mktForFeed = MARKETS.find(m=>String(m.id)===String(apiId)||String(m.apiId)===String(apiId));
+        const allOutcomes = mktForFeed?.outcomes || [{id:'yes',label:'SIM'},{id:'no',label:'NÃO'}];
+        feedEl.innerHTML = trades.slice(0,20).map(t => {
+          const oid = getOutcome(t);
+          const outcomeObj = allOutcomes.find(o=>String(o.id).toLowerCase()===oid) || {label:oid==='yes'?'SIM':oid==='no'?'NÃO':oid, id:oid};
+          const isYes = oid==='yes';
+          const col = isYes ? 'var(--teal)' : oid==='no' ? '#ff4455' : '#ff9500';
+          const lbl = outcomeObj.label || oid;
+          const amt = parseFloat(t.amount||t.cost||0).toFixed(0);
           const user = t.userDisplayName||t.user?.displayName||t.userName||'—';
           const time = t.createdAt ? new Date(t.createdAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
           return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
             <div><span style="font-weight:600">${user}</span> apostou em <span style="color:${col};font-weight:700">${lbl}</span></div>
-            <div style="text-align:right"><div style="color:var(--teal);font-size:12px;font-weight:600">R$ ${amt}</div><div style="color:rgba(255,255,255,0.35);font-size:11px">${time}</div></div>
+            <div style="text-align:right"><div style="color:${col};font-size:12px;font-weight:600">${amt}</div><div style="color:rgba(255,255,255,0.35);font-size:11px">${time}</div></div>
           </div>`;
         }).join('');
       } else {
@@ -3686,9 +3694,20 @@ function buildOddsChart(trades, marketType, outcomes) {
 
   if (window._oddsChart) { try { window._oddsChart.destroy(); } catch(e2) {} window._oddsChart = null; }
 
-  if (!trades || trades.length < 2) {
-    canvas.style.display  = 'none';
-    if (emptyEl) emptyEl.style.display = 'block';
+  // Always show chart — seed with initial 50% if no trades yet
+  const seedTrades = (!trades || trades.length === 0);
+  if (seedTrades) {
+    // Show initial equilibrium point
+    canvas.style.display = 'block';
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (typeof Chart === 'undefined') return;
+    const ctx2 = canvas.getContext('2d');
+    if (window._oddsChart) { try { window._oddsChart.destroy(); } catch(e2) {} window._oddsChart = null; }
+    window._oddsChart = new Chart(ctx2, {
+      type: 'line',
+      data: { labels: ['Abertura'], datasets: [{ label:'SIM %', data:[50], borderColor:'rgba(29,158,117,1)', backgroundColor:'rgba(29,158,117,0.1)', fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'rgba(29,158,117,1)' }] },
+      options: { responsive:true, plugins:{ legend:{display:false} }, scales: { y:{min:0,max:100,ticks:{color:'rgba(255,255,255,0.4)',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.05)'}}, x:{ticks:{color:'rgba(255,255,255,0.3)'},grid:{display:false}} } }
+    });
     return;
   }
   canvas.style.display = 'block';
@@ -3702,10 +3721,11 @@ function buildOddsChart(trades, marketType, outcomes) {
 
   let datasets = [];
 
+  const getOC = t => (t.outcomeId||t.outcome||'').toLowerCase();
   if (mType === 'binary') {
     let yesN=0, noN=0;
     const data = sorted.map(t => {
-      if (t.outcome==='yes') yesN++; else noN++;
+      if (getOC(t)==='yes') yesN++; else noN++;
       const tot = yesN+noN;
       return Math.round(yesN/tot*100);
     });
@@ -3716,7 +3736,7 @@ function buildOddsChart(trades, marketType, outcomes) {
     outs.forEach(o => counts[o.id] = 0);
     datasets = outs.map((o,i) => {
       const data = sorted.map(t => {
-        if ((t.outcome||t.outcomeId) === o.id) counts[o.id]++;
+        if (getOC(t) === o.id) counts[o.id]++;
         const tot = Object.values(counts).reduce((a,b)=>a+b,0)||1;
         return Math.round(counts[o.id]/tot*100);
       });
