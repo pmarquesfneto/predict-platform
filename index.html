@@ -1930,58 +1930,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="adm-volume">R$ 0</div></div>
     </div>
     <div id="adm-status" style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;min-height:18px"></div>
-    <div style="background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.2);border-radius:12px;padding:16px;margin-bottom:24px">
-      <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">⚙ Modelo de Resolução Global</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <label style="display:flex;gap:8px;align-items:center;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;cursor:pointer">
-          <input type="radio" name="resolution-model" value="oracle" style="accent-color:var(--teal)">
-          <div><div style="font-size:12px;font-weight:600">🤖 Oracle</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">Fonte oficial automática</div></div>
-        </label>
-        <label style="display:flex;gap:8px;align-items:center;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;cursor:pointer">
-          <input type="radio" name="resolution-model" value="manual" checked style="accent-color:var(--amber)">
-          <div><div style="font-size:12px;font-weight:600">✋ Manual</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">Admin valida resultado</div></div>
-        </label>
-        <label style="display:flex;gap:8px;align-items:center;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:8px;padding:12px;cursor:pointer">
-          <input type="radio" name="resolution-model" value="hybrid" style="accent-color:var(--teal)">
-          <div><div style="font-size:12px;font-weight:600">⚡ Híbrida</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">Oracle + validação admin</div></div>
-        </label>
-      </div>
-    </div>
-    <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin-bottom:20px">
-      <button onclick="adminTab('users')" id="adm-tab-users" style="padding:11px 20px;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:13px;font-weight:700;cursor:pointer">👥 Utilizadores</button>
-      <button onclick="adminTab('markets')" id="adm-tab-markets" style="padding:11px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">📊 Mercados</button>
-      <button onclick="adminTab('trades')" id="adm-tab-trades" style="padding:11px 20px;background:none;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer">💰 Apostas</button>
-    </div>
-    <div id="adm-panel-users" style="display:block">
-          <!-- Analytics summary row -->
-          <div id="adm-user-analytics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px"></div>
-          <!-- User list -->
-          <div id="adm-users-list"></div>
-        </div>
-    <div id="adm-panel-markets" style="display:none">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:rgba(255,255,255,0.6)">
-          <input type="checkbox" id="adm-mkt-select-all" onchange="adminToggleSelectAll(this)" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer">
-          Seleccionar todos
-        </label>
-        <span id="adm-mkt-selected-count" style="font-size:12px;color:rgba(255,255,255,0.35)"></span>
-        <button id="adm-mkt-delete-btn" onclick="adminDeleteSelected()" disabled style="background:rgba(255,68,85,0.08);border:1px solid rgba(255,68,85,0.3);color:#ff4455;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;opacity:0.4">🗑 Eliminar selecionados</button>
-        <div id="adm-delete-result" style="font-size:12px;font-weight:600;color:var(--teal)"></div>
-      </div>
-      <div id="adm-markets-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar para carregar...</div></div>
-    </div>
-    <div id="adm-panel-trades" style="display:none">
-      <div id="adm-trades-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar para carregar...</div></div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-onboard" style="display:none">
-  <div class="onboard">
-    <!-- Tab switcher -->
-    <div style="display:flex;gap:0;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:4px;margin-bottom:24px">
-      <button id="ob-tab-login" onclick="obTabSwitch('login')" style="flex:1;padding:10px;border:none;border-radius:9px;background:var(--teal);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Entrar</button>
-      <button id="ob-tab-register" onclick="obTabSwitch('register')" style="flex:1;padding:10px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:14px;font-weight:600;cursor:pointer">Criar conta</button>
+    ;font-weight:600;cursor:pointer">Criar conta</button>
     </div>
 
     <!-- LOGIN panel -->
