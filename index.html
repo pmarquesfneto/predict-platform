@@ -3562,7 +3562,17 @@ async function loadMarketDetail(apiId) {
     const getOutcome = t => (t.outcomeId || t.outcome || '').toLowerCase();
     const total    = trades.length;
     const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+    // Volume, avg, mode stats (no R$ prefix)
+    const amounts = trades.map(t=>parseFloat(t.amount||t.cost||0)).filter(a=>a>0);
+    const totalVol = amounts.reduce((a,b)=>a+b,0);
+    const avgAmt   = amounts.length ? Math.round(totalVol/amounts.length) : 0;
+    // Mode = most common bet amount
+    const freq = {}; amounts.forEach(a=>{ freq[a]=(freq[a]||0)+1; });
+    const modeAmt = amounts.length ? Object.entries(freq).sort((a,b)=>b[1]-a[1])[0]?.[0] : '—';
     set('mkt-stat-total', total);
+    set('mkt-stat-avg',   modeAmt);            // Modo
+    set('mkt-stat-max',   totalVol.toFixed(0)); // Volume
+    set('mkt-stat-median', avgAmt);             // Média/aposta
 
     // Adapt SIM/NÃO labels based on market type
     const mktForStats = MARKETS.find(m => String(m.id)===String(apiId)||String(m.apiId)===String(apiId));
