@@ -678,7 +678,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 .ml-stats{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.35)}
 .ml-btn{background:var(--teal);color:#fff;border:none;padding:8px 18px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;margin-top:4px}
 
-/* ── ACCESS CODE MODAL ─────────────────────────────── */
 .access-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(6px)}
 .access-box{background:var(--dark-card);border:1px solid var(--dark-border);border-radius:var(--r-lg);padding:32px;width:300px;text-align:center}
 .access-icon{font-size:40px;margin-bottom:12px}
@@ -5680,7 +5679,6 @@ function doLogout() { logout(); }
 
 
 
-- ══ ACCESS CODE MODAL ══════════════════════════════ -->
 <div class="access-modal" id="access-modal" style="display:none" onclick="if(event.target===this)closeAccessModal()">
   <div class="access-box">
     <div class="access-icon">🔓</div>
