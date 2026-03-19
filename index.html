@@ -5566,6 +5566,37 @@ function logout() {
   if (typeof obHideLogin === 'function') obHideLogin();
   if (typeof authTab === 'function') authTab('register');
 }
+// ── Admin utility functions ───────────────────────────────────
+async function adminTopUp(userId, displayName) {
+  const amountStr = prompt(`💰 Ajustar saldo de "${displayName}"
+Valor a adicionar (use negativo para remover):`);
+  if (amountStr === null) return; // cancelled
+  const amount = parseFloat(amountStr);
+  if (isNaN(amount)) { alert('Valor inválido. Usa um número (ex: 500 ou -200)'); return; }
+  const r = await api('PATCH', '/admin/users/'+userId+'/balance', {amount});
+  if (r?.ok || r?.balancePlay != null) {
+    alert('✅ Saldo actualizado! Novo saldo: R$ '+parseFloat(r.balancePlay||0).toFixed(2));
+    document.getElementById('user-detail-modal')?.remove();
+    await adminRefresh();
+  } else {
+    alert('Erro ao ajustar saldo: '+(r?.error||'tente novamente'));
+  }
+}
+
+async function adminResetPw(userId, displayName) {
+  const newPw = prompt(`🔑 Nova password para "${displayName}"
+(mínimo 8 caracteres):`);
+  if (!newPw) return;
+  if (newPw.length < 8) { alert('A password deve ter pelo menos 8 caracteres.'); return; }
+  const r = await api('PATCH', '/admin/users/'+userId+'/password', {password: newPw});
+  if (r?.ok || r?.message) {
+    alert('✅ Password alterada com sucesso!');
+  } else {
+    alert('Erro ao alterar password: '+(r?.error||'tente novamente'));
+  }
+}
+
+
 function doLogout() { logout(); }
 
 
