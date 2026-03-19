@@ -709,6 +709,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   .page{display:none!important;}
   .page.active{display:block!important;}
   body{overflow-x:hidden;}
+
+  /* Hide ALL direct body children that aren't nav, .page divs, or footer */
+  body > div:not(.page),
+  body > section,
+  body > article,
+  body > button:not([id="claude-agent"]),
+  body > h1, body > h2, body > h3, body > h4,
+  body > p {
+    display: none !important;
+  }
 </style>
 </head>
 <body onload="if(typeof showPage==='function')showPage('home')">
