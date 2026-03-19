@@ -4563,8 +4563,8 @@ async function ucSubmit() {
       }, 1200);
     } else {
       const msg = result?.error || result?.message || 'Erro ao criar mercado.';
-      const friendlyMsg = msg.includes('check constraint') 
-        ? '❌ Tipo de mercado não suportado. Tenta novamente ou contacta o admin.'
+      const friendlyMsg = (msg.includes('check constraint') || msg.includes('invalid input value') || msg.includes('enum'))
+        ? '❌ Erro temporário ao criar mercado. Tenta novamente em alguns segundos.'
         : '❌ ' + msg;
       alert(friendlyMsg);
       if (btn) { btn.textContent = 'Publicar mercado →'; btn.disabled = false; }
