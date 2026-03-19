@@ -2708,6 +2708,7 @@ async function showAdminMarketDetail(marketId) {
 
 
 async function deleteCurrentMarket() {
+  if (!currentUser || currentUser.role !== 'admin') { alert('Apenas administradores podem eliminar mercados.'); return; }
   const mkt = MARKETS.find(m => m.id === CURRENT_MARKET_ID);
   if (!mkt || !mkt.apiId) return;
   if (!confirm('Eliminar este mercado? Esta acção é irreversível.')) return;
@@ -3409,7 +3410,7 @@ function openMarket(marketId) {
 
   // Delete button
   const deleteBtn = document.getElementById('mkt-delete-btn');
-  if (deleteBtn) deleteBtn.style.display = (currentUser&&(currentUser.role==='admin'||mkt.creatorId===currentUser.id))?'block':'none';
+  if (deleteBtn) deleteBtn.style.display = (currentUser&&currentUser.role==='admin')?'block':'none';
 
   // ── Build bet panel based on type ─────────────────────────
   const betPanelEl = document.getElementById('mkt-bet-panel');
