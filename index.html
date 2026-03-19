@@ -705,6 +705,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 .code-actions{display:flex;gap:8px;justify-content:center}
 .code-action-btn{background:rgba(239,159,39,0.08);border:1px solid rgba(239,159,39,0.25);color:var(--amber);padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer}
 
+
+  .page{display:none!important;}
+  .page.active{display:block!important;}
+  body{overflow-x:hidden;}
 </style>
 </head>
 <body onload="if(typeof showPage==='function')showPage('home')">
@@ -1935,7 +1939,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <div style="display:flex;gap:0;border-bottom:1px solid var(--dark-border);margin-bottom:20px">
       <button id="adm-tab-users"   onclick="adminTab('users')"   style="padding:10px 20px;border:none;background:none;color:var(--teal);font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--teal)">👥 Utilizadores</button>
       <button id="adm-tab-markets" onclick="adminTab('markets')" style="padding:10px 20px;border:none;background:none;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent">📊 Mercados</button>
-      <button id="adm-tab-apostas" onclick="adminTab('apostas')" style="padding:10px 20px;border:none;background:none;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent">💰 Apostas</button>
+      <button id="adm-tab-trades" onclick="adminTab('apostas')" style="padding:10px 20px;border:none;background:none;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent">💰 Apostas</button>
     </div>
 
     <!-- ── Users tab ──────────────────────────────── -->
@@ -1961,7 +1965,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     </div>
 
     <!-- ── Trades tab ──────────────────────────────── -->
-    <div id="adm-panel-apostas" style="display:none">
+    <div id="adm-panel-trades" style="display:none">
       <div id="adm-trades-list"><div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Clica em Actualizar para carregar...</div></div>
     </div>
 
