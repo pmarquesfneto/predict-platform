@@ -2443,6 +2443,15 @@ async function showUserDetail(userId) {
             style="background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.3);border-radius:8px;padding:8px 14px;color:var(--amber);cursor:pointer;font-size:12px;font-weight:600">
             🔑 Reset password
           </button>
+          ${!u.isActive && u.role!=='admin' ? `
+          <button onclick="adminApproveUser('${u.id}')"
+            style="background:rgba(29,158,117,0.18);border:1px solid rgba(29,158,117,0.5);border-radius:8px;padding:8px 14px;color:var(--teal);cursor:pointer;font-size:12px;font-weight:700">
+            ✅ Aprovar utilizador
+          </button>
+          <button onclick="adminRejectUser('${u.id}')"
+            style="background:rgba(255,68,85,0.1);border:1px solid rgba(255,68,85,0.3);border-radius:8px;padding:8px 14px;color:#ff4455;cursor:pointer;font-size:12px;font-weight:600">
+            ❌ Rejeitar
+          </button>` : ''}
           <div style="flex:1;text-align:right">
             <span style="font-size:11px;color:rgba(255,255,255,0.25)">Última aposta: ${lastBet}</span>
           </div>
@@ -2472,6 +2481,66 @@ async function showUserDetail(userId) {
       </div>
     </div>`);
 }
+
+// ── Admin action functions ────────────────────────────────────
+async function adminApproveUser(userId) {
+  if (!confirm('Aprovar este utilizador?')) return;
+  const r = await api('POST', '/admin/users/'+userId+'/approve');
+  if (r?.ok) {
+    alert('✅ Utilizador aprovado! Já pode fazer login.');
+    await adminRefresh();
+  } else {
+    alert('Erro: '+(r?.error||'tente novamente'));
+  }
+}
+
+async function adminRejectUser(userId) {
+  if (!confirm('Rejeitar/suspender este utilizador?')) return;
+  const r = await api('POST', '/admin/users/'+userId+'/reject');
+  if (r?.ok) {
+    alert('Utilizador rejeitado/suspenso.');
+    await adminRefresh();
+  } else {
+    alert('Erro: '+(r?.error||'tente novamente'));
+  }
+}
+
+async function adminApproveMarket(marketId) {
+  if (!confirm('Aprovar este mercado? Ficará visível e activo para todos.')) return;
+  const r = await api('POST', '/admin/markets/'+marketId+'/approve');
+  if (r?.ok) {
+    alert('✅ Mercado aprovado e publicado!');
+    await loadRealMarkets();
+    await adminRefresh();
+    document.getElementById('user-detail-modal')?.remove();
+  } else {
+    alert('Erro: '+(r?.error||'tente novamente'));
+  }
+}
+
+async function adminRejectMarket(marketId) {
+  if (!confirm('Rejeitar este mercado?')) return;
+  const r = await api('POST', '/admin/markets/'+marketId+'/reject');
+  if (r?.ok) {
+    alert('Mercado rejeitado.');
+    await adminRefresh();
+  } else {
+    alert('Erro: '+(r?.error||'tente novamente'));
+  }
+}
+
+async function adminDeleteMarketById(marketId) {
+  if (!confirm('Eliminar permanentemente este mercado?')) return;
+  const r = await api('DELETE', '/markets/'+marketId);
+  if (r?.ok) {
+    await loadRealMarkets();
+    await adminRefresh();
+  } else {
+    alert('Erro ao eliminar: '+(r?.error||'tente novamente'));
+  }
+}
+
+
 
 function t(key) {
   return TRANSLATIONS[currentLang]?.[key] || TRANSLATIONS['pt'][key] || key;
@@ -2840,27 +2909,12 @@ function ucSelType(el, type) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Session restore — admin NEVER auto-restores (must login manually)
-  const storedToken = localStorage.getItem('predict_token');
-  const storedUser  = localStorage.getItem('predict_user');
-  if (storedToken && storedUser) {
-    try {
-      const u = JSON.parse(storedUser);
-      if (u && u.role !== 'admin') {
-        authToken   = storedToken;
-        currentUser = u;
-        AUTH_TOKEN   = storedToken;
-        CURRENT_USER = u;
-      } else {
-        // Admin session — clear it, must login each time
-        localStorage.removeItem('predict_token');
-        localStorage.removeItem('predict_user');
-      }
-    } catch (e) {
-      localStorage.removeItem('predict_token');
-      localStorage.removeItem('predict_user');
-    }
-  }
+  // SECURITY: Always start with no session — users must log in explicitly every visit
+  localStorage.removeItem('predict_token');
+  localStorage.removeItem('predict_user');
+  authToken = null; currentUser = null;
+  AUTH_TOKEN = null; CURRENT_USER = null;
+
   loadRealMarkets();
   updateNavUser();
   // Restore language preference
@@ -2868,7 +2922,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('predict_lang');
     if (savedLang && savedLang !== 'pt') { currentLang = savedLang; toggleLang(); }
   } catch(e) {}
-  // Ensure home page is visible on load
   showPage('home', null);
 });
 
@@ -3244,7 +3297,7 @@ function renderRows(markets) {
         <div class="mrow-q">${m.q}</div>
         <div class="mrow-meta" style="display:flex;align-items:center;gap:8px">
           <span>${catLbl[m.cat] || m.cat} · Encerra ${m.closes}</span>
-          <span style="font-size:10px;padding:2px 6px;border-radius:5px;background:${typeBg};border:1px solid ${typeBdr};color:${typeTxt}">${typeLbl}</span>
+          <span style="font-size:10px;padding:2px 6px;border-radius:5px;background:${typeBg};border:1px solid ${typeBdr};color:${typeTxt}">${typeLbl}</span>${m.status==="pending_approval"?"<span style=\"font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(100,140,255,0.12);color:#6496ff\">⏳ Pendente</span>":""}${(m.visibility==="closed"||m.status==="closed")?"<span style=\"font-size:10px;padding:2px 6px;border-radius:5px;background:rgba(239,159,39,0.1);color:var(--amber)\">🔒 Fechado</span>":""}
         </div>
       </div>
       ${probHtml}
@@ -3281,7 +3334,9 @@ function openMarket(marketId) {
     if (!resolvedName && mkt.creatorId && currentUser?.id === mkt.creatorId) {
       resolvedName = currentUser.displayName || currentUser.email;
     }
-    let creatorText = resolvedName || '—';
+    // Closed/private markets hide creator identity
+    const isClosedMkt = mkt.visibility === 'closed' || mkt.status === 'closed';
+    let creatorText = isClosedMkt ? '**********' : (resolvedName || '—');
     if (mkt.createdAt) {
       const d = new Date(mkt.createdAt);
       const datePart = d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
@@ -4476,6 +4531,23 @@ async function ucSubmit() {
 
     if (result && result.id) {
       await loadRealMarkets();
+      // Non-admin market goes to pending_approval
+      const isPendingMkt = result.status === 'pending_approval' || (!currentUser || currentUser.role !== 'admin');
+      if (isPendingMkt && currentUser?.role !== 'admin') {
+        if (btn) { btn.textContent = '⏳ Aguarda aprovação'; btn.style.background = 'rgba(100,140,255,0.2)'; }
+        // Show pending message
+        const stepEl = document.getElementById('uc-step-indicator') || document.getElementById('create-feedback');
+        const msgDiv = document.createElement('div');
+        msgDiv.style.cssText = 'background:rgba(100,140,255,0.12);border:1px solid rgba(100,140,255,0.3);border-radius:12px;padding:20px;text-align:center;margin:16px 0';
+        msgDiv.innerHTML = '<div style="font-size:28px;margin-bottom:12px">⏳</div>' +
+          '<div style="font-weight:800;font-size:18px;margin-bottom:8px">Mercado submetido!</div>' +
+          '<div style="color:rgba(255,255,255,0.6);font-size:14px">O teu mercado aguarda aprovação do administrador.<br>Receberás uma notificação quando estiver activo.</div>';
+        const formArea = document.getElementById('page-create') || document.querySelector('.uc-wrap');
+        if (formArea) formArea.prepend(msgDiv);
+        setTimeout(() => { showPage('listing', null); msgDiv.remove?.(); btn.textContent = 'Publicar mercado →'; btn.disabled = false; btn.style.background = ''; }, 4000);
+        ucCurrentStep = 0;
+        return;
+      }
       if (btn) { btn.textContent = '✅ Mercado criado!'; btn.style.background = 'rgba(29,158,117,0.3)'; }
       const newMkt = MARKETS.find(m => m.id === result.id || m.apiId === result.id);
       setTimeout(() => {
@@ -4843,15 +4915,25 @@ async function obRegister() {
   try {
     const result = await apiRegister(email, password, name);
   if (result?.ok) {
-    // Save extra profile data locally (backend doesn't have these fields yet)
     if (estado) localStorage.setItem('predict_estado', estado);
     if (pais)   localStorage.setItem('predict_pais', pais);
   }
-    if (result.ok || result.success) {
+    if (result?.pending) {
+      // Account created but pending admin approval
+      const errEl = document.getElementById('ob-reg-error');
+      if (errEl) {
+        errEl.style.color = 'var(--teal)';
+        errEl.textContent = '✅ Conta criada com sucesso! A aguardar aprovação do administrador. Receberás uma notificação quando a conta estiver activa.';
+      }
+      // Clear form
+      ['ob-input-name','ob-input-apelido','ob-input-email','ob-input-password','ob-input-estado','ob-input-pais']
+        .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    } else if (result?.ok || result?.success || result?.tokens) {
       obStep(2);
       updateNavUser();
     } else {
-      alert('Erro: ' + (result.error || 'Tente novamente'));
+      const errEl = document.getElementById('ob-reg-error');
+      if (errEl) errEl.textContent = result?.error || 'Erro ao criar conta. Tente novamente.';
     }
   } catch(e) { alert('Erro: ' + e.message); }
   finally { if (btn) { btn.textContent = 'Criar conta →'; btn.disabled = false; } }
@@ -4916,12 +4998,12 @@ async function adminRefresh() {
     const [usersRaw, tradesRaw, mktsRaw] = await Promise.all([
       api('GET', '/admin/users').catch(()=>null),
       api('GET', '/admin/trades').catch(()=>null),
-      api('GET', '/markets?limit=500').catch(()=>null)
+      api('GET', '/admin/markets').catch(()=>null)
     ]);
 
     const users  = Array.isArray(usersRaw) ? usersRaw : (usersRaw?.users||usersRaw?.data||[]);
     const trades = Array.isArray(tradesRaw) ? tradesRaw : (tradesRaw?.trades||tradesRaw?.data||[]);
-    const mkts   = mktsRaw?.markets || [];
+    const mkts   = mktsRaw?.markets || mktsRaw?.data || (Array.isArray(mktsRaw)?mktsRaw:[]);
 
     // ── Header KPIs ────────────────────────────────────────────
     const setEl = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
@@ -5010,7 +5092,8 @@ async function adminRefresh() {
           const wr      = total > 0 ? Math.round(u.winCount/total*100) : null;
           const isSusp  = suspicious.find(s=>s.id===u.id);
           const joinDate = new Date(u.createdAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'2-digit'});
-          const borderColor = isAdmin ? 'rgba(239,159,39,0.4)' : isSusp ? 'rgba(255,68,85,0.4)' : 'var(--dark-border)';
+          const isPending   = !u.isActive && u.role !== 'admin';
+          const borderColor = isAdmin ? 'rgba(239,159,39,0.4)' : isSusp ? 'rgba(255,68,85,0.4)' : isPending ? 'rgba(100,140,255,0.4)' : 'var(--dark-border)';
 
           return `<div class="adm-user-card" data-uid="${u.id}" data-uname="${u.displayName||u.email}"
             onclick="showUserDetail('${u.id}')"
@@ -5031,6 +5114,7 @@ async function adminRefresh() {
               <div style="font-weight:700;font-size:13px">${u.displayName||'—'}
                 ${isAdmin?'<span style="font-size:10px;color:var(--amber);background:rgba(239,159,39,0.1);padding:1px 6px;border-radius:4px;margin-left:6px">ADMIN</span>':''}
                 ${isSusp?'<span style="font-size:10px;color:#ff4455;background:rgba(255,68,85,0.1);padding:1px 6px;border-radius:4px;margin-left:6px">⚠️ SUSPEITO</span>':''}
+                ${isPending?'<span style="font-size:10px;color:#6496ff;background:rgba(100,140,255,0.12);padding:1px 6px;border-radius:4px;margin-left:6px">⏳ PENDENTE</span>':''}
               </div>
               <div style="font-size:11px;color:rgba(255,255,255,0.4)">${u.email}</div>
               <div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px">Registado ${joinDate}</div>
@@ -5084,9 +5168,75 @@ async function adminRefresh() {
       }
     }
 
+    // ── Markets tab ──────────────────────────────────────────────
+    const mktsEl = document.getElementById('adm-panel-markets');
+    if (mktsEl) {
+      // Preserve the existing toolbar (checkboxes/delete button) and rebuild only the rows area
+      let rowsContainer = document.getElementById('adm-mkt-rows');
+      if (!rowsContainer) {
+        rowsContainer = document.createElement('div');
+        rowsContainer.id = 'adm-mkt-rows';
+        mktsEl.appendChild(rowsContainer);
+      }
+      const statusColors = {
+        active:           {bg:'rgba(29,158,117,0.12)',color:'var(--teal)',label:'✅ Activo'},
+        pending_approval: {bg:'rgba(100,140,255,0.12)',color:'#6496ff',label:'⏳ Pendente'},
+        closed:           {bg:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.4)',label:'🔒 Fechado'},
+        rejected:         {bg:'rgba(255,68,85,0.1)',color:'#ff4455',label:'❌ Rejeitado'},
+        resolved:         {bg:'rgba(239,159,39,0.1)',color:'var(--amber)',label:'🏁 Resolvido'},
+        cancelled:        {bg:'rgba(255,68,85,0.08)',color:'#ff6677',label:'⛔ Cancelado'},
+      };
+      if (!mkts.length) {
+        rowsContainer.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:20px 0">Sem mercados.</div>';
+      } else {
+        rowsContainer.innerHTML = mkts.map(m => {
+          const st = statusColors[m.status] || {bg:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.4)',label:m.status||'?'};
+          const yesPrice = m.prices?.find(p=>p.outcomeId==='yes');
+          const yesPct = Math.round((yesPrice?.probability||0.5)*100);
+          const vol = 'R$ '+Math.round(parseFloat(m.totalVolume||0));
+          const isPending = m.status === 'pending_approval';
+          const creator = window._adminUsers?.find(u=>u.id===m.createdBy)?.displayName || '—';
+          return `<div class="adm-mkt-row" data-id="${m.id}"
+            style="display:grid;grid-template-columns:32px 1fr 120px 80px 80px auto;gap:10px;align-items:center;
+              padding:12px 0;border-bottom:1px solid var(--dark-border)">
+            <input type="checkbox" class="adm-mkt-cb" data-id="${m.id}"
+              onchange="adminUpdateDeleteBtn()" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer">
+            <div>
+              <div style="font-size:13px;font-weight:600">${m.title?.slice(0,60)||'—'}</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.35)">${m.category||'—'} · Criado por ${creator}</div>
+              ${isPending ? `<div style="font-size:10px;color:#6496ff;margin-top:2px">⏳ Aguarda aprovação do admin</div>` : ''}
+            </div>
+            <div>
+              <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:${st.bg};color:${st.color}">${st.label}</span>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--teal)">${yesPct}%</div>
+              <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:3px">
+                <div style="height:4px;background:var(--teal);border-radius:2px;width:${yesPct}%"></div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5)">${vol}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+              ${isPending ? `
+                <button onclick="adminApproveMarket('${m.id}')"
+                  style="background:rgba(29,158,117,0.15);border:1px solid rgba(29,158,117,0.4);border-radius:6px;padding:4px 10px;color:var(--teal);cursor:pointer;font-size:11px;font-weight:700">✅ Aprovar</button>
+                <button onclick="adminRejectMarket('${m.id}')"
+                  style="background:rgba(255,68,85,0.1);border:1px solid rgba(255,68,85,0.3);border-radius:6px;padding:4px 10px;color:#ff4455;cursor:pointer;font-size:11px">❌ Rejeitar</button>
+              ` : ''}
+              <button onclick="openMarket('${m.id}')"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;color:rgba(255,255,255,0.5);cursor:pointer;font-size:11px">👁</button>
+              <button onclick="adminDeleteMarketById('${m.id}')"
+                style="background:rgba(255,68,85,0.06);border:1px solid rgba(255,68,85,0.2);border-radius:6px;padding:4px 8px;color:#ff4455;cursor:pointer;font-size:11px">🗑</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+
     // Store for reuse in showUserDetail
     window._adminUsers  = users;
     window._adminTrades = trades;
+    window._adminMarkets = mkts;
 
   } catch(err) {
     if (statusEl) { statusEl.textContent = '❌ Erro: '+err.message.slice(0,40); statusEl.style.color='#ff4455'; }
