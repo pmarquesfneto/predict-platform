@@ -1930,7 +1930,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <div class="kpi"><div class="kpi-l">Volume total</div><div class="kpi-v" id="adm-volume">R$ 0</div></div>
     </div>
     <div id="adm-status" style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;min-height:18px"></div>
-    <button class="ob-btn" style="background:transparent;border:1px solid var(--dark-border);color:rgba(255,255,255,0.7);margin-top:8px;font-size:13px;font-weight:600;cursor:pointer" onclick="obTabSwitch('register')">Criar conta</button>
+  </div>
+</div>
+
+<div class="page" id="page-onboard" style="display:none">
+  <div class="onboard">
+    <!-- Tab switcher -->
+    <div style="display:flex;gap:0;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:4px;margin-bottom:24px">
+      <button id="ob-tab-login" onclick="obTabSwitch('login')" style="flex:1;padding:10px;border:none;border-radius:9px;background:var(--teal);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Entrar</button>
+      <button id="ob-tab-register" onclick="obTabSwitch('register')" style="flex:1;padding:10px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:14px;font-weight:600;cursor:pointer">Criar conta</button>
     </div>
 
     <!-- LOGIN panel -->
