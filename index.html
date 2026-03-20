@@ -2220,11 +2220,7 @@ async function apiPlaceBet(marketApiId, outcomeId, amount) {
 
 // ── UPDATE DASHBOARD with real user data ─────────────
 async function updateDashboard() {
-  if (!currentUser) {
-    const stored = localStorage.getItem('predict_user');
-    if (stored) { currentUser = JSON.parse(stored); authToken = localStorage.getItem('predict_token'); }
-  }
-  if (!currentUser) return;
+  if (!currentUser) return; // Never re-read localStorage — session managed by restoreSession()
 
   // Name & score
   const nameEl  = document.getElementById('dash-name');
@@ -5625,6 +5621,17 @@ function logout() {
   // Reset nav via updateNavUser (which handles null currentUser)
   updateNavUser();
 
+  // Clear all dashboard fields so profile page shows empty
+  ['dash-name','dash-score','dash-email','dash-volume','dash-pnl','dash-bets','dash-balance',
+   'dash-win','dash-loss','dash-calib'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '';
+  });
+
+  // Clear leaderboard so "you" highlight is gone
+  const lbEl = document.getElementById('leaderboard-list');
+  if (lbEl) lbEl.innerHTML = '';
+
   // Navigate to home
   document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
   const homePage = document.getElementById('page-home');
@@ -5812,6 +5819,11 @@ async function restoreSession() {
     // Restore session immediately from localStorage (JWT is self-validating)
     authToken = token; AUTH_TOKEN = token;
     currentUser = user; CURRENT_USER = user;
+    // Set balance from stored user immediately
+    if (user.balancePlay !== undefined) {
+      const balEl = document.querySelector('.nav-balance');
+      if (balEl) balEl.textContent = 'Saldo: R$ ' + parseFloat(user.balancePlay||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    }
     updateNavUser();
     await loadRealMarkets();
     console.log('✅ Session restored:', user.displayName);
@@ -5837,6 +5849,16 @@ setInterval(async () => {
     const activePage = document.querySelector('.page.active');
     if (activePage && ['page-home','page-listing','page-market'].some(id => activePage.id === id)) {
       await loadRealMarkets();
+    }
+    // Refresh user balance if logged in
+    if (authToken) {
+      const me = await fetch(API_BASE+'/users/me',{headers:{'Authorization':'Bearer '+authToken}})
+        .then(r=>r.ok?r.json():null).catch(()=>null);
+      if (me && me.id) {
+        currentUser = me; CURRENT_USER = me;
+        localStorage.setItem('predict_user', JSON.stringify(me));
+        updateNavUser();
+      }
     }
   }
 }, 30000);
