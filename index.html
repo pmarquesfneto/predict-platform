@@ -3206,6 +3206,8 @@ async function loadPortfolio() {
 }
 
 /* ── LOAD LEADERBOARD ── */
+var _lbData = null;
+var _lbTab = "activity";
 async function loadLeaderboard() {
   var board = document.getElementById("lb-board");
   if (!board) return;
