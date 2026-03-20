@@ -5705,7 +5705,7 @@ function adminResolveMarket(marketId, outcomes) {
   document.getElementById("resolve-source").value = "";
   document.getElementById("resolve-notes").value = "";
   const _m = document.getElementById("resolve-modal");
-  if (_m) { _m.style.setProperty('display','flex','important'); _m.style.cssText = 'display:flex!important;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center'; }
+  if (_m) { _m.removeAttribute('style'); _m.style.display = 'flex'; }
 }
 
 function selectResolutionOutcome(el, outcomeId) {
@@ -5720,7 +5720,7 @@ function selectResolutionOutcome(el, outcomeId) {
 }
 
 function closeResolveModal() {
-  const _mc = document.getElementById("resolve-modal"); if (_mc) _mc.style.cssText = 'display:none!important';
+  const _mc = document.getElementById("resolve-modal"); if (_mc) { _mc.style.display = 'none'; }
   _resolveMarketId = null; _resolveSelectedOutcome = null;
 }
 
