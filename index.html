@@ -710,7 +710,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   body{overflow-x:hidden;}
 
   /* Hide ALL direct body children that aren't nav, .page divs, or footer */
-  body > div:not(.page),
+  body > div:not(.page):not(#resolve-modal),
   body > section,
   body > article,
   body > button,
@@ -5704,7 +5704,8 @@ function adminResolveMarket(marketId, outcomes) {
   document.getElementById("resolve-error").textContent = "";
   document.getElementById("resolve-source").value = "";
   document.getElementById("resolve-notes").value = "";
-  document.getElementById("resolve-modal").style.display = "flex";
+  const _m = document.getElementById("resolve-modal");
+  if (_m) { _m.style.setProperty('display','flex','important'); _m.style.cssText = 'display:flex!important;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center'; }
 }
 
 function selectResolutionOutcome(el, outcomeId) {
@@ -5719,7 +5720,7 @@ function selectResolutionOutcome(el, outcomeId) {
 }
 
 function closeResolveModal() {
-  document.getElementById("resolve-modal").style.display = "none";
+  const _mc = document.getElementById("resolve-modal"); if (_mc) _mc.style.cssText = 'display:none!important';
   _resolveMarketId = null; _resolveSelectedOutcome = null;
 }
 
