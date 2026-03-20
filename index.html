@@ -5753,7 +5753,7 @@ async function submitResolution() {
   } catch(e) { errEl.textContent = "Erro: " + e.message; }
   finally { if (btn) { btn.textContent = "⚖ Confirmar resolução"; btn.disabled = false; } }
 }
-document.getElementById("resolve-modal").addEventListener("mousedown", function(e) { if (e.target === this) closeResolveModal(); });
+// Modal backdrop listener — added after DOM ready in restoreSession
 // ════ END RESOLUTION ════════════════════════════════
 
 // ════ WEEKLY REPLENISHMENT ══════════════════════════
@@ -5871,6 +5871,12 @@ function renderLeaderboard() {
 
 // ════ SESSION PERSISTENCE ═══════════════════════════════
 async function restoreSession() {
+  // Attach modal backdrop listener now that DOM is ready
+  const _rm = document.getElementById("resolve-modal");
+  if (_rm && !_rm._listenerAttached) {
+    _rm.addEventListener("mousedown", function(e) { if (e.target === this) closeResolveModal(); });
+    _rm._listenerAttached = true;
+  }
   const token = localStorage.getItem('predict_token');
   const userStr = localStorage.getItem('predict_user');
   if (!token || !userStr) return;
