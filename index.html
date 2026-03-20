@@ -5751,7 +5751,7 @@ async function submitResolution() {
   } catch(e) { errEl.textContent = "Erro: " + e.message; }
   finally { if (btn) { btn.textContent = "⚖ Confirmar resolução"; btn.disabled = false; } }
 }
-document.addEventListener("click", function(e) { if (e.target && e.target.id === "resolve-modal") closeResolveModal(); });
+document.getElementById("resolve-modal").addEventListener("mousedown", function(e) { if (e.target === this) closeResolveModal(); });
 // ════ END RESOLUTION ════════════════════════════════
 
 // ════ WEEKLY REPLENISHMENT ══════════════════════════
