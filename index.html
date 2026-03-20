@@ -2956,22 +2956,7 @@ function ucSelType(el, type) {
   el.style.background = 'rgba(29,158,117,0.08)';
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  // SECURITY: Always start with no session — users must log in explicitly every visit
-  localStorage.removeItem('predict_token');
-  localStorage.removeItem('predict_user');
-  authToken = null; currentUser = null;
-  AUTH_TOKEN = null; CURRENT_USER = null;
-
-  loadRealMarkets();
-  updateNavUser();
-  // Restore language preference
-  try {
-    const savedLang = localStorage.getItem('predict_lang');
-    if (savedLang && savedLang !== 'pt') { currentLang = savedLang; toggleLang(); }
-  } catch(e) {}
-  showPage('home', null);
-});
+// Session restored via restoreSession() on page load
 
 
 
@@ -5896,14 +5881,6 @@ async function restoreSession() {
           currentUser = me; CURRENT_USER = me;
           localStorage.setItem('predict_user', JSON.stringify(me));
           updateNavUser();
-        } else if (me === null) {
-          // Token truly expired — clear and reload
-          localStorage.removeItem('predict_token');
-          localStorage.removeItem('predict_user');
-          authToken = null; AUTH_TOKEN = null;
-          currentUser = null; CURRENT_USER = null;
-          updateNavUser();
-          console.log('Session expired — please log in again');
         }
       }).catch(() => {});
   } catch(e) {
