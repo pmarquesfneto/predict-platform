@@ -5788,71 +5788,7 @@ function lbTab(tab) {
     btn.style.color = t===tab ? "#fff" : "rgba(255,255,255,0.5)";
     btn.style.fontWeight = t===tab ? "700" : "600";
   });
-  renderLeaderboard();
-}
-async function loadLeaderboard() {
-  var board = document.getElementById("lb-board");
-  if (!board) return;
-  board.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px 0">A carregar...</div>';
-  try {
-    var tok = AUTH_TOKEN||authToken||"";
-    var headers = tok ? {"Authorization":"Bearer "+tok} : {};
-    var tData = await fetch("https://predict-backend-44i1.onrender.com/api/admin/trades",{headers:headers}).then(function(r){return r.json();}).catch(function(){return {trades:[]};});
-    var uData = await fetch("https://predict-backend-44i1.onrender.com/api/admin/users",{headers:headers}).then(function(r){return r.json();}).catch(function(){return {users:[]};});
-    var tradeArr = tData.trades||[];
-    var userArr = (uData.users||uData||[]).filter(function(u){ return u.role!=="admin" && u.isActive!==false; });
-    var stats = {};
-    tradeArr.forEach(function(t) {
-      var uid = t.userId; if (!uid) return;
-      if (!stats[uid]) stats[uid] = {trades:0,volume:0,markets:{},sides:{}};
-      stats[uid].trades++;
-      stats[uid].volume += parseFloat(t.cost||0);
-      if (t.marketId) stats[uid].markets[t.marketId] = 1;
-    });
-    _lbData = userArr.map(function(u) {
-      var s = stats[u.id]||{trades:0,volume:0,markets:{}};
-      return {
-        id:u.id,
-        name:u.displayName||u.name||u.email?.split("@")[0]||"Utilizador",
-        initials:(u.displayName||u.name||"?")[0].toUpperCase(),
-        trades:s.trades, volume:s.volume,
-        markets:Object.keys(s.markets).length,
-        balance:parseFloat(u.balance||u.credits||1000),
-        activityScore:s.trades*10+Object.keys(s.markets).length*20
-      };
-    }).filter(function(u){ return u.trades>0; });
-    renderLeaderboard();
-  } catch(e) {
-    if (board) board.innerHTML = '<div style="color:#ff4455;text-align:center;padding:40px">Erro: '+e.message+'</div>';
-  }
-}
-function renderLeaderboard() {
-  var board = document.getElementById("lb-board");
-  if (!board || !_lbData) return;
-  var sorted = _lbData.slice();
-  if (_lbTab==="volume") sorted.sort(function(a,b){return b.volume-a.volume;});
-  else if (_lbTab==="diversity") sorted.sort(function(a,b){return b.markets-a.markets||b.trades-a.trades;});
-  else sorted.sort(function(a,b){return b.activityScore-a.activityScore;});
-  if (sorted.length===0) { board.innerHTML='<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px">Sem dados ainda.</div>'; return; }
-  var medals=["🥇","🥈","🥉"];
-  board.innerHTML = sorted.slice(0,20).map(function(u,i) {
-    var rank=i+1;
-    var medal=medals[i]||'<span style="color:rgba(255,255,255,0.35);font-weight:700">#'+rank+'</span>';
-    var pStat,pLabel,sStat,sLabel;
-    if (_lbTab==="volume") { pStat="R$ "+u.volume.toLocaleString("pt-BR",{maximumFractionDigits:0}); pLabel="volume"; sStat=u.trades; sLabel="apostas"; }
-    else if (_lbTab==="diversity") { pStat=u.markets; pLabel="mercados"; sStat=u.trades; sLabel="apostas"; }
-    else { pStat=u.trades; pLabel="apostas"; sStat=u.markets; sLabel="mercados"; }
-    var isMe = currentUser && u.id===currentUser.id;
-    return '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:'+(isMe?"rgba(29,158,117,0.08)":rank<=3?"rgba(255,255,255,0.03)":"transparent")+';border:1px solid '+(isMe?"rgba(29,158,117,0.3)":rank<=3?"rgba(255,255,255,0.08)":"rgba(255,255,255,0.05)")+';border-radius:12px">'
-    +'<div style="width:32px;text-align:center;font-size:18px;flex-shrink:0">'+medal+'</div>'
-    +'<div style="width:36px;height:36px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;flex-shrink:0">'+u.initials+'</div>'
-    +'<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:'+(isMe?"var(--teal)":"#fff")+'">'+u.name+(isMe?" (tu)":"")+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px">Saldo R$ '+u.balance.toLocaleString("pt-BR",{maximumFractionDigits:0})+'</div></div>'
-    +'<div style="text-align:right;flex-shrink:0"><div style="font-size:18px;font-weight:800;color:'+(rank===1?"var(--teal)":rank<=3?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.7)")+'">'+pStat+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35)">'+pLabel+'</div></div>'
-    +'<div style="text-align:right;flex-shrink:0;min-width:55px"><div style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.5)">'+sStat+'</div><div style="font-size:11px;color:rgba(255,255,255,0.3)">'+sLabel+'</div></div>'
-    +'</div>';
-  }).join("");
-}
-// ════ END LEADERBOARD ═══════════════════════════════
+  ren══════
 
 // ════ SESSION PERSISTENCE ═══════════════════════════════
 async function restoreSession() {
