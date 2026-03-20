@@ -5779,6 +5779,11 @@ function renderConcentrationBadge(pct) {
 
 // ════ LEADERBOARD ═══════════════════════════════════
 var _lbData = null, _lbTab = "activity";
+function renderLeaderboard() {
+  // Delegate to loadLeaderboard which renders directly
+  loadLeaderboard();
+}
+
 function lbTab(tab) {
   _lbTab = tab;
   ["activity","volume","diversity"].forEach(function(t) {
@@ -6420,7 +6425,7 @@ id="uc-form-4" style="display:none">
       <button id="lb-tab-volume" onclick="lbTab('volume')" style="padding:8px 18px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer">Volume</button>
       <button id="lb-tab-diversity" onclick="lbTab('diversity')" style="padding:8px 18px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer">Diversidade</button>
     </div>
-    <div id="lb-board" style="display:flex;flex-direction:column;gap:8px"><div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:40px">A carregar leaderboard...</div></div>
+    <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:8px"><div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:40px">A carregar leaderboard...</div></div>
     <div style="margin-top:28px;padding:14px 18px;background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:12px">
       <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px">⏳ Calibração em breve</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.5)">O score de calibração será calculado assim que os primeiros mercados resolverem.</div>
