@@ -731,6 +731,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     <button class="nav-tab" data-page="dashboard" onclick="showPage('dashboard',this)" id="nav-dashboard">Minha Conta</button>
     <button class="nav-tab" data-page="experience" onclick="showPage('experience',this)">Experiência</button>
     <button class="nav-tab" data-page="pitch" onclick="showPage('pitch',this)">Para Você</button>
+    <button class="nav-tab" data-page="leaderboard" onclick="showPage('leaderboard',this)">🏆 Ranking</button>
     <button class="nav-tab" data-page="create" onclick="showPage('create',this)">Criar Mercado</button>
     <button class="nav-tab" data-page="onboard" onclick="showPage('onboard',this)" id="nav-entrar" style="background:var(--teal);color:#fff;border-radius:8px;padding:6px 16px;margin-left:4px">Entrar</button>
     </div>
@@ -831,7 +832,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
     </div>
     <div class="mkt-layout">
       <div>
-        <div style="margin-bottom:10px"><span class="mcat" id="mkt-cat-el">—</span><span id="mkt-type-badge" style="display:none;margin-left:8px;font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);color:var(--amber)"></span></div>
+        <div style="margin-bottom:10px"><span class="mcat" id="mkt-cat-el">—</span><span id="mkt-type-badge" style="display:none;margin-left:8px;font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);color:var(--amber)"></span><span id="mkt-concentration" style="margin-left:6px;vertical-align:middle"></span></div>
         <h1 class="mkt-title" id="mkt-title-el" style="font-size:22px;line-height:1.3;margin-bottom:14px">—</h1>
         <div class="mkt-meta" style="margin-bottom:18px">
           <div class="mkt-mi">📦 <b>Vol:</b> <span id="mkt-vol-el">—</span></div>
@@ -1935,6 +1936,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button onclick="adminRefresh()" style="background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--teal);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">🔄 Actualizar</button>
         <button onclick="adminSeedMarkets()" style="background:rgba(239,159,39,0.08);border:1px solid rgba(239,159,39,0.3);color:var(--amber);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">🌱 Seed mercados</button>
+        <button onclick="adminWeeklyReplenishment()" style="background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.3);color:var(--teal);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">💰 Replenishment</button>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
@@ -3412,6 +3414,10 @@ function openMarket(marketId) {
   const deleteBtn = document.getElementById('mkt-delete-btn');
   if (deleteBtn) deleteBtn.style.display = (currentUser&&currentUser.role==='admin')?'block':'none';
 
+  // Check concentration and show warning
+  const _concPct = checkConcentration(window._LAST_MARKET_TRADES||[]);
+  const _concEl = document.getElementById('mkt-concentration');
+  if (_concEl) _concEl.innerHTML = renderConcentrationBadge(_concPct);
   // ── Build bet panel based on type ─────────────────────────
   const betPanelEl = document.getElementById('mkt-bet-panel');
   if (betPanelEl) {
@@ -3589,6 +3595,7 @@ async function loadMarketDetail(apiId) {
     const trData = await api('GET', '/markets/'+apiId+'/trades?limit=100').catch(()=>null)
                 || await api('GET', '/markets/'+apiId+'/bets?limit=100').catch(()=>null);
     const trades = Array.isArray(trData) ? trData : (trData?.trades || trData?.bets || trData?.data || []);
+    window._LAST_MARKET_TRADES = trades;
 
     // Compute stats — outcomeId field is canonical (API returns outcomeId)
     const getOutcome = t => (t.outcomeId || t.outcome || '').toLowerCase();
@@ -3853,6 +3860,7 @@ function showPage(id,btn,closeMobile){
   if(id==='share')      setTimeout(populateShareSelect, 100);
   if(id==='experience') setTimeout(function(){ if(typeof expTab==='function') expTab('explore'); }, 100);
   if(id==='listing')    setTimeout(function(){ if(typeof renderRows==='function') renderRows(MARKETS); }, 100);
+  if(id==='leaderboard') setTimeout(function(){ if(typeof loadLeaderboard==='function') loadLeaderboard(); }, 100);
   if(id==='onboard')    setTimeout(function(){ if(typeof obShowLogin==='function') obShowLogin(); }, 200);
 
   // Hide every page — use BOTH style.display and classList
@@ -5081,6 +5089,8 @@ async function adminRefresh() {
       api('GET', '/admin/markets').catch(()=>null).then(r=>r||api('GET','/markets?limit=500').catch(()=>null))
     ]);
 
+    window.ADMIN_USERS = Array.isArray(usersRaw?.users) ? usersRaw.users : (Array.isArray(usersRaw)?usersRaw:[]);
+    window.ADMIN_MARKETS = Array.isArray(mktsRaw?.markets) ? mktsRaw.markets : (Array.isArray(mktsRaw)?mktsRaw:[]);
     const users  = Array.isArray(usersRaw) ? usersRaw : (usersRaw?.users||usersRaw?.data||[]);
     const trades = Array.isArray(tradesRaw) ? tradesRaw : (tradesRaw?.trades||tradesRaw?.data||[]);
     const mkts   = mktsRaw?.markets || mktsRaw?.data || (Array.isArray(mktsRaw)?mktsRaw:[]);
@@ -5260,6 +5270,7 @@ async function adminRefresh() {
       }
       const statusColors = {
         active:    {bg:'rgba(29,158,117,0.12)',color:'var(--teal)',label:'✅ Activo'},
+        resolved:  {bg:'rgba(100,200,160,0.12)',color:'#64c896',label:'⚖ Resolvido'},
         draft:     {bg:'rgba(100,140,255,0.12)',color:'#6496ff',label:'⏳ Pendente'},
         closed:    {bg:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.4)',label:'🔒 Fechado'},
         suspended: {bg:'rgba(255,68,85,0.1)',color:'#ff4455',label:'⛠ Suspenso'},
@@ -5305,6 +5316,7 @@ async function adminRefresh() {
               ` : ''}
               <button onclick="openMarket('${m.id}')"
                 style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;color:rgba(255,255,255,0.5);cursor:pointer;font-size:11px">👁</button>
+              <button onclick="adminResolveMarket('${m.id}',m.outcomes||[{id:'yes',label:'SIM'},{id:'no',label:'NAO'}])" style="background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:6px;padding:4px 8px;color:var(--teal);cursor:pointer;font-size:11px;font-weight:600;margin-right:3px" title="Resolver">⚖</button>
               <button onclick="adminDeleteMarketById('${m.id}')"
                 style="background:rgba(255,68,85,0.06);border:1px solid rgba(255,68,85,0.2);border-radius:6px;padding:4px 8px;color:#ff4455;cursor:pointer;font-size:11px">🗑</button>
             </div>
@@ -5674,6 +5686,180 @@ function doLogout() { logout(); }
 
 
 
+// ════ MARKET RESOLUTION ════════════════════════════
+var _resolveMarketId = null;
+var _resolveSelectedOutcome = null;
+
+function adminResolveMarket(marketId, outcomes) {
+  if (!currentUser || currentUser.role !== "admin") { alert("Apenas administradores podem resolver mercados."); return; }
+  _resolveMarketId = marketId;
+  _resolveSelectedOutcome = null;
+  var mkt = (window.ADMIN_MARKETS||[]).find(function(m){ return (m.id||m.apiId)===marketId; }) || {};
+  document.getElementById("resolve-market-title").textContent = mkt.title || mkt.q || marketId;
+  var outcomesEl = document.getElementById("resolve-outcomes");
+  var ocs = (outcomes && outcomes.length > 0) ? outcomes : [{id:"yes",label:"SIM"},{id:"no",label:"NÃO"}];
+  outcomesEl.innerHTML = ocs.map(function(o) {
+    return '<div data-outcome-id="'+o.id+'" onclick="selectResolutionOutcome(this,\'"+o.id+"\')" style="padding:12px 16px;border:2px solid var(--dark-border);border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px"><div style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>'+(o.label||o.id)+'</div>';
+  }).join("");
+  document.getElementById("resolve-error").textContent = "";
+  document.getElementById("resolve-source").value = "";
+  document.getElementById("resolve-notes").value = "";
+  document.getElementById("resolve-modal").style.display = "flex";
+}
+
+function selectResolutionOutcome(el, outcomeId) {
+  _resolveSelectedOutcome = outcomeId;
+  document.querySelectorAll("#resolve-outcomes > div").forEach(function(d) {
+    var isSel = d.dataset.outcomeId === outcomeId;
+    d.style.border = isSel ? "2px solid var(--teal)" : "2px solid var(--dark-border)";
+    d.style.background = isSel ? "rgba(29,158,117,0.1)" : "transparent";
+    var dot = d.querySelector("div");
+    if (dot) { dot.style.background = isSel ? "var(--teal)" : "transparent"; dot.style.borderColor = isSel ? "var(--teal)" : "rgba(255,255,255,0.3)"; }
+  });
+}
+
+function closeResolveModal() {
+  document.getElementById("resolve-modal").style.display = "none";
+  _resolveMarketId = null; _resolveSelectedOutcome = null;
+}
+
+async function submitResolution() {
+  var errEl = document.getElementById("resolve-error");
+  if (!_resolveSelectedOutcome) { errEl.textContent = "Selecciona o resultado correcto."; return; }
+  var source = document.getElementById("resolve-source").value.trim();
+  if (!source) { errEl.textContent = "A fonte de resolução é obrigatória."; return; }
+  errEl.textContent = "";
+  var btn = document.getElementById("resolve-submit-btn");
+  if (btn) { btn.textContent = "A resolver..."; btn.disabled = true; }
+  try {
+    var result = await api("POST", "/admin/markets/" + _resolveMarketId + "/resolve", {
+      outcome: _resolveSelectedOutcome,
+      resolutionSource: source,
+      resolutionNotes: document.getElementById("resolve-notes").value.trim()
+    });
+    if (result) {
+      closeResolveModal();
+      alert("✅ Mercado resolvido! Créditos distribuídos automaticamente.");
+      await adminRefresh();
+    } else { errEl.textContent = "Erro ao resolver. Tenta novamente."; }
+  } catch(e) { errEl.textContent = "Erro: " + e.message; }
+  finally { if (btn) { btn.textContent = "⚖ Confirmar resolução"; btn.disabled = false; } }
+}
+document.addEventListener("click", function(e) { if (e.target && e.target.id === "resolve-modal") closeResolveModal(); });
+// ════ END RESOLUTION ════════════════════════════════
+
+// ════ WEEKLY REPLENISHMENT ══════════════════════════
+async function adminWeeklyReplenishment() {
+  if (!currentUser || currentUser.role !== "admin") return;
+  var users = window.ADMIN_USERS || [];
+  var activeCount = users.filter(function(u){ return u.isActive!==false && u.role!=="admin"; }).length;
+  if (!confirm("💰 Replenishment Semanal\n\n" + activeCount + " utilizadores activos receberão R$ 200 cada.\n\nConfirmas?")) return;
+  var btn = document.querySelector("[onclick=\"adminWeeklyReplenishment()\"]");
+  if (btn) { btn.textContent = "A processar..."; btn.disabled = true; }
+  try {
+    var result = await api("POST", "/admin/replenishment", { amount: 200 });
+    if (result) { alert("✅ Replenishment concluído! " + (result.usersUpdated||activeCount) + " utilizadores receberam R$ 200."); await adminRefresh(); }
+    else { alert("❌ Erro no replenishment."); }
+  } catch(e) { alert("Erro: " + e.message); }
+  finally { if (btn) { btn.textContent = "💰 Replenishment"; btn.disabled = false; } }
+}
+// ════ END REPLENISHMENT ═════════════════════════════
+
+// ════ CONCENTRATION FLAG ════════════════════════════
+function checkConcentration(trades) {
+  if (!trades || trades.length === 0) return null;
+  var byUser = {}, total = 0;
+  trades.forEach(function(t) {
+    var uid = t.userId || "unknown";
+    byUser[uid] = (byUser[uid]||0) + parseFloat(t.cost||0);
+    total += parseFloat(t.cost||0);
+  });
+  if (total === 0) return null;
+  var maxPct = Math.max.apply(null, Object.values(byUser)) / total;
+  return maxPct > 0.4 ? Math.round(maxPct*100) : null;
+}
+function renderConcentrationBadge(pct) {
+  if (!pct) return "";
+  return '<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.3);color:var(--amber);padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:help" title="Um utilizador detém '+pct+'% do volume deste mercado. Os preços podem não reflectir o consenso geral.">⚠ Alta concentração ('+pct+'%)</span>';
+}
+// ════ END CONCENTRATION FLAG ════════════════════════
+
+// ════ LEADERBOARD ═══════════════════════════════════
+var _lbData = null, _lbTab = "activity";
+function lbTab(tab) {
+  _lbTab = tab;
+  ["activity","volume","diversity"].forEach(function(t) {
+    var btn = document.getElementById("lb-tab-"+t);
+    if (!btn) return;
+    btn.style.background = t===tab ? "var(--teal)" : "none";
+    btn.style.color = t===tab ? "#fff" : "rgba(255,255,255,0.5)";
+    btn.style.fontWeight = t===tab ? "700" : "600";
+  });
+  renderLeaderboard();
+}
+async function loadLeaderboard() {
+  var board = document.getElementById("lb-board");
+  if (!board) return;
+  board.innerHTML = '<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px 0">A carregar...</div>';
+  try {
+    var tok = AUTH_TOKEN||authToken||"";
+    var headers = tok ? {"Authorization":"Bearer "+tok} : {};
+    var tData = await fetch("https://predict-backend-44i1.onrender.com/api/admin/trades",{headers:headers}).then(function(r){return r.json();}).catch(function(){return {trades:[]};});
+    var uData = await fetch("https://predict-backend-44i1.onrender.com/api/admin/users",{headers:headers}).then(function(r){return r.json();}).catch(function(){return {users:[]};});
+    var tradeArr = tData.trades||[];
+    var userArr = (uData.users||uData||[]).filter(function(u){ return u.role!=="admin" && u.isActive!==false; });
+    var stats = {};
+    tradeArr.forEach(function(t) {
+      var uid = t.userId; if (!uid) return;
+      if (!stats[uid]) stats[uid] = {trades:0,volume:0,markets:{},sides:{}};
+      stats[uid].trades++;
+      stats[uid].volume += parseFloat(t.cost||0);
+      if (t.marketId) stats[uid].markets[t.marketId] = 1;
+    });
+    _lbData = userArr.map(function(u) {
+      var s = stats[u.id]||{trades:0,volume:0,markets:{}};
+      return {
+        id:u.id,
+        name:u.displayName||u.name||u.email?.split("@")[0]||"Utilizador",
+        initials:(u.displayName||u.name||"?")[0].toUpperCase(),
+        trades:s.trades, volume:s.volume,
+        markets:Object.keys(s.markets).length,
+        balance:parseFloat(u.balance||u.credits||1000),
+        activityScore:s.trades*10+Object.keys(s.markets).length*20
+      };
+    }).filter(function(u){ return u.trades>0; });
+    renderLeaderboard();
+  } catch(e) {
+    if (board) board.innerHTML = '<div style="color:#ff4455;text-align:center;padding:40px">Erro: '+e.message+'</div>';
+  }
+}
+function renderLeaderboard() {
+  var board = document.getElementById("lb-board");
+  if (!board || !_lbData) return;
+  var sorted = _lbData.slice();
+  if (_lbTab==="volume") sorted.sort(function(a,b){return b.volume-a.volume;});
+  else if (_lbTab==="diversity") sorted.sort(function(a,b){return b.markets-a.markets||b.trades-a.trades;});
+  else sorted.sort(function(a,b){return b.activityScore-a.activityScore;});
+  if (sorted.length===0) { board.innerHTML='<div style="color:rgba(255,255,255,0.3);text-align:center;padding:40px">Sem dados ainda.</div>'; return; }
+  var medals=["🥇","🥈","🥉"];
+  board.innerHTML = sorted.slice(0,20).map(function(u,i) {
+    var rank=i+1;
+    var medal=medals[i]||'<span style="color:rgba(255,255,255,0.35);font-weight:700">#'+rank+'</span>';
+    var pStat,pLabel,sStat,sLabel;
+    if (_lbTab==="volume") { pStat="R$ "+u.volume.toLocaleString("pt-BR",{maximumFractionDigits:0}); pLabel="volume"; sStat=u.trades; sLabel="apostas"; }
+    else if (_lbTab==="diversity") { pStat=u.markets; pLabel="mercados"; sStat=u.trades; sLabel="apostas"; }
+    else { pStat=u.trades; pLabel="apostas"; sStat=u.markets; sLabel="mercados"; }
+    var isMe = currentUser && u.id===currentUser.id;
+    return '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:'+(isMe?"rgba(29,158,117,0.08)":rank<=3?"rgba(255,255,255,0.03)":"transparent")+';border:1px solid '+(isMe?"rgba(29,158,117,0.3)":rank<=3?"rgba(255,255,255,0.08)":"rgba(255,255,255,0.05)")+';border-radius:12px">'
+    +'<div style="width:32px;text-align:center;font-size:18px;flex-shrink:0">'+medal+'</div>'
+    +'<div style="width:36px;height:36px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;flex-shrink:0">'+u.initials+'</div>'
+    +'<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:'+(isMe?"var(--teal)":"#fff")+'">'+u.name+(isMe?" (tu)":"")+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px">Saldo R$ '+u.balance.toLocaleString("pt-BR",{maximumFractionDigits:0})+'</div></div>'
+    +'<div style="text-align:right;flex-shrink:0"><div style="font-size:18px;font-weight:800;color:'+(rank===1?"var(--teal)":rank<=3?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.7)")+'">'+pStat+'</div><div style="font-size:11px;color:rgba(255,255,255,0.35)">'+pLabel+'</div></div>'
+    +'<div style="text-align:right;flex-shrink:0;min-width:55px"><div style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.5)">'+sStat+'</div><div style="font-size:11px;color:rgba(255,255,255,0.3)">'+sLabel+'</div></div>'
+    +'</div>';
+  }).join("");
+}
+// ════ END LEADERBOARD ═══════════════════════════════
 </script>
 
 
@@ -6225,6 +6411,45 @@ id="uc-form-4" style="display:none">
 
 
 
+
+<!-- Resolution Modal -->
+<div id="resolve-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:16px;padding:28px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:8px">⚖ Resolver Mercado</div>
+    <div id="resolve-market-title" style="font-size:15px;font-weight:700;margin-bottom:20px;color:#fff;line-height:1.4"></div>
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.4px">Resultado correcto:</div>
+    <div id="resolve-outcomes" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px"></div>
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.4px">Fonte de resolução <span style="color:#ff4455">*</span></div>
+    <input id="resolve-source" type="text" placeholder="Ex: Banco Central — comunicado oficial 19/03/2026" style="width:100%;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;box-sizing:border-box;margin-bottom:16px">
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.4px">Notas (opcional)</div>
+    <textarea id="resolve-notes" rows="2" placeholder="Contexto adicional sobre a resolução..." style="width:100%;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;box-sizing:border-box;resize:vertical;margin-bottom:16px"></textarea>
+    <div id="resolve-error" style="color:#ff4455;font-size:12px;margin-bottom:12px;min-height:16px"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeResolveModal()" style="flex:1;background:var(--dark-card);border:1px solid var(--dark-border);color:rgba(255,255,255,0.6);padding:11px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600">Cancelar</button>
+      <button id="resolve-submit-btn" onclick="submitResolution()" style="flex:2;background:var(--teal);border:none;color:#000;padding:11px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700">⚖ Confirmar resolução</button>
+    </div>
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(239,159,39,0.06);border:1px solid rgba(239,159,39,0.2);border-radius:8px;font-size:11px;color:rgba(255,255,255,0.4)">⚠️ Irreversível. Os créditos são distribuídos automaticamente aos utilizadores que apostaram no resultado correcto.</div>
+  </div>
+</div>
+
+<!-- Leaderboard Page -->
+<div class="page" id="page-leaderboard" style="display:none">
+  <div style="max-width:900px;margin:0 auto;padding:32px 20px">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:8px">🏆 Leaderboard</div>
+    <h1 style="font-size:30px;font-weight:800;margin-bottom:8px">Top Traders</h1>
+    <p style="color:rgba(255,255,255,0.4);font-size:14px;margin-bottom:28px">Ranking por actividade, diversidade e volume.</p>
+    <div style="display:flex;gap:0;background:var(--dark-card);border:1px solid var(--dark-border);border-radius:12px;padding:4px;margin-bottom:24px;width:fit-content">
+      <button id="lb-tab-activity" onclick="lbTab('activity')" style="padding:8px 18px;border:none;border-radius:9px;background:var(--teal);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Actividade</button>
+      <button id="lb-tab-volume" onclick="lbTab('volume')" style="padding:8px 18px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer">Volume</button>
+      <button id="lb-tab-diversity" onclick="lbTab('diversity')" style="padding:8px 18px;border:none;border-radius:9px;background:none;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer">Diversidade</button>
+    </div>
+    <div id="lb-board" style="display:flex;flex-direction:column;gap:8px"><div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:40px">A carregar leaderboard...</div></div>
+    <div style="margin-top:28px;padding:14px 18px;background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:12px">
+      <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px">⏳ Calibração em breve</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5)">O score de calibração será calculado assim que os primeiros mercados resolverem.</div>
+    </div>
+  </div>
+</div>
 <!-- ── Static Info Pages ─────────────────────────────────────── -->
 <div class="page" id="page-blog" style="display:none"><div style="max-width:800px;margin:0 auto;padding:40px 24px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:8px">Blog</div><h1 style="font-size:36px;font-weight:800;margin-bottom:16px">Blog</h1><p style="color:rgba(255,255,255,0.5);font-size:16px">Em breve — histórias, análises e novidades da Predict Brasil.</p><button onclick="showPage('home')" style="margin-top:24px;background:var(--dark-card);border:1px solid var(--dark-border);color:rgba(255,255,255,0.7);padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px">← Voltar</button></div></div>
 
