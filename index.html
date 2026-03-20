@@ -721,7 +721,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
   }
 </style>
 </head>
-<body onload="if(typeof showPage==='function')showPage('home')">
+<body onload="if(typeof showPage==='function'){ restoreSession(); showPage('home'); }">
 
 <nav>
   <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>Predict</div>
@@ -5868,6 +5868,51 @@ function renderLeaderboard() {
   }).join("");
 }
 // ════ END LEADERBOARD ═══════════════════════════════
+
+// ════ SESSION PERSISTENCE ═══════════════════════════════
+async function restoreSession() {
+  const token = localStorage.getItem('predict_token');
+  const userStr = localStorage.getItem('predict_user');
+  if (!token || !userStr) return;
+  try {
+    const user = JSON.parse(userStr);
+    authToken = token; AUTH_TOKEN = token;
+    currentUser = user; CURRENT_USER = user;
+    // Verify token still valid
+    const me = await fetch(API_BASE + '/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    }).then(r => r.json()).catch(() => null);
+    if (me && me.id) {
+      authToken = token; AUTH_TOKEN = token;
+      currentUser = me; CURRENT_USER = me;
+      updateNavUser();
+      await loadRealMarkets();
+      console.log('✅ Session restored:', me.displayName);
+    } else {
+      // Token expired — clear storage
+      localStorage.removeItem('predict_token');
+      localStorage.removeItem('predict_user');
+      authToken = null; AUTH_TOKEN = null;
+      currentUser = null; CURRENT_USER = null;
+      console.log('Session expired — cleared');
+    }
+  } catch(e) {
+    console.warn('Session restore failed:', e.message);
+  }
+}
+
+// ════ AUTO-REFRESH MARKET DATA ═══════════════════════════
+// Refresh market data every 30 seconds when on listing/market pages
+setInterval(async () => {
+  if (!document.hidden) {
+    const activePage = document.querySelector('.page.active');
+    if (activePage && ['page-home','page-listing','page-market'].some(id => activePage.id === id)) {
+      await loadRealMarkets();
+    }
+  }
+}, 30000);
+// ════ END SESSION + REFRESH ══════════════════════════════
+
 </script>
 
 
