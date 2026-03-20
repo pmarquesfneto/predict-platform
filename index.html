@@ -5316,7 +5316,7 @@ async function adminRefresh() {
               ` : ''}
               <button onclick="openMarket('${m.id}')"
                 style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;color:rgba(255,255,255,0.5);cursor:pointer;font-size:11px">👁</button>
-              <button onclick="adminResolveMarket('${m.id}',m.outcomes||[{id:'yes',label:'SIM'},{id:'no',label:'NAO'}])" style="background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:6px;padding:4px 8px;color:var(--teal);cursor:pointer;font-size:11px;font-weight:600;margin-right:3px" title="Resolver">⚖</button>
+              <button onclick="adminResolveMarket('${m.id}')" style="background:rgba(29,158,117,0.06);border:1px solid rgba(29,158,117,0.2);border-radius:6px;padding:4px 8px;color:var(--teal);cursor:pointer;font-size:11px;font-weight:600;margin-right:3px" title="Resolver">⚖</button>
               <button onclick="adminDeleteMarketById('${m.id}')"
                 style="background:rgba(255,68,85,0.06);border:1px solid rgba(255,68,85,0.2);border-radius:6px;padding:4px 8px;color:#ff4455;cursor:pointer;font-size:11px">🗑</button>
             </div>
@@ -5691,6 +5691,11 @@ var _resolveMarketId = null;
 var _resolveSelectedOutcome = null;
 
 function adminResolveMarket(marketId, outcomes) {
+  // Look up outcomes from cached admin markets if not passed
+  if (!outcomes || outcomes.length === 0) {
+    var cachedMkt = (window.ADMIN_MARKETS||[]).find(function(m){ return m.id===marketId || m.apiId===marketId; });
+    outcomes = (cachedMkt?.outcomes && cachedMkt.outcomes.length > 0) ? cachedMkt.outcomes : [{id:'yes',label:'SIM'},{id:'no',label:'NÃO'}];
+  }
   if (!currentUser || currentUser.role !== "admin") { alert("Apenas administradores podem resolver mercados."); return; }
   _resolveMarketId = marketId;
   _resolveSelectedOutcome = null;
