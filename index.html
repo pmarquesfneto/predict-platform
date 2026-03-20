@@ -5882,26 +5882,30 @@ async function restoreSession() {
   if (!token || !userStr) return;
   try {
     const user = JSON.parse(userStr);
+    // Restore session immediately from localStorage (JWT is self-validating)
     authToken = token; AUTH_TOKEN = token;
     currentUser = user; CURRENT_USER = user;
-    // Verify token still valid
-    const me = await fetch(API_BASE + '/auth/me', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    }).then(r => r.json()).catch(() => null);
-    if (me && me.id) {
-      authToken = token; AUTH_TOKEN = token;
-      currentUser = me; CURRENT_USER = me;
-      updateNavUser();
-      await loadRealMarkets();
-      console.log('✅ Session restored:', me.displayName);
-    } else {
-      // Token expired — clear storage
-      localStorage.removeItem('predict_token');
-      localStorage.removeItem('predict_user');
-      authToken = null; AUTH_TOKEN = null;
-      currentUser = null; CURRENT_USER = null;
-      console.log('Session expired — cleared');
-    }
+    updateNavUser();
+    await loadRealMarkets();
+    console.log('✅ Session restored:', user.displayName);
+    // Silently refresh user data in background via /users/me
+    fetch(API_BASE + '/users/me', { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(r => r.ok ? r.json() : null)
+      .then(me => {
+        if (me && me.id) {
+          currentUser = me; CURRENT_USER = me;
+          localStorage.setItem('predict_user', JSON.stringify(me));
+          updateNavUser();
+        } else if (me === null) {
+          // Token truly expired — clear and reload
+          localStorage.removeItem('predict_token');
+          localStorage.removeItem('predict_user');
+          authToken = null; AUTH_TOKEN = null;
+          currentUser = null; CURRENT_USER = null;
+          updateNavUser();
+          console.log('Session expired — please log in again');
+        }
+      }).catch(() => {});
   } catch(e) {
     console.warn('Session restore failed:', e.message);
   }
