@@ -5633,31 +5633,6 @@ function logout() {
   if (lbEl) lbEl.innerHTML = '';
 
   // Navigate to home
-  if (typeof showPage === 'function') showPage('home');
-}unction logout() {
-  // Clear all session state
-  authToken     = null;
-  currentUser   = null;
-  AUTH_TOKEN    = null;
-  CURRENT_USER  = null;
-  localStorage.removeItem('predict_token');
-  localStorage.removeItem('predict_user');
-
-  // Reset nav via updateNavUser (which handles null currentUser)
-  updateNavUser();
-
-  // Clear all dashboard fields so profile page shows empty
-  ['dash-name','dash-score','dash-email','dash-volume','dash-pnl','dash-bets','dash-balance',
-   'dash-win','dash-loss','dash-calib'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = '';
-  });
-
-  // Clear leaderboard so "you" highlight is gone
-  const lbEl = document.getElementById('leaderboard-list');
-  if (lbEl) lbEl.innerHTML = '';
-
-  // Navigate to home
   document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; });
   const homePage = document.getElementById('page-home');
   if (homePage) homePage.style.display = 'block';
