@@ -5714,7 +5714,7 @@ function adminResolveMarket(marketId, outcomes) {
   if (_m) { _m.style.display = 'flex'; }
 }
 
-function selectResolutionOutcome(el, outcomeId) {
+function selectResolutionOutcome(el, outcomeId) { outcomeId = outcomeId || el.dataset.outcomeId;
   if (!outcomeId) outcomeId = el?.dataset?.outcomeId;
   _resolveSelectedOutcome = outcomeId;
   document.querySelectorAll("#resolve-outcomes > div").forEach(function(d) {
