@@ -706,6 +706,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1100;background:rgba(10,12,11,0.
 
 
   .page{display:none!important;}
+  #resolve-modal[style*="flex"]{display:flex!important;}
   .page.active{display:block!important;}
   body{overflow-x:hidden;}
 
@@ -5704,7 +5705,7 @@ function adminResolveMarket(marketId, outcomes) {
   var outcomesEl = document.getElementById("resolve-outcomes");
   var ocs = (outcomes && outcomes.length > 0) ? outcomes : [{id:"yes",label:"SIM"},{id:"no",label:"NÃO"}];
   outcomesEl.innerHTML = ocs.map(function(o) {
-    return '<div data-outcome-id="'+o.id+'" onclick="selectResolutionOutcome(this,\'"+o.id+"\')" style="padding:12px 16px;border:2px solid var(--dark-border);border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px"><div style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>'+(o.label||o.id)+'</div>';
+    return '<div data-outcome-id="'+o.id+'" onclick="selectResolutionOutcome(this, this.dataset.outcomeId)" style="padding:12px 16px;border:2px solid var(--dark-border);border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px"><div style="width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);flex-shrink:0"></div>'+(o.label||o.id)+'</div>';
   }).join("");
   document.getElementById("resolve-error").textContent = "";
   document.getElementById("resolve-source").value = "";
@@ -5714,6 +5715,7 @@ function adminResolveMarket(marketId, outcomes) {
 }
 
 function selectResolutionOutcome(el, outcomeId) {
+  if (!outcomeId) outcomeId = el?.dataset?.outcomeId;
   _resolveSelectedOutcome = outcomeId;
   document.querySelectorAll("#resolve-outcomes > div").forEach(function(d) {
     var isSel = d.dataset.outcomeId === outcomeId;
@@ -6419,7 +6421,7 @@ id="uc-form-4" style="display:none">
 
 
 <!-- Resolution Modal -->
-<div id="resolve-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center">
+<div id="resolve-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
   <div style="background:var(--dark-bg);border:1px solid var(--dark-border);border-radius:16px;padding:28px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:8px">⚖ Resolver Mercado</div>
     <div id="resolve-market-title" style="font-size:15px;font-weight:700;margin-bottom:20px;color:#fff;line-height:1.4"></div>
